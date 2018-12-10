@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
         //mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Device_Sensors);
         // SDK默认采用连续定位模式，时间间隔2000ms
         // 设置定位间隔，单位毫秒，默认为2000ms，最低1000ms。
-        mLocationOption.setInterval(3000);
+        mLocationOption.setInterval(30000);
         // 设置定位同时是否需要返回地址描述
         //设置是否返回地址信息（默认返回地址信息）
         mLocationOption.setNeedAddress(true);
