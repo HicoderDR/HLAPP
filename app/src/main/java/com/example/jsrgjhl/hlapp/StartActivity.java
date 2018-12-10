@@ -6,7 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 
 public class StartActivity extends AppCompatActivity {
 
-    private  final int SPLASH_DISPLAY_LENGHT = 4000;//4秒后进入系统，时间可自行调整
+    private  final int SPLASH_DISPLAY_LENGHT = 3000;//3秒后进入系统，时间可自行调整
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -16,7 +16,7 @@ public class StartActivity extends AppCompatActivity {
         new android.os.Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                Intent mainIntent = new Intent(StartActivity.this,MainActivity.class);
+                Intent mainIntent = new Intent(StartActivity.this,LoginActivity.class);
                 StartActivity.this.startActivity(mainIntent);
                 StartActivity.this.finish();
             }
