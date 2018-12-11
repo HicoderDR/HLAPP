@@ -1,11 +1,15 @@
 package com.example.jsrgjhl.hlapp;
 
+import android.graphics.Color;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.*;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
@@ -20,16 +24,22 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS| WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+            window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN| View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION| View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(Color.TRANSPARENT);
+            window.setNavigationBarColor(Color.TRANSPARENT);
+        }
         setContentView(R.layout.activity_login);
         initViews();
         setupEvents();
         initData();
-
     }
 
     private void initData() {
-
-
         //判断用户第一次登陆
         if (firstLogin()) {
             checkBox_password.setChecked(false);//取消记住密码的复选框
@@ -136,8 +146,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         checkBox_password.setTypeface(typeface);
         checkBox_login.setTypeface(typeface);
         Apptitle.setTypeface(typeface);
-
-
     }
 
     private void setupEvents() {
@@ -189,7 +197,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
      * 用户名csdn，密码123456，就能登录成功，否则登录失败
      */
     private void login() {
-        startActivity(new Intent(LoginActivity.this, MainActivity.class));
+        Intent mainintent = new Intent(LoginActivity.this, MainActivity.class);
+        LoginActivity.this.startActivity(mainintent);
+        LoginActivity.this.finish();
         /*
         //先做一些基本的判断，比如输入的用户命为空，密码为空，网络不可用多大情况，都不需要去链接服务器了，而是直接返回提示错误
         if (getAccount().isEmpty()){

@@ -3,11 +3,32 @@ package com.example.jsrgjhl.hlapp;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.Typeface;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
+import android.view.MotionEvent;
+import android.view.View.OnTouchListener;
+import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.ListAdapter;
+import android.widget.ListView;
+import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
+
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
@@ -21,29 +42,46 @@ import com.amap.api.maps.model.LatLng;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity implements LocationSource, AMapLocationListener{
+public class MainActivity extends AppCompatActivity implements LocationSource, AMapLocationListener {
 
     private static final String TAG = "TestLocation";
-
+    private Context mContext = null;
     private TextView location = null;
-
+    private RelativeLayout Back = null;
     private MapView mapView;
     private AMap aMap;
     private AMapLocationClient mLocationClient = null;
     private AMapLocationClientOption mLocationOption = null;
     private OnLocationChangedListener mListener = null;
+    //menu
+    private String[] menunames = {"地图", "警报记录", "设备列表", "个人设置"};
+    private int[] menuimgs = {R.mipmap.btn_map, R.mipmap.btn_record, R.mipmap.btn_equip, R.mipmap.btn_file};
+    private ListView listview;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.i(TAG,"onCreate()");
+        Log.i(TAG, "onCreate()");
         super.onCreate(savedInstanceState);
+        getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS | WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+            window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(Color.TRANSPARENT);
+            window.setNavigationBarColor(Color.TRANSPARENT);
+        }
         setContentView(R.layout.activity_main);
         init();
         // 创建地图
         mapView.onCreate(savedInstanceState);
     }
+
     public static String sHA1(Context context) {
         try {
             PackageInfo info = context.getPackageManager().getPackageInfo(
@@ -61,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
                 hexString.append(":");
             }
             String result = hexString.toString();
-            return result.substring(0, result.length()-1);
+            return result.substring(0, result.length() - 1);
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         } catch (NoSuchAlgorithmException e) {
@@ -69,10 +107,21 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
         }
         return null;
     }
+
     private void init() {
-        Log.i(TAG,"init()");
-        location = (TextView) findViewById(R.id.location);
-        mapView =(MapView) findViewById(R.id.mapView);
+        mContext = this;
+        Log.i(TAG, "init()");
+        mapView = (MapView) findViewById(R.id.mapView);
+        //menu按钮初始化
+        Back = (RelativeLayout) findViewById(R.id.back);
+        Back.getBackground().setAlpha(125);//0~255透明度值
+        Back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showPopupWindow(v);
+            }
+        });
+
         if (aMap == null) {
             // 显示地图
             aMap = mapView.getMap();
@@ -80,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
 
         aMap.getUiSettings().setZoomControlsEnabled(false);
         // 设置地图默认的指南针是否显示
-        aMap.getUiSettings().setCompassEnabled(true);
+        aMap.getUiSettings().setCompassEnabled(false);
         // 设置定位监听
         aMap.setLocationSource(this);
         // 设置默认定位按钮是否显示
@@ -106,7 +155,7 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
         //mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Device_Sensors);
         // SDK默认采用连续定位模式，时间间隔2000ms
         // 设置定位间隔，单位毫秒，默认为2000ms，最低1000ms。
-        mLocationOption.setInterval(30000);
+        mLocationOption.setInterval(60000);
         // 设置定位同时是否需要返回地址描述
         //设置是否返回地址信息（默认返回地址信息）
         mLocationOption.setNeedAddress(true);
@@ -132,16 +181,17 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
         mLocationClient.startLocation();
     }
 
+    //定位
     @Override
     public void onLocationChanged(AMapLocation aMapLocation) {
-        Log.i(TAG,"onLocationChanged()");
+        Log.i(TAG, "onLocationChanged()");
         // 解析AMapLocation对象
         // 判断AMapLocation对象不为空，当定位错误码类型为0时定位成功
         if (aMapLocation != null) {
-            Log.i(TAG,"onLocationChanged()--aMapLocation.getErrorCode():"+aMapLocation.getErrorCode());
+            Log.i(TAG, "onLocationChanged()--aMapLocation.getErrorCode():" + aMapLocation.getErrorCode());
             if (aMapLocation.getErrorCode() == 0) {
                 int locationType = aMapLocation.getLocationType(); // 获取当前定位结果来源，如网络定位结果，详见定位类型表
-                double latitude= aMapLocation.getLatitude(); // 获取纬度
+                double latitude = aMapLocation.getLatitude(); // 获取纬度
                 double longitude = aMapLocation.getLongitude(); // 获取经度
                 float accuracy = aMapLocation.getAccuracy(); // 获取精度信息
                 String address = aMapLocation.getAddress(); // 地址，如果option中设置isNeedAddress为false，则没有此结果，
@@ -151,37 +201,37 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
                 String city = aMapLocation.getCity(); // 城市信息
                 String district = aMapLocation.getDistrict(); // 城区信息
                 String street = aMapLocation.getStreet(); // 街道信息
-                String streetNum= aMapLocation.getStreetNum(); // 街道门牌号信息
+                String streetNum = aMapLocation.getStreetNum(); // 街道门牌号信息
                 String cityCode = aMapLocation.getCityCode(); // 城市编码
                 String adCode = aMapLocation.getAdCode(); // 地区编码
-                String aoiName= aMapLocation.getAoiName(); // 获取当前定位点的AOI信息
+                String aoiName = aMapLocation.getAoiName(); // 获取当前定位点的AOI信息
                 String buildingId = aMapLocation.getBuildingId(); // 获取当前室内定位的建筑物Id
-                String floor= aMapLocation.getFloor(); // 获取当前室内定位的楼层
+                String floor = aMapLocation.getFloor(); // 获取当前室内定位的楼层
                 int gpsAccuracyStatus = aMapLocation.getGpsAccuracyStatus(); //获取GPS的当前状态
                 // 获取定位时间
                 SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 Date date = new Date(aMapLocation.getTime());
                 df.format(date);
 
-                Log.i(TAG,"onLocationChanged()---"+"\n"
-                        +"--locationType:"+locationType +"\n"
-                        +"--latitude:"+latitude+"\n"
-                        +"--longitude:"+longitude+"\n"
-                        +"--accuracy:"+accuracy+"\n"
-                        +"--address:"+address+"\n"
-                        +"--country:"+country+"\n"
-                        +"--province:"+province+"\n"
-                        +"--city:"+city+"\n"
-                        +"--district:"+district+"\n"
-                        +"--street:"+street+"\n"
-                        +"--streetNum:"+streetNum+"\n"
-                        +"--cityCode:"+cityCode+"\n"
-                        +"--adCode:"+adCode+"\n"
-                        +"--aoiName:"+aoiName+"\n"
-                        +"--buildingId:"+buildingId+"\n"
-                        +"--floor:"+floor+"\n"
-                        +"--gpsAccuracyStatus:"+gpsAccuracyStatus+"\n"
-                        +"--date:"+date);
+                Log.i(TAG, "onLocationChanged()---" + "\n"
+                        + "--locationType:" + locationType + "\n"
+                        + "--latitude:" + latitude + "\n"
+                        + "--longitude:" + longitude + "\n"
+                        + "--accuracy:" + accuracy + "\n"
+                        + "--address:" + address + "\n"
+                        + "--country:" + country + "\n"
+                        + "--province:" + province + "\n"
+                        + "--city:" + city + "\n"
+                        + "--district:" + district + "\n"
+                        + "--street:" + street + "\n"
+                        + "--streetNum:" + streetNum + "\n"
+                        + "--cityCode:" + cityCode + "\n"
+                        + "--adCode:" + adCode + "\n"
+                        + "--aoiName:" + aoiName + "\n"
+                        + "--buildingId:" + buildingId + "\n"
+                        + "--floor:" + floor + "\n"
+                        + "--gpsAccuracyStatus:" + gpsAccuracyStatus + "\n"
+                        + "--date:" + date);
 
                 // 设置缩放级别
                 aMap.moveCamera(CameraUpdateFactory.zoomTo(17));
@@ -191,7 +241,7 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
                 // 点击定位按钮 能够将地图的中心移动到定位点
                 mListener.onLocationChanged(aMapLocation);
 
-                location.setText(address);
+                location.setText("1231312");
             } else {
                 // 定位失败时，可通过ErrCode（错误码）信息来确定失败的原因，errInfo是错误信息，详见错误码表。
                 Log.e("HLQ_Struggle", "location Error, ErrCode:"
@@ -203,25 +253,25 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
 
     @Override
     public void onPointerCaptureChanged(boolean hasCapture) {
-        Log.i(TAG,"onPointerCaptureChanged----hasCapture:"+hasCapture);
+        Log.i(TAG, "onPointerCaptureChanged----hasCapture:" + hasCapture);
     }
 
     @Override
     public void activate(OnLocationChangedListener onLocationChangedListener) {
-        Log.i(TAG,"activate()");
+        Log.i(TAG, "activate()");
         mListener = onLocationChangedListener;
     }
 
     @Override
     public void deactivate() {
-        Log.i(TAG,"deactivate()");
+        Log.i(TAG, "deactivate()");
         mListener = null;
     }
 
 
     @Override
     protected void onResume() {
-        Log.i(TAG,"onResume()");
+        Log.i(TAG, "onResume()");
         super.onResume();
         // 重新绘制加载地图
         mapView.onResume();
@@ -229,7 +279,7 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
 
     @Override
     protected void onPause() {
-        Log.i(TAG,"onPause()");
+        Log.i(TAG, "onPause()");
         super.onPause();
         // 暂停地图的绘制
         mapView.onPause();
@@ -237,7 +287,7 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
 
     @Override
     protected void onDestroy() {
-        Log.i(TAG,"onDestroy()");
+        Log.i(TAG, "onDestroy()");
         super.onDestroy();
         // 销毁地图
         mapView.onDestroy();
@@ -245,8 +295,85 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        Log.i(TAG,"onSaveInstanceState()");
+        Log.i(TAG, "onSaveInstanceState()");
         super.onSaveInstanceState(outState);
         mapView.onSaveInstanceState(outState);
+    }
+
+    private void showPopupWindow(View v) {
+        // 一个自定义的布局，作为显示的内容
+        View contentView = LayoutInflater.from(mContext).inflate(
+                R.layout.pop_menu, null);
+        // 设置按钮的点击事件
+        final PopupWindow popupWindow = new PopupWindow(contentView,
+                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, true);
+        int windowPos[] = calculatePopWindowPos(v, contentView);
+        int xOff = 900;// 可以自己调整偏移
+        windowPos[0] +=500;
+        windowPos[1] -= 520;
+        popupWindow.showAtLocation(v, Gravity.TOP | Gravity.START, windowPos[0], windowPos[1]);
+
+        //menu弹窗
+        popupWindow.setTouchable(true);
+        popupWindow.setTouchInterceptor(new OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                Log.i("dr", "onTouch : ");
+                return false;
+                // 这里如果返回true的话，touch事件将被拦截
+                // 拦截后 PopupWindow的onTouchEvent不被调用，这样点击外部区域无法dismiss
+            }
+        });
+        // 如果不设置PopupWindow的背景，无论是点击外部区域还是Back键都无法dismiss弹框
+        // 我觉得这里是API的一个bug
+        popupWindow.setBackgroundDrawable(getResources().getDrawable(
+                R.mipmap.greysquare));
+        // 设置好参数之后再show
+
+        //menu的list设置
+        ArrayList<HashMap<String, Object>> menulist = new ArrayList<HashMap<String, Object>>();
+        for (int i = 0; i < 4; i++) {
+            HashMap<String, Object> unit = new HashMap<String, Object>();
+            unit.put("img", menuimgs[i]);
+            unit.put("name", menunames[i]);
+            menulist.add(unit);
+        }
+        SimpleAdapter saImageItems = new SimpleAdapter(this,
+                menulist,//数据来源
+                R.layout.menu_unit,//每一个用户xml相当ListView的一个组件
+                new String[]{"img", "name"},
+                //分别对应view view的id
+                new int[]{R.id.img, R.id.name});
+        //获取listview
+        listview = (ListView) contentView.findViewById(R.id.list_menu);
+        listview.setAdapter(saImageItems);
+
+        popupWindow.showAsDropDown(v);
+    }
+
+    //计算menu弹窗位置
+    private static int[] calculatePopWindowPos(final View anchorView, final View contentView) {
+        final int windowPos[] = new int[2];
+        final int anchorLoc[] = new int[2];
+        // 获取锚点View在屏幕上的左上角坐标位置
+        anchorView.getLocationOnScreen(anchorLoc);
+        final int anchorHeight = anchorView.getHeight();
+        // 获取屏幕的高宽
+        final int screenHeight = ScreenUtils.getScreenHeight(anchorView.getContext());
+        final int screenWidth = ScreenUtils.getScreenWidth(anchorView.getContext());
+        contentView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        // 计算contentView的高宽
+        final int windowHeight = contentView.getMeasuredHeight();
+        final int windowWidth = contentView.getMeasuredWidth();
+        // 判断需要向上弹出还是向下弹出显示
+        final boolean isNeedShowUp = (screenHeight - anchorLoc[1] - anchorHeight < windowHeight);
+        if (isNeedShowUp) {
+            windowPos[0] = screenWidth - windowWidth;
+            windowPos[1] = anchorLoc[1] - windowHeight;
+        } else {
+            windowPos[0] = screenWidth - windowWidth;
+            windowPos[1] = anchorLoc[1] + anchorHeight;
+        }
+        return windowPos;
     }
 }
