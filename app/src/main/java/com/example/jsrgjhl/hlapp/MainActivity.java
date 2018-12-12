@@ -35,10 +35,13 @@ import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
 import com.amap.api.maps.AMap;
+import com.amap.api.maps.AMapOptions;
 import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.LocationSource;
 import com.amap.api.maps.MapView;
+import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.LatLng;
+import com.amap.api.maps.model.MyLocationStyle;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -58,6 +61,7 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
     private AMap aMap;
     private AMapLocationClient mLocationClient = null;
     private AMapLocationClientOption mLocationOption = null;
+    private MyLocationStyle mLocationStyle = null;
     private OnLocationChangedListener mListener = null;
     //menu
     private String[] menunames = {"地图", "警报记录", "设备列表", "个人设置"};
@@ -81,6 +85,14 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
         init();
         // 创建地图
         mapView.onCreate(savedInstanceState);
+
+        //部分高德UI样式改动
+        aMap.getUiSettings().setLogoPosition(AMapOptions.LOGO_POSITION_BOTTOM_RIGHT);//高德logo位置的移动
+        MyLocationStyle myLocationStyle = new MyLocationStyle();
+        //myLocationStyle.myLocationIcon(BitmapDescriptorFactory.fromResource(R.mipmap.icon_move_map_path_dot));
+        myLocationStyle.strokeColor(Color.argb(0, 0, 0, 0));// 设置圆形的边框颜色
+        myLocationStyle.radiusFillColor(Color.argb(0, 0, 0, 0));// 设置圆形的填充颜色
+        aMap.setMyLocationStyle(myLocationStyle);//设置定位蓝点的Style
     }
 
     public static String sHA1(Context context) {
