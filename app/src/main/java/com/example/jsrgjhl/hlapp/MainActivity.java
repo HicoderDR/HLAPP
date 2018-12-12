@@ -5,6 +5,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -311,23 +312,29 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
         int xOff = 900;// 可以自己调整偏移
         windowPos[0] +=500;
         windowPos[1] -= 520;
-        popupWindow.showAtLocation(v, Gravity.TOP | Gravity.START, windowPos[0], windowPos[1]);
 
-        //menu弹窗
-        popupWindow.setTouchable(true);
-        popupWindow.setTouchInterceptor(new OnTouchListener() {
-            @Override
+
+
+        popupWindow.setOutsideTouchable(true);
+        // mMenuView添加OnTouchListener监听判断获取触屏位置如果在选择框外面则销毁弹出框
+        contentView.setOnTouchListener(new View.OnTouchListener() {
+
             public boolean onTouch(View v, MotionEvent event) {
-                Log.i("dr", "onTouch : ");
-                return false;
-                // 这里如果返回true的话，touch事件将被拦截
-                // 拦截后 PopupWindow的onTouchEvent不被调用，这样点击外部区域无法dismiss
+                int height = v.findViewById(R.id.popback).getTop();
+
+                int y = (int) event.getY();
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    if (y < height) {
+                        popupWindow.dismiss();
+                    }
+                }
+                return true;
             }
         });
         // 如果不设置PopupWindow的背景，无论是点击外部区域还是Back键都无法dismiss弹框
         // 我觉得这里是API的一个bug
-        popupWindow.setBackgroundDrawable(getResources().getDrawable(
-                R.mipmap.greysquare));
+        ColorDrawable dw = new ColorDrawable(0xb0000000);
+        popupWindow.setBackgroundDrawable(dw);
         // 设置好参数之后再show
 
         //menu的list设置
@@ -347,8 +354,8 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
         //获取listview
         listview = (ListView) contentView.findViewById(R.id.list_menu);
         listview.setAdapter(saImageItems);
-
-        popupWindow.showAsDropDown(v);
+        popupWindow.setAnimationStyle(R.style.pop_anim);
+        popupWindow.showAtLocation(v, Gravity.TOP | Gravity.START, windowPos[0], windowPos[1]);
     }
 
     //计算menu弹窗位置

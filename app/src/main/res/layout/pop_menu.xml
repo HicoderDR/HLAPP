@@ -3,6 +3,7 @@
     android:layout_width="130dp"
     android:layout_height="wrap_content"
     android:background="#ffffff"
+    android:id="@+id/popback"
     android:orientation="vertical" >
 
     <ListView
