@@ -57,6 +57,10 @@
         </activity>
         <activity android:name=".Activity.LoginActivity"></activity>
         <activity android:name=".Activity.MainActivity"></activity>
+        <activity
+            android:name=".Activity.RecordActivity" />
+        <activity android:name=".Activity.DeviceListActivity" />
+        <activity android:name=".Activity.DeviceSituationActivity"></activity>
 
     </application>
 

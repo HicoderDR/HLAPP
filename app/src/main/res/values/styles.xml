@@ -6,6 +6,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:dropDownListViewStyle">@style/mySpinnerStyle</item>
     </style>
 
     <style name="pop_anim" parent="android:Animation">
@@ -17,4 +18,14 @@
         <item name="android:inAnimation">@anim/scale_big_anim</item>
         <item name="android:outAnimation">@anim/scale_small_anim</item>
     </style>
+    //自定义edittextview样式
+    <style name="MyEditText" parent="Theme.AppCompat.Light">
+        <item name="colorControlNormal">@color/indigo</item>
+    </style>
+    //自定义spinner样式
+    <style name="mySpinnerStyle" parent="android:style/Widget.ListView.DropDown">
+        <item name="android:divider">#e2dbdb</item>
+        <item name="android:dividerHeight">1dp</item>
+    </style>
+    <color name="indigo">#969494</color>
 </resources>
