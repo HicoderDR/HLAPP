@@ -26,7 +26,10 @@ public class Devicepoint{
     public double getLng(){
         return Lng;
     }
+    public String getTypeId(){
+        return this.getType()+"'"+Id+"'";
+    }
     public String getStringId(){
-        return "'"+Id+"'";
+        return ""+Id;
     }
 }

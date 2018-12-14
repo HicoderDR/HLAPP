@@ -7,21 +7,33 @@ import java.util.Objects;
 public class DeviceList {
     private Devicepoint[] devicelist=new Devicepoint[100];
     private int num = 0;
-    public DeviceList(){
-        Devicepoint a= new Devicepoint(1,"rader",30.833825,121.506413);
-        this.append(a);
-        Devicepoint b= new Devicepoint(2,"rader",30.833825,121.505513);
-        this.append(b);
-        Devicepoint c= new Devicepoint(3,"rader",30.832825,121.505513);
-        this.append(c);
+    public DeviceList(String type){
+        switch (type){
+            case "radar":
+                Devicepoint a= new Devicepoint(1,"radar",30.833825,121.506413);
+                this.append(a);
+                a= new Devicepoint(2,"radar",30.833825,121.505513);
+                this.append(a);
+                a= new Devicepoint(3,"radar",30.832825,121.505513);
+                this.append(a);
+                break;
+            case "camera":
+                Devicepoint b= new Devicepoint(1,"camera",30.833825,121.499413);
+                this.append(b);
+                b= new Devicepoint(2,"camera",30.831825,121.505513);
+                this.append(b);
+                b= new Devicepoint(3,"camera",30.837825,121.502513);
+                this.append(b);
+                break;
+        }
     }
     public Devicepoint getbyId(int x){
-        return devicelist[x];
+        return this.devicelist[x];
     }
     private void append(Devicepoint x){
         this.devicelist[num++]=x;
     }
     public int size(){
-        return num;
+        return this.num;
     }
 }

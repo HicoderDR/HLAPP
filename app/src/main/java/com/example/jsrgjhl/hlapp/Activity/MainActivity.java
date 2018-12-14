@@ -20,6 +20,8 @@ import android.view.WindowManager;
 import android.view.MotionEvent;
 import android.view.ViewGroup.LayoutParams;
 import android.view.animation.LinearInterpolator;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
@@ -48,6 +50,7 @@ import com.amap.api.maps.model.animation.Animation;
 import com.amap.api.maps.model.animation.ScaleAnimation;
 import com.example.jsrgjhl.hlapp.R;
 import com.example.jsrgjhl.hlapp.Sample.DeviceList;
+import com.example.jsrgjhl.hlapp.Sample.Devicepoint;
 import com.example.jsrgjhl.hlapp.Sample.Gifmarker;
 import com.example.jsrgjhl.hlapp.Utils.ScreenUtils;
 import com.example.jsrgjhl.hlapp.View.SegmentView;
@@ -61,7 +64,7 @@ import java.util.HashMap;
 import java.util.Locale;
 
 
-public class MainActivity extends AppCompatActivity implements LocationSource, AMapLocationListener {
+public class MainActivity extends AppCompatActivity implements LocationSource, AMapLocationListener,OnItemClickListener {
 
     private static final String TAG = "TestLocation";
     private Context mContext = null;
@@ -79,6 +82,13 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
     private ListView listview;
     //segment
     private SegmentView segmentView;
+    //marker
+    DeviceList cameraList=new DeviceList("camera");
+    DeviceList radarList=new DeviceList("radar");
+    DeviceList vibrationList=new DeviceList("vibration");
+    ArrayList<Marker> cameramarkers = new ArrayList ();
+    ArrayList<Marker> radarmarkers = new ArrayList ();
+    ArrayList<Marker> vibrationmarkers = new ArrayList ();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.i(TAG, "onCreate()");
@@ -213,7 +223,8 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
                 aMap.moveCamera(mCameraUpdate);
 
                 marker.showInfoWindow();
-                Gifmarker cameragif=new Gifmarker("camera",mContext);
+                String type=marker.getTitle();
+                Gifmarker cameragif=new Gifmarker(type,mContext);
                 marker.setIcons(cameragif.iconList);
                 /*Animation scaleAnimation = new ScaleAnimation(1f, 1.2f, 1f, 1.2f);
                 scaleAnimation.setInterpolator(new LinearInterpolator());
@@ -350,29 +361,46 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
     }
 
     private void initmarkers(){
-        DeviceList positionEneityList=new DeviceList();
-        /*
-            DeviceList cameraList=new DeviceList("camera")
-            DeviceList radarList=new DeviceList("radar")
-            DeviceList vibrationList=new DeviceList("vibration")
-            for(int i=0;i<=;i++){
-                drawMarkerOnMap(,"")
-            }
-        */
-        for (int i =0 ; i <positionEneityList.size(); i++) {
-                drawMarkerOnMap(new LatLng(positionEneityList.getbyId(i).getLat() ,positionEneityList.getbyId(i).getLng()),
-                        positionEneityList.getbyId(i).getStringId());
+        for(int i=0;i<cameraList.size();i++){
+            cameramarkers.add(drawMarkerOnMap(cameraList.getbyId(i), cameraList.getbyId(i).getType()));
+        }
+
+        for(int i=0;i<radarList.size();i++){
+            radarmarkers.add(drawMarkerOnMap(radarList.getbyId(i),radarList.getbyId(i).getType()));
         }
     }
 
-    private Marker drawMarkerOnMap(LatLng point, String title) {
-        if (aMap != null && point != null) {
-            Marker marker = aMap.addMarker(new MarkerOptions().anchor(0.5f, 1)
-                    .position(point)
-                    .title(title)
-                    .icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(),R.mipmap.marker_radar_g))));
-            return marker;
-        }
+    private Marker drawMarkerOnMap(Devicepoint info, String Type) {
+        LatLng latLng = new LatLng(info.getLat(),info.getLng());
+        View marker_camera = LayoutInflater.from(this).inflate(R.layout.marker_camera_g,null);
+        View marker_radar = LayoutInflater.from(this).inflate(R.layout.marker_radar_g,null);
+        switch (Type) {
+            case "camera":
+                MarkerOptions options = new MarkerOptions()
+                        .position(latLng)
+                        .title(info.getType())
+                        .snippet(info.getStringId())
+                        .icon(BitmapDescriptorFactory.fromView(marker_camera))
+                        .draggable(true);
+                Marker marker = aMap.addMarker(options);
+                marker.setObject(info);//传入数据bean
+                return marker;
+            case "radar":
+                MarkerOptions options1 = new MarkerOptions()
+                        .position(latLng)
+                        .title(info.getType())
+                        .snippet(info.getStringId())
+                        .icon(BitmapDescriptorFactory.fromView(marker_radar))
+                        .draggable(true);
+                Marker marker1 = aMap.addMarker(options1);
+                marker1.setObject(info);//传入数据bean
+                return marker1;
+            case "vibration":
+                break;
+            default:
+                break;
+            }
+
         return null;
     }
 
@@ -384,20 +412,24 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
             public void onSegmentViewClick(View view, int position) {
                 switch (position) {
                     case 0:
-                        Toast.makeText(MainActivity.this, "点击了" + position,
-                                Toast.LENGTH_SHORT).show();
+                        setvisible(cameramarkers,true);
+                        setvisible(radarmarkers,true);
+                        setvisible(vibrationmarkers,true);
                         break;
                     case 1:
-                        Toast.makeText(MainActivity.this, "点击了" + position,
-                                Toast.LENGTH_SHORT).show();
+                        setvisible(cameramarkers,true);
+                        setvisible(radarmarkers,false);
+                        setvisible(vibrationmarkers,false);
                         break;
                     case 2:
-                        Toast.makeText(MainActivity.this, "点击了" + position,
-                                Toast.LENGTH_SHORT).show();
+                        setvisible(cameramarkers,false);
+                        setvisible(radarmarkers,true);
+                        setvisible(vibrationmarkers,false);
                         break;
                     case 3:
-                        Toast.makeText(MainActivity.this, "点击了" + position,
-                                Toast.LENGTH_SHORT).show();
+                        setvisible(cameramarkers,false);
+                        setvisible(radarmarkers,false);
+                        setvisible(vibrationmarkers,true);
                         break;
                     default:
                         break;
@@ -405,7 +437,11 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
             }
         });
     }
-
+    private void setvisible(ArrayList<Marker> list,boolean x){
+        for(int i=0;i<list.size();i++){
+            list.get(i).setVisible(x);
+        }
+    }
     private void showPopupWindow(View v) {
         // 一个自定义的布局，作为显示的内容
         View contentView = LayoutInflater.from(mContext).inflate(
@@ -456,6 +492,8 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
         //获取listview
         listview = (ListView) contentView.findViewById(R.id.list_menu);
         listview.setAdapter(saImageItems);
+        listview.setOnItemClickListener(this);
+
         popupWindow.setAnimationStyle(R.style.pop_anim);
         popupWindow.showAtLocation(v, Gravity.TOP | Gravity.START, windowPos[0], windowPos[1]);
     }
@@ -487,5 +525,13 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
         return windowPos;
     }
 
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position,
+                            long id) {
+        // TODO Auto-generated method stub
+        String text= listview.getItemAtPosition(position)+"";
+        Toast.makeText(this, "position="+position+"text="+text,
+                Toast.LENGTH_SHORT).show();
+    }
 
 }
