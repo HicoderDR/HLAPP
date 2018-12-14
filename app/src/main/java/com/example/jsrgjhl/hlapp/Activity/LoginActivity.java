@@ -1,4 +1,4 @@
-package com.example.jsrgjhl.hlapp;
+package com.example.jsrgjhl.hlapp.Activity;
 
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -11,6 +11,8 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.*;
+
+import com.example.jsrgjhl.hlapp.R;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
     //布局内的控件

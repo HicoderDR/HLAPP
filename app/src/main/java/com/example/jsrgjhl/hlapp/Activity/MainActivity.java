@@ -1,10 +1,11 @@
-package com.example.jsrgjhl.hlapp;
+package com.example.jsrgjhl.hlapp.Activity;
 
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
@@ -14,21 +15,17 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.MotionEvent;
-import android.view.View.OnTouchListener;
-import android.widget.Button;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.view.ViewGroup.LayoutParams;
-import android.widget.ListAdapter;
+import android.view.animation.LinearInterpolator;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
@@ -36,12 +33,24 @@ import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
 import com.amap.api.maps.AMap;
 import com.amap.api.maps.AMapOptions;
+import com.amap.api.maps.CameraUpdate;
 import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.LocationSource;
 import com.amap.api.maps.MapView;
+import com.amap.api.maps.model.BitmapDescriptor;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
+import com.amap.api.maps.model.CameraPosition;
 import com.amap.api.maps.model.LatLng;
+import com.amap.api.maps.model.Marker;
+import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
+import com.amap.api.maps.model.animation.Animation;
+import com.amap.api.maps.model.animation.ScaleAnimation;
+import com.example.jsrgjhl.hlapp.R;
+import com.example.jsrgjhl.hlapp.Sample.DeviceList;
+import com.example.jsrgjhl.hlapp.Sample.Gifmarker;
+import com.example.jsrgjhl.hlapp.Utils.ScreenUtils;
+import com.example.jsrgjhl.hlapp.View.SegmentView;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -50,6 +59,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
+
 
 public class MainActivity extends AppCompatActivity implements LocationSource, AMapLocationListener {
 
@@ -67,7 +77,8 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
     private String[] menunames = {"地图", "警报记录", "设备列表", "个人设置"};
     private int[] menuimgs = {R.mipmap.btn_map, R.mipmap.btn_record, R.mipmap.btn_equip, R.mipmap.btn_file};
     private ListView listview;
-
+    //segment
+    private SegmentView segmentView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.i(TAG, "onCreate()");
@@ -83,6 +94,8 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
         }
         setContentView(R.layout.activity_main);
         init();
+        initmarkers();
+        initsegment();
         // 创建地图
         mapView.onCreate(savedInstanceState);
 
@@ -192,6 +205,29 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
         mLocationClient.setLocationOption(mLocationOption);
         // 启动高德地图定位
         mLocationClient.startLocation();
+        //设置marker点击事件
+        aMap.setOnMarkerClickListener(new AMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                CameraUpdate mCameraUpdate = CameraUpdateFactory.newCameraPosition(new CameraPosition(marker.getPosition(),17,0,0));
+                aMap.moveCamera(mCameraUpdate);
+
+                marker.showInfoWindow();
+                Gifmarker cameragif=new Gifmarker("camera",mContext);
+                marker.setIcons(cameragif.iconList);
+                /*Animation scaleAnimation = new ScaleAnimation(1f, 1.2f, 1f, 1.2f);
+                scaleAnimation.setInterpolator(new LinearInterpolator());
+                scaleAnimation.setDuration(1000);
+                marker.setAnimation(scaleAnimation);
+                marker.startAnimation();
+                */
+                String number = marker.getId().substring(6);
+                if (!number.equals("") && number != null) {
+                    Log.i(TAG, "position" + number);
+                }
+                return true;
+            }
+        });
     }
 
     //定位
@@ -313,6 +349,63 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
         mapView.onSaveInstanceState(outState);
     }
 
+    private void initmarkers(){
+        DeviceList positionEneityList=new DeviceList();
+        /*
+            DeviceList cameraList=new DeviceList("camera")
+            DeviceList radarList=new DeviceList("radar")
+            DeviceList vibrationList=new DeviceList("vibration")
+            for(int i=0;i<=;i++){
+                drawMarkerOnMap(,"")
+            }
+        */
+        for (int i =0 ; i <positionEneityList.size(); i++) {
+                drawMarkerOnMap(new LatLng(positionEneityList.getbyId(i).getLat() ,positionEneityList.getbyId(i).getLng()),
+                        positionEneityList.getbyId(i).getStringId());
+        }
+    }
+
+    private Marker drawMarkerOnMap(LatLng point, String title) {
+        if (aMap != null && point != null) {
+            Marker marker = aMap.addMarker(new MarkerOptions().anchor(0.5f, 1)
+                    .position(point)
+                    .title(title)
+                    .icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(),R.mipmap.marker_radar_g))));
+            return marker;
+        }
+        return null;
+    }
+
+    //segmental
+    private void initsegment(){
+        segmentView = (SegmentView) findViewById(R.id.segmentview);
+        segmentView.setOnSegmentViewClickListener(new SegmentView.onSegmentViewClickListener() {
+            @Override
+            public void onSegmentViewClick(View view, int position) {
+                switch (position) {
+                    case 0:
+                        Toast.makeText(MainActivity.this, "点击了" + position,
+                                Toast.LENGTH_SHORT).show();
+                        break;
+                    case 1:
+                        Toast.makeText(MainActivity.this, "点击了" + position,
+                                Toast.LENGTH_SHORT).show();
+                        break;
+                    case 2:
+                        Toast.makeText(MainActivity.this, "点击了" + position,
+                                Toast.LENGTH_SHORT).show();
+                        break;
+                    case 3:
+                        Toast.makeText(MainActivity.this, "点击了" + position,
+                                Toast.LENGTH_SHORT).show();
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
+    }
+
     private void showPopupWindow(View v) {
         // 一个自定义的布局，作为显示的内容
         View contentView = LayoutInflater.from(mContext).inflate(
@@ -324,9 +417,6 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
         int xOff = 900;// 可以自己调整偏移
         windowPos[0] +=500;
         windowPos[1] -= 520;
-
-
-
         popupWindow.setOutsideTouchable(true);
         // mMenuView添加OnTouchListener监听判断获取触屏位置如果在选择框外面则销毁弹出框
         contentView.setOnTouchListener(new View.OnTouchListener() {
@@ -370,6 +460,7 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
         popupWindow.showAtLocation(v, Gravity.TOP | Gravity.START, windowPos[0], windowPos[1]);
     }
 
+
     //计算menu弹窗位置
     private static int[] calculatePopWindowPos(final View anchorView, final View contentView) {
         final int windowPos[] = new int[2];
@@ -395,4 +486,6 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
         }
         return windowPos;
     }
+
+
 }

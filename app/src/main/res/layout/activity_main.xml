@@ -6,7 +6,7 @@
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".Activity.MainActivity">
 
     <com.amap.api.maps.MapView
         android:id="@+id/mapView"
@@ -38,4 +38,14 @@
 
     </RelativeLayout>
 
+    <com.example.jsrgjhl.hlapp.View.SegmentView
+        android:id="@+id/segmentview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="30dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="59dp"></com.example.jsrgjhl.hlapp.View.SegmentView>
 </RelativeLayout>

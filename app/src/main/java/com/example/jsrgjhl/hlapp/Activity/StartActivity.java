@@ -1,4 +1,4 @@
-package com.example.jsrgjhl.hlapp;
+package com.example.jsrgjhl.hlapp.Activity;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -8,6 +8,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+
+import com.example.jsrgjhl.hlapp.R;
 
 public class StartActivity extends AppCompatActivity {
 

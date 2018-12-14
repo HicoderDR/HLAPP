@@ -12,4 +12,9 @@
         <item name="android:windowEnterAnimation">@anim/pop_enter_anim</item>
         <item name="android:windowExitAnimation">@anim/pop_exit_anim</item>
     </style>
+
+    <style name="marker_warning" parent="android:Animation">
+        <item name="android:inAnimation">@anim/scale_big_anim</item>
+        <item name="android:outAnimation">@anim/scale_small_anim</item>
+    </style>
 </resources>
