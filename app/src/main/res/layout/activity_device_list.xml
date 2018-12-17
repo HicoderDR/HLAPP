@@ -1,0 +1,81 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/list_record"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/deviece_list_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        app:navigationIcon="@mipmap/back7"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+        <TextView
+            android:id="@+id/record_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:singleLine="true"
+            android:text="设备列表"
+            android:textColor="@color/white"
+            android:textSize="15sp" />
+
+        <ImageView
+            android:id="@+id/add_newdevice_img"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="right"
+            android:layout_marginRight="20dp"
+            android:clickable="true"
+            android:src="@mipmap/add" />
+    </android.support.v7.widget.Toolbar>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/QQblue"
+        android:orientation="horizontal">
+        <android.support.v7.widget.AppCompatSpinner
+            android:id="@+id/sort_sp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:dropDownWidth="500dp"
+            android:background="@drawable/shape_spinner_drop_down"
+            android:layout_gravity="center_vertical"/>
+        <android.support.v7.widget.AppCompatSpinner
+            android:id="@+id/region_sp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:dropDownWidth="500dp"
+            android:background="@drawable/shape_spinner_drop_down"
+            android:layout_gravity="center_vertical" />
+        <android.support.v7.widget.AppCompatSpinner
+            android:id="@+id/defend_sp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="20dp"
+            android:layout_weight="1"
+            android:dropDownWidth="500dp"
+            android:background="@drawable/shape_spinner_drop_down"
+            android:layout_gravity="center_vertical"/>
+
+    </LinearLayout>
+
+    <ListView
+        android:layout_marginTop="15dp"
+        android:id="@+id/device_listview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:divider="@color/list_record"
+        android:dividerHeight="15dp"></ListView>
+
+
+</LinearLayout>

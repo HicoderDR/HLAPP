@@ -1,0 +1,86 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:background="@color/white"
+    android:layout_height="wrap_content">
+    <TextView
+        android:id="@+id/id_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="15sp"
+        android:textColor="@color/black"
+        android:layout_margin="20dp"/>
+
+    <TextView
+        android:id="@+id/sort_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_toRightOf="@id/id_tv"
+        android:layout_marginLeft="20dp"
+        android:textColor="@color/black"
+        android:textSize="15sp"
+        android:layout_marginRight="5sp"/>
+
+    <TextView
+        android:id="@+id/situation_img"
+        android:layout_width="wrap_content"
+        android:layout_height="25dp"
+        android:layout_marginLeft="20dp"
+        android:textColor="@color/list_text"
+        android:text="运行情况"
+        android:layout_below="@id/id_tv"/>
+
+    <TextView
+        android:id="@+id/situation_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/situation_img"
+        android:layout_alignBottom="@+id/situation_img"
+        android:layout_marginLeft="15dp"
+        android:layout_marginStart="15dp"
+        android:layout_toEndOf="@+id/situation_img"
+        android:layout_toRightOf="@+id/situation_img"
+        android:textColor="@color/black"
+        android:textSize="13sp" />
+
+    <TextView
+        android:id="@+id/address_img"
+        android:layout_width="wrap_content"
+        android:layout_height="25dp"
+        android:textColor="@color/list_text"
+        android:layout_marginLeft="20dp"
+        android:text="设备地点"
+        android:layout_below="@id/situation_img"/>
+
+    <TextView
+        android:id="@+id/address_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/situation_tv"
+        android:layout_alignStart="@+id/situation_tv"
+        android:layout_below="@+id/situation_img"
+        android:textColor="@color/black"
+        android:textSize="13sp" />
+    <TextView
+        android:id="@+id/device_setting_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="参数设置"
+        android:textColor="@color/QQblue"
+        android:layout_alignTop="@id/address_tv"
+        android:layout_marginRight="40dp"
+        android:textSize="15sp"
+        android:clickable="true"
+        android:layout_alignParentRight="true"/>
+
+    <ImageView
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@+id/device_setting_tv"
+        android:layout_marginEnd="12dp"
+        android:layout_marginRight="12dp"
+        android:src="@mipmap/more" />
+
+</RelativeLayout>

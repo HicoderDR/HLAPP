@@ -1,6 +1,7 @@
 package com.example.jsrgjhl.hlapp.Activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -529,9 +530,18 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
     public void onItemClick(AdapterView<?> parent, View view, int position,
                             long id) {
         // TODO Auto-generated method stub
-        String text= listview.getItemAtPosition(position)+"";
-        Toast.makeText(this, "position="+position+"text="+text,
-                Toast.LENGTH_SHORT).show();
+        switch (position){
+            case 1:
+                Intent intent=new Intent(MainActivity.this,RecordActivity.class);
+                startActivity(intent);
+                break;
+            case 2:
+                Intent intent1=new Intent(MainActivity.this,DeviceListActivity.class);
+                startActivity(intent1);
+                break;
+            default:
+                Toast.makeText(MainActivity.this,"功能还未实现",Toast.LENGTH_SHORT).show();
+        }
     }
 
 }

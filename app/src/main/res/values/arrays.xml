@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="sort">
+        <item >振动传感</item>
+        <item >监控</item>
+        <item >雷达</item>
+    </string-array>
+    <string-array name="region">
+        <item >区域一</item>
+        <item >区域二</item>
+        <item >区域三</item>
+    </string-array>
+    <string-array name="defend">
+        <item >防区一</item>
+        <item >防区二</item>
+        <item >防区三</item>
+    </string-array>
+
+
+</resources>
