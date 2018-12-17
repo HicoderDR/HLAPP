@@ -1,0 +1,58 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/list_record"
+    android:orientation="vertical">
+
+
+    <android.support.v7.widget.Toolbar
+       android:id="@+id/recordtoolbar"
+       android:layout_width="match_parent"
+       android:layout_height="50dp"
+       android:minHeight="?attr/actionBarSize"
+       android:background="?attr/colorPrimary"
+        app:navigationIcon="@mipmap/back7"
+       android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+       app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+      <TextView
+          android:id="@+id/record_tv"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center"
+          android:singleLine="true"
+          android:text="警报记录"
+          android:textColor="@color/white"
+          android:textSize="15sp" />
+      <TextView
+          android:id="@+id/static_tv"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="right"
+          android:clickable="true"
+          android:layout_marginRight="20dp"
+          android:singleLine="true"
+          android:text="统计"
+          android:textColor="@color/white"
+          android:textSize="15sp" />
+   </android.support.v7.widget.Toolbar>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:text="所有记录"
+            android:textColor="@color/list_text"
+            android:textSize="15sp" />
+
+    <ListView
+        android:id="@+id/record_listview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:dividerHeight="15dp"
+        android:divider="@color/list_record"></ListView>
+
+
+</LinearLayout>
