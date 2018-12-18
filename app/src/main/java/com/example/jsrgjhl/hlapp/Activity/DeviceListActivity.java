@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -25,21 +26,23 @@ import java.util.List;
 public class DeviceListActivity extends AppCompatActivity {
 
     private List<Device> mdeviceList=new ArrayList<>();
+    private List<Device> mnowdeviceList=new ArrayList<>();
     private ImageView addDevice;
     private Spinner sortSpinner;
     private Spinner regionSpinner;
     private Spinner defendSpinner;
-    private String[] sorttype={"类型","振动传感","感应器","雷达"};
+    private String[] sorttype={"类型","振动传感","监控","雷达"};
     private String[] regiontype={"区域","区域一","区域二","区域三"};
     private String[] defendtype={"防区","防区一","防区二","防区三"};
     private DeviceAdapter adapter;
-    private TextView devicesetingtv;
+
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_device_list);
+        initDeviceList();
         Toolbar toolbar = (Toolbar) findViewById(R.id.deviece_list_toolbar);
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
@@ -54,6 +57,12 @@ public class DeviceListActivity extends AppCompatActivity {
             }
         });
 
+        //
+        //初始化设备列表
+        mnowdeviceList=mdeviceList;
+        adapter = new DeviceAdapter(DeviceListActivity.this, R.layout.device_list,mnowdeviceList);
+        final ListView devicelistView=(ListView)findViewById(R.id.device_listview);
+        devicelistView.setAdapter(adapter);
         //下拉框控制及其样式
         sortSpinner=findViewById(R.id.sort_sp);
         regionSpinner=findViewById(R.id.region_sp);
@@ -77,7 +86,19 @@ public class DeviceListActivity extends AppCompatActivity {
         //类型下拉框点击事件
         sortSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {}
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+
+                if (sortSpinner.getSelectedItemPosition()==0&&defendSpinner.getSelectedItemPosition()==0&&regionSpinner.getSelectedItemPosition()==0){
+                    initDeviceList();
+                    mnowdeviceList=mdeviceList;
+                    adapter.notifyDataSetChanged();
+                }
+                else {
+                    initDeviceList();
+                    mnowdeviceList=mdeviceList;
+                    initNowDeviceList(sorttype[sortSpinner.getSelectedItemPosition()],defendtype[defendSpinner.getSelectedItemPosition()],regiontype[regionSpinner.getSelectedItemPosition()]);
+                    adapter.notifyDataSetChanged();}
+            }
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {}
@@ -86,28 +107,42 @@ public class DeviceListActivity extends AppCompatActivity {
         //区域下拉框点击事件
         regionSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {}
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (sortSpinner.getSelectedItemPosition()==0&&defendSpinner.getSelectedItemPosition()==0&&regionSpinner.getSelectedItemPosition()==0){
+                    initDeviceList();
+                    mnowdeviceList=mdeviceList;
+                    adapter.notifyDataSetChanged();
+                }
+                else {
+                    initDeviceList();
+                    mnowdeviceList=mdeviceList;
+                    initNowDeviceList(sorttype[sortSpinner.getSelectedItemPosition()],defendtype[defendSpinner.getSelectedItemPosition()],regiontype[regionSpinner.getSelectedItemPosition()]);
+                    adapter.notifyDataSetChanged();}
+            }
 
             @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
+            public void onNothingSelected(AdapterView<?> adapterView) {}
         });
         //防区下拉框点击事件
         defendSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {}
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (sortSpinner.getSelectedItemPosition()==0&&defendSpinner.getSelectedItemPosition()==0&&regionSpinner.getSelectedItemPosition()==0){
+                    initDeviceList();
+                    mnowdeviceList=mdeviceList;
+                    adapter.notifyDataSetChanged();
+                }
+                else {
+                    initDeviceList();
+                    mnowdeviceList=mdeviceList;
+                    initNowDeviceList(sorttype[sortSpinner.getSelectedItemPosition()],defendtype[defendSpinner.getSelectedItemPosition()],regiontype[regionSpinner.getSelectedItemPosition()]);
+                    adapter.notifyDataSetChanged();}
+            }
 
             @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
+            public void onNothingSelected(AdapterView<?> adapterView) {}
         });
-        //初始化设备列表
-        initDeviceList();
-        adapter = new DeviceAdapter(DeviceListActivity.this, R.layout.device_list,mdeviceList);
-        ListView devicelistView=(ListView)findViewById(R.id.device_listview);
-        devicelistView.setAdapter(adapter);
+
 
         //listview_item点击事件
         devicelistView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -137,6 +172,7 @@ public class DeviceListActivity extends AppCompatActivity {
     }
 
     private void initDeviceList() {
+        mdeviceList.clear();
         Device device1=new Device("MAC1000","振动传感","正常运转","理工大学","5555","运行很好","防区二","区域一");
         mdeviceList.add(device1);
         Device device2=new Device("MAC1000","振动传感","正常运转","理工大学","5555","运行很好","防区二","区域二");
@@ -156,5 +192,43 @@ public class DeviceListActivity extends AppCompatActivity {
         Device device9=new Device("MAC1000","雷达","正常运转","理工大学","5555","运行很好","防区二","区域一");
         mdeviceList.add(device9);
     }
-
+    private void initNowDeviceList(String sort,String defend,String region){
+        //完成设备类型的选择
+        for(int i=0;i<mnowdeviceList.size();i++){
+            if (sort.equals("类型")){
+                break;
+            }
+           else if(mnowdeviceList.get(i).getSort().equals(sort)){
+                continue;
+            }
+            else {
+                mnowdeviceList.remove(i);
+                i--;
+            }
+        }
+       //完成防区的选择
+        for (int j=0;j<mnowdeviceList.size();j++){
+            if(defend.equals("防区")){
+                break;
+            }
+            else if(mnowdeviceList.get(j).getDefend().equals(defend)){
+                continue;
+            }else{
+                mnowdeviceList.remove(j);
+                j--;
+            }
+        }
+        //完成区域的选择
+        for (int k=0;k<mnowdeviceList.size();k++){
+            if(region.equals("区域")){
+                break;
+            }
+            else if(mnowdeviceList.get(k).getRegion().equals(region)){
+                continue;
+            }else{
+                mnowdeviceList.remove(k);
+                k--;
+            }
+        }
+    }
 }
