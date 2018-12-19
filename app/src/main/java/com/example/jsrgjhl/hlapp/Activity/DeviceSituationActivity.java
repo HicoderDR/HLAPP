@@ -62,6 +62,7 @@ public class DeviceSituationActivity extends AppCompatActivity {
         defendSpinner=findViewById(R.id.defend_de_sp);
         ipEditText=findViewById(R.id.ip_EditText);
         aboutEditText=findViewById(R.id.about_EditText);
+        chooseAddressImg=findViewById(R.id.choose_img);
 
         //设置三个下拉框下拉的位置
         sortSpinner.setDropDownVerticalOffset(140);
@@ -100,6 +101,12 @@ public class DeviceSituationActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Toast.makeText(DeviceSituationActivity.this,"提交成功", Toast.LENGTH_SHORT).show();
+            }
+        });
+        chooseAddressImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(DeviceSituationActivity.this,"实现",Toast.LENGTH_SHORT).show();
             }
         });
     }
