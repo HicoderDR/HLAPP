@@ -128,15 +128,16 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="60dp">
-        <EditText
-            android:layout_marginTop="10dp"
-            android:id="@+id/deviece_address_EditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="当前位置(默认)或选择新位置"
-            android:layout_marginRight="5dp"
-            android:layout_gravity="center_vertical"/>
+            android:layout_height="100dp">
+
+            <EditText
+                android:id="@+id/deviece_address_EditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="42dp"
+                android:hint="当前位置(默认)或选择新位置" />
             <ImageView
                 android:id="@+id/choose_img"
                 android:layout_alignParentRight="true"
@@ -167,8 +168,8 @@
             android:id="@+id/ip_EditText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
             android:layout_gravity="center_vertical"
             android:layout_weight="1" />

@@ -163,7 +163,7 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
             // 显示地图
             aMap = mapView.getMap();
         }
-
+        aMap.showIndoorMap(true);
         aMap.getUiSettings().setZoomControlsEnabled(false);
         // 设置地图默认的指南针是否显示
         aMap.getUiSettings().setCompassEnabled(false);
@@ -220,9 +220,9 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
         aMap.setOnMarkerClickListener(new AMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                CameraUpdate mCameraUpdate = CameraUpdateFactory.newCameraPosition(new CameraPosition(marker.getPosition(),17,0,0));
-                aMap.moveCamera(mCameraUpdate);
-
+               //CameraUpdate mCameraUpdate = CameraUpdateFactory.newCameraPosition(new CameraPosition(marker.getPosition(),17,0,0));
+                //aMap.moveCamera(mCameraUpdate);
+                aMap.moveCamera(CameraUpdateFactory.changeLatLng(marker.getPosition()));
                 marker.showInfoWindow();
                 String type=marker.getTitle();
                 Gifmarker cameragif=new Gifmarker(type,mContext);
