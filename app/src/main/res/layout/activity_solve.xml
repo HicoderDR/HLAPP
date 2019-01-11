@@ -1,0 +1,213 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/devicesituationbar"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:minHeight="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        app:navigationIcon="@mipmap/back7"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+        <TextView
+            android:id="@+id/record_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:singleLine="true"
+            android:text="@string/solve"
+            android:textColor="@color/white"
+            android:textSize="15sp" />
+    </android.support.v7.widget.Toolbar>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="220dp"
+        android:orientation="horizontal"
+        android:background="@mipmap/whiteletter"
+        android:scaleType="fitXY">
+
+        <TextView
+            android:id="@+id/nowrecord"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_gravity="center"
+            android:layout_marginStart="25dp"
+            android:layout_marginLeft="25dp"
+            android:layout_marginTop="17dp"
+            android:singleLine="true"
+            android:text="@string/nowrecord"
+            android:textColor="@color/white"
+            android:textSize="15sp" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:background="@color/white"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_below="@id/nowrecord">
+            <TextView
+                android:id="@+id/warn_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:textColor="@color/black"
+                android:layout_margin="20dp"/>
+
+            <TextView
+                android:id="@+id/slove_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_toLeftOf="@+id/check_img"
+                android:layout_toStartOf="@+id/check_img"
+                android:textColor="@color/red"
+                android:textSize="15sp"
+                android:layout_marginRight="5sp"/>
+            <ImageView
+                android:id="@+id/check_img"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_alignParentRight="true"
+                android:src="@mipmap/into2"
+                android:clickable="true"/>
+            <TextView
+                android:id="@+id/timeimg"
+                android:layout_width="wrap_content"
+                android:layout_height="25dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="10dp"
+                android:text="@string/recordtime"
+                android:textColor="@color/list_text"
+                android:layout_below="@id/warn_status"/>
+            <TextView
+                android:id="@+id/timetv"
+                android:layout_width="wrap_content"
+                android:layout_height="25dp"
+                android:height="25dp"
+                android:layout_toRightOf="@id/timeimg"
+                android:layout_below="@id/warn_status"
+                android:layout_alignBaseline="@+id/timeimg"
+                android:layout_margin="5dp"
+                android:textSize="15sp"
+                android:textColor="@color/black" />
+
+            <TextView
+                android:id="@+id/addressimg"
+                android:layout_width="wrap_content"
+                android:layout_height="25dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="10dp"
+                android:textColor="@color/list_text"
+                android:text="@string/recordlocation"
+                android:layout_below="@id/timeimg"/>
+            <TextView
+                android:id="@+id/addresstv"
+                android:layout_width="wrap_content"
+                android:layout_alignTop="@id/addressimg"
+                android:layout_toRightOf="@id/addressimg"
+                android:layout_below="@id/timetv"
+                android:layout_margin="5dp"
+                android:textSize="15sp"
+                android:layout_alignBaseline="@+id/addressimg"
+                android:textColor="@color/black"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/idimg"
+                android:layout_width="wrap_content"
+                android:layout_height="25dp"
+                android:layout_marginLeft="20dp"
+                android:text="@string/deviceid"
+                android:layout_marginRight="10dp"
+                android:textColor="@color/list_text"
+                android:layout_below="@id/addressimg"/>
+            <TextView
+                android:id="@+id/idtv"
+                android:layout_width="wrap_content"
+                android:layout_alignTop="@id/idimg"
+                android:layout_toRightOf="@id/idimg"
+                android:layout_below="@id/addresstv"
+                android:layout_margin="5dp"
+                android:layout_alignBaseline="@+id/idimg"
+                android:layout_marginBottom="10dp"
+                android:textSize="15sp"
+                android:textColor="@color/black"
+                android:layout_height="wrap_content" />
+
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="271dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/solvetable"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:text="@string/solvetable"
+            android:textColor="@color/black"
+            android:textSize="19sp" />
+
+        <EditText
+            android:id="@+id/tabletitle"
+            android:layout_width="fill_parent"
+            android:layout_height="36dip"
+            android:layout_margin="10dip"
+            android:hint="处理结论"
+            android:padding="5dip"
+            android:textColorHint="#AAAAAA"
+            android:background="@drawable/bg_edittext_selector"
+            android:textSize="15dip" />
+        <EditText
+            android:id="@+id/tablecontent"
+            android:layout_width="fill_parent"
+            android:layout_height="130dip"
+            android:layout_margin="10dip"
+            android:background="@drawable/bg_edittext_selector"
+            android:gravity="top"
+            android:hint="补充内容"
+            android:minLines="6"
+            android:padding="5dip"
+            android:textColorHint="#AAAAAA"
+            android:textSize="15dip" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/submit_Btn"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/button"
+            android:text="@string/submit"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+</LinearLayout>

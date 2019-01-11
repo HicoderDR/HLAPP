@@ -61,6 +61,7 @@
         <activity android:name=".Activity.DeviceListActivity" />
         <activity android:name=".Activity.DeviceSituationActivity" />
         <activity android:name=".Activity.MapActivity" />
+        <activity android:name=".Activity.SolveActivity" />
     </application>
 
 </manifest>

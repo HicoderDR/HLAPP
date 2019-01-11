@@ -21,7 +21,7 @@
           android:layout_height="wrap_content"
           android:layout_gravity="center"
           android:singleLine="true"
-          android:text="警报记录"
+          android:text="@string/record"
           android:textColor="@color/white"
           android:textSize="15sp" />
       <TextView
@@ -32,7 +32,7 @@
           android:clickable="true"
           android:layout_marginRight="20dp"
           android:singleLine="true"
-          android:text="统计"
+          android:text="@string/statistic"
           android:textColor="@color/white"
           android:textSize="15sp" />
    </android.support.v7.widget.Toolbar>
@@ -41,7 +41,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:text="所有记录"
+            android:text="@string/allrecord"
             android:textColor="@color/list_text"
             android:textSize="15sp" />
 
