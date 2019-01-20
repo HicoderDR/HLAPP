@@ -13,11 +13,21 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.amap.api.maps.CameraUpdateFactory;
+import com.amap.api.maps.model.LatLng;
+import com.amap.api.services.core.LatLonPoint;
+import com.amap.api.services.geocoder.GeocodeResult;
+import com.amap.api.services.geocoder.RegeocodeAddress;
+import com.amap.api.services.geocoder.RegeocodeQuery;
+import com.amap.api.services.geocoder.RegeocodeResult;
 import com.example.jsrgjhl.hlapp.Adapter.Device;
 import com.example.jsrgjhl.hlapp.R;
+import com.amap.api.services.geocoder.GeocodeSearch;
+import com.amap.api.services.geocoder.GeocodeSearch.OnGeocodeSearchListener;
 
-public class DeviceSituationActivity extends AppCompatActivity {
-
+public class DeviceSituationActivity extends AppCompatActivity implements OnGeocodeSearchListener{
+    private GeocodeSearch geocodeSearch;
+    private final static int REQUEST_CODE=1;
     private EditText idEditText;
     private EditText addressEditText;
     private Spinner sortSpinner;
@@ -62,6 +72,7 @@ public class DeviceSituationActivity extends AppCompatActivity {
         defendSpinner=findViewById(R.id.defend_de_sp);
         ipEditText=findViewById(R.id.ip_EditText);
         aboutEditText=findViewById(R.id.about_EditText);
+        chooseAddressImg=findViewById(R.id.choose_img);
 
         //设置三个下拉框下拉的位置
         sortSpinner.setDropDownVerticalOffset(140);
@@ -102,5 +113,45 @@ public class DeviceSituationActivity extends AppCompatActivity {
                 Toast.makeText(DeviceSituationActivity.this,"提交成功", Toast.LENGTH_SHORT).show();
             }
         });
+        chooseAddressImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                chooselocation();
+            }
+        });
+        geocodeSearch = new GeocodeSearch(this);
+        geocodeSearch.setOnGeocodeSearchListener(this);
     }
+
+    private void chooselocation(){
+        Intent intent=new Intent(DeviceSituationActivity.this,MapActivity.class);
+        this.startActivityForResult(intent, REQUEST_CODE);
+    }
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        if (requestCode==REQUEST_CODE)
+        {
+            if (resultCode==MapActivity.RESULT_CODE)
+            {
+                Bundle bundle=data.getExtras();
+                double lat=bundle.getDouble("backlat");
+                double lng=bundle.getDouble("backlng");
+                String str="lat:"+lat+" lng:"+lng;
+                LatLonPoint latLonPoint=new LatLonPoint(lat,lng);
+                RegeocodeQuery query = new RegeocodeQuery(latLonPoint, 30,GeocodeSearch.AMAP);
+                geocodeSearch.getFromLocationAsyn(query);
+
+                Toast.makeText(DeviceSituationActivity.this,str,Toast.LENGTH_LONG).show();
+            }
+        }
+
+    }
+    @Override
+    public void onRegeocodeSearched(RegeocodeResult result, int rCode) {
+        addressEditText.setText(result.getRegeocodeAddress().getFormatAddress());
+    }
+    @Override
+    public void onGeocodeSearched(GeocodeResult result, int rCode) {
+    }
+
 }

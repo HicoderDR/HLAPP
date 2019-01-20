@@ -1,10 +1,10 @@
 package com.example.jsrgjhl.hlapp.Adapter;
-
+import java.io.Serializable;
 /**
  * Created by xuxiaojin on 2018/12/7.
  */
 
-public class Records {
+public class Records implements Serializable{
     private String warn_status;
     private String solve_status;
     private String time;

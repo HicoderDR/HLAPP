@@ -163,7 +163,7 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
             // 显示地图
             aMap = mapView.getMap();
         }
-
+        aMap.showIndoorMap(true);
         aMap.getUiSettings().setZoomControlsEnabled(false);
         // 设置地图默认的指南针是否显示
         aMap.getUiSettings().setCompassEnabled(false);
@@ -220,9 +220,9 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
         aMap.setOnMarkerClickListener(new AMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                CameraUpdate mCameraUpdate = CameraUpdateFactory.newCameraPosition(new CameraPosition(marker.getPosition(),17,0,0));
-                aMap.moveCamera(mCameraUpdate);
-
+               //CameraUpdate mCameraUpdate = CameraUpdateFactory.newCameraPosition(new CameraPosition(marker.getPosition(),17,0,0));
+                //aMap.moveCamera(mCameraUpdate);
+                aMap.moveCamera(CameraUpdateFactory.changeLatLng(marker.getPosition()));
                 marker.showInfoWindow();
                 String type=marker.getTitle();
                 Gifmarker cameragif=new Gifmarker(type,mContext);
@@ -451,16 +451,15 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
         final PopupWindow popupWindow = new PopupWindow(contentView,
                 LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, true);
         int windowPos[] = calculatePopWindowPos(v, contentView);
-        int xOff = 900;// 可以自己调整偏移
+        int xOff =800;// 可以自己调整偏移
         windowPos[0] +=500;
         windowPos[1] -= 520;
         popupWindow.setOutsideTouchable(true);
-        // mMenuView添加OnTouchListener监听判断获取触屏位置如果在选择框外面则销毁弹出框
+        //    mMenuView添加OnTouchListener监听判断获取触屏位置如果在选择框外面则销毁弹出框
         contentView.setOnTouchListener(new View.OnTouchListener() {
 
             public boolean onTouch(View v, MotionEvent event) {
                 int height = v.findViewById(R.id.popback).getTop();
-
                 int y = (int) event.getY();
                 if (event.getAction() == MotionEvent.ACTION_UP) {
                     if (y < height) {
@@ -488,7 +487,7 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
                 menulist,//数据来源
                 R.layout.menu_unit,//每一个用户xml相当ListView的一个组件
                 new String[]{"img", "name"},
-                //分别对应view view的id
+                //分别对应view view的ids
                 new int[]{R.id.img, R.id.name});
         //获取listview
         listview = (ListView) contentView.findViewById(R.id.list_menu);

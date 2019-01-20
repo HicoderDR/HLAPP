@@ -1,5 +1,6 @@
 package com.example.jsrgjhl.hlapp.Activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -9,14 +10,16 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.jsrgjhl.hlapp.Adapter.Device;
 import com.example.jsrgjhl.hlapp.Adapter.Records;
 import com.example.jsrgjhl.hlapp.Adapter.RecordsAdapter;
 import com.example.jsrgjhl.hlapp.R;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RecordActivity extends AppCompatActivity {
+public class RecordActivity extends AppCompatActivity implements Serializable{
 
     private TextView mstatictv;
     private List<Records> mrecordsList=new ArrayList<>();
@@ -57,7 +60,11 @@ public class RecordActivity extends AppCompatActivity {
         recordlistView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Toast.makeText(RecordActivity.this,"跳转掉处理页面", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent();
+                intent.setClass(RecordActivity.this, SolveActivity.class);
+                Records record0=mrecordsList.get(i);
+                intent.putExtra("record",(Serializable)record0);
+                startActivity(intent);
             }
         });
 
@@ -68,8 +75,6 @@ public class RecordActivity extends AppCompatActivity {
         mrecordsList.add(record1);
         Records record2=new Records("预警","已处理","2018-12-7 19:26:00","金沙路","MAC1000");
         mrecordsList.add(record2);
-
-
     }
 
 }

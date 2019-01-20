@@ -5,4 +5,25 @@
     <string name="check_password">记住密码</string>
     <string name="check_login">自动登录</string>
     <string name="login">登  录</string>
+    <string name="nowrecord">当前记录</string>
+    <string name="solve">警报处理</string>
+    <string name="recordtime">警报时间</string>
+    <string name="recordlocation">设备地点</string>
+    <string name="deviceid">设备编号</string>
+    <string name="submit">提   交</string>
+    <string name="record">警报记录</string>
+    <string name="statistic">统计</string>
+    <string name="confirmpoint">确认选点</string>
+    <string name="allrecord">所有记录</string>
+    <string name="devicelist">设备列表</string>
+    <string name="ipaddress">ip地址：</string>
+    <string name="devicedata">设备参数</string>
+    <string name="deviceidl">设备号：</string>
+    <string name="area">所在区域：</string>
+    <string name="defarea">所属防区：</string>
+    <string name="devicelocation">设备地址：</string>
+    <string name="chooseaddress">当前位置(默认)或选择新位置</string>
+    <string name="relativedata">相关参数：</string>
+    <string name="devicetype">设备类型：</string>
+    <string name="solvetable">填写处理报表</string>
 </resources>
