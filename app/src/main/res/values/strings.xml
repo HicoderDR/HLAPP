@@ -26,4 +26,20 @@
     <string name="relativedata">相关参数：</string>
     <string name="devicetype">设备类型：</string>
     <string name="solvetable">填写处理报表</string>
+    <string name="personalsetting">个人设置</string>
+    <string name="person_account">个人账户</string>
+    <string name="operateRecord">账户操作记录</string>
+    <string name="version">版本说明</string>
+    <string name="about_us">关于我们</string>
+    <string name="logout">注销登录</string>
+    <string name="aboutversion">围界安防</string>
+    <string name="aboutversionnumber">Version. 1.00</string>
+    <string name="aboutus">我们是人民的海岸</string>
+    <string name="aboutus2">构建安全防线</string>
+    <string name="notifyTitle">提示</string>
+    <string name="notifyMsg">当前应用缺少必要权限。\n\n请点击\"设置\"-\"权限\"-打开所需权限。</string>
+    <string name="gpsNotifyMsg">当前应用需要打开定位功能。\n\n请点击\"设置\"-\"定位服务\"-打开定位功能。</string>
+    <string name="setting">设置</string>
+    <string name="cancel">取消</string>
+    <string name="addressshare">实时位置共享</string>
 </resources>
