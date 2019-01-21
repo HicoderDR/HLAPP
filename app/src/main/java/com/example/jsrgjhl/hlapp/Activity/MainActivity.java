@@ -531,12 +531,16 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
         // TODO Auto-generated method stub
         switch (position){
             case 1:
-                Intent intent=new Intent(MainActivity.this,RecordActivity.class);
-                startActivity(intent);
+                Intent intentRecord=new Intent(MainActivity.this,RecordActivity.class);
+                startActivity(intentRecord);
                 break;
             case 2:
-                Intent intent1=new Intent(MainActivity.this,DeviceListActivity.class);
-                startActivity(intent1);
+                Intent intentDeviceList=new Intent(MainActivity.this,DeviceListActivity.class);
+                startActivity(intentDeviceList);
+                break;
+            case 3:
+                Intent intentPerson=new Intent(MainActivity.this,PersonActivity.class);
+                startActivity(intentPerson);
                 break;
             default:
                 Toast.makeText(MainActivity.this,"功能还未实现",Toast.LENGTH_SHORT).show();

@@ -18,6 +18,14 @@
         <item name="android:inAnimation">@anim/scale_big_anim</item>
         <item name="android:outAnimation">@anim/scale_small_anim</item>
     </style>
+    //自定义switch样式
+    <style name="s_true" parent="@android:style/TextAppearance.Small">
+        <item name="android:textColor">#33da33</item>
+    </style>
+
+    <style name="s_false" parent="@android:style/TextAppearance.Small">
+        <item name="android:textColor">#9b9b9b</item>
+    </style>
     //自定义edittextview样式
     <style name="MyEditText" parent="Theme.AppCompat.Light">
         <item name="colorControlNormal">@color/indigo</item>
