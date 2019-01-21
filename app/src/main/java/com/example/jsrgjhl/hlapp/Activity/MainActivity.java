@@ -192,7 +192,7 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
         //mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Device_Sensors);
         // SDK默认采用连续定位模式，时间间隔2000ms
         // 设置定位间隔，单位毫秒，默认为2000ms，最低1000ms。
-        mLocationOption.setInterval(60000);
+        mLocationOption.setInterval(600000);
         // 设置定位同时是否需要返回地址描述
         //设置是否返回地址信息（默认返回地址信息）
         mLocationOption.setNeedAddress(true);
@@ -452,8 +452,8 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
                 LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, true);
         int windowPos[] = calculatePopWindowPos(v, contentView);
         int xOff =800;// 可以自己调整偏移
-        windowPos[0] +=500;
-        windowPos[1] -= 520;
+        //windowPos[0] +=500;
+        //windowPos[1] -= 520;
         popupWindow.setOutsideTouchable(true);
         //    mMenuView添加OnTouchListener监听判断获取触屏位置如果在选择框外面则销毁弹出框
         contentView.setOnTouchListener(new View.OnTouchListener() {
@@ -511,17 +511,26 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
         final int screenWidth = ScreenUtils.getScreenWidth(anchorView.getContext());
         contentView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
         // 计算contentView的高宽
-        final int windowHeight = contentView.getMeasuredHeight();
+        final int windowHeight = 400;
         final int windowWidth = contentView.getMeasuredWidth();
+
         // 判断需要向上弹出还是向下弹出显示
         final boolean isNeedShowUp = (screenHeight - anchorLoc[1] - anchorHeight < windowHeight);
         if (isNeedShowUp) {
             windowPos[0] = screenWidth - windowWidth;
-            windowPos[1] = anchorLoc[1] - windowHeight;
+            windowPos[1] = anchorLoc[1] - windowHeight+40;
         } else {
             windowPos[0] = screenWidth - windowWidth;
-            windowPos[1] = anchorLoc[1] + anchorHeight;
+            windowPos[1] = anchorLoc[1] + anchorHeight-40;
         }
+        Log.i(TAG, "anchorHeight---"+anchorHeight+"\n"+
+                "screenHeight---"+screenHeight+"\n"+
+                "screenWidth---"+screenWidth+"\n"+
+                "windowHeight---"+windowHeight+"\n"+
+                "windowWidth---"+windowWidth+"\n"+
+                "isNeedShowUp---"+isNeedShowUp+"\n"+
+                "windowPos[0]---"+windowPos[0]+"\n"+
+                "windowPos[1]---"+windowPos[1]);
         return windowPos;
     }
 
