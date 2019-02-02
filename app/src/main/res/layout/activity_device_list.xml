@@ -8,7 +8,7 @@
     <android.support.v7.widget.Toolbar
         android:id="@+id/deviece_list_toolbar"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="@dimen/dp_40"
         android:background="?attr/colorPrimary"
         android:minHeight="?attr/actionBarSize"
         app:navigationIcon="@mipmap/back7"

@@ -56,6 +56,7 @@ public class MapActivity extends AppCompatActivity implements AMap.OnMapClickLis
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+       /*
         getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
@@ -64,7 +65,7 @@ public class MapActivity extends AppCompatActivity implements AMap.OnMapClickLis
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(Color.TRANSPARENT);
             window.setNavigationBarColor(Color.TRANSPARENT);
-        }
+        }*/
         setContentView(R.layout.activity_map);
 
         //获取地图控件引用
