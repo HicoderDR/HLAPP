@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -42,7 +43,7 @@ import java.util.Locale;
 
 public class MapActivity extends AppCompatActivity implements AMap.OnMapClickListener,LocationSource, AMapLocationListener {
     public final static int RESULT_CODE=1;
-    private Button doneSelect;
+    private FloatingActionButton doneSelect;
     private MapView mMapView = null;
     private static final String TAG = "TestLocation";
     private AMap aMap = null;
@@ -80,7 +81,7 @@ public class MapActivity extends AppCompatActivity implements AMap.OnMapClickLis
         myLocationStyle.strokeColor(Color.argb(0, 0, 0, 0));// 设置圆形的边框颜色
         myLocationStyle.radiusFillColor(Color.argb(0, 0, 0, 0));// 设置圆形的填充颜色
         aMap.setMyLocationStyle(myLocationStyle);//设置定位蓝点的Style
-        doneSelect = (Button)findViewById(R.id.doneSelect);
+        doneSelect = (FloatingActionButton)findViewById(R.id.doneSelect);
         doneSelect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

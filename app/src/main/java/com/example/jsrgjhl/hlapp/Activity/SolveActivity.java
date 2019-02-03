@@ -1,9 +1,11 @@
 package com.example.jsrgjhl.hlapp.Activity;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -49,21 +51,36 @@ public class SolveActivity extends AppCompatActivity implements Serializable {
         Intent intent = getIntent();
         Records record = (Records)intent.getSerializableExtra("record");
 
+
         tablecontent=findViewById(R.id.tablecontent);
         tabletitle=findViewById(R.id.tabletitle);
         Warn_status=findViewById(R.id.warn_status);
         Slove_status=findViewById(R.id.slove_status);
+        Button submit=(Button)findViewById(R.id.submit_Btn);
         Timetv=findViewById(R.id.timetv);
         Addresstv=findViewById(R.id.addresstv);
         Idtv=findViewById(R.id.idtv);
+
+
+
         Warn_status.setText(record.getWarn_status());
         Slove_status.setText(record.getSolve_status());
         Timetv.setText(record.getTime());
         Idtv.setText(record.getId());
         Addresstv.setText(record.getAddress());
+        tabletitle.setText(record.getSolve_title());
+        tablecontent.setText(record.getSolve_context());
 
+
+        //处理状态为已处理 页面布局的调整
+        if(record.getSolve_status().equals("已处理")){
+            Slove_status.setTextColor(Color.rgb(00, 00, 00));
+            tabletitle.setEnabled(false);
+            tablecontent.setEnabled(false);
+            submit.setVisibility(View.GONE);
+
+        }
         //提交按钮事件
-        Button submit=(Button)findViewById(R.id.submit_Btn);
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

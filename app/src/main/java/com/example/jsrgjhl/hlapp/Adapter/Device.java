@@ -15,8 +15,9 @@ public class Device implements Serializable {
     private String about;
     private String defend;
     private String region;
+    private String other; //参数设置
 
-    public Device(String id, String sort, String situation, String address, String ipaddress, String about, String defend, String region) {
+    public Device(String id, String sort, String situation, String address, String ipaddress, String about, String defend, String region, String other) {
         this.id = id;
         this.sort = sort;
         this.situation = situation;
@@ -25,6 +26,7 @@ public class Device implements Serializable {
         this.about = about;
         this.defend = defend;
         this.region = region;
+        this.other = other;
     }
 
     public String getId() {
@@ -89,5 +91,13 @@ public class Device implements Serializable {
 
     public void setRegion(String region) {
         this.region = region;
+    }
+
+    public String getOther() {
+        return other;
+    }
+
+    public void setOther(String other) {
+        this.other = other;
     }
 }
