@@ -65,7 +65,6 @@
         android:id="@+id/device_setting_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="参数设置"
         android:textColor="@color/QQblue"
         android:layout_alignTop="@id/address_tv"
         android:layout_marginRight="40dp"

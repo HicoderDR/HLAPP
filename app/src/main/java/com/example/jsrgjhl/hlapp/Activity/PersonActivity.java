@@ -126,7 +126,9 @@ public class PersonActivity extends AppCompatActivity {
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Intent intent=new Intent(PersonActivity.this,LoginActivity.class);
                 Toast.makeText(PersonActivity.this,"退出登录成功",Toast.LENGTH_SHORT).show();
+                startActivity(intent);
             }
         });
     }

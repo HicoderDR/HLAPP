@@ -164,7 +164,7 @@ public class DeviceListActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent();
                 intent.setClass(DeviceListActivity.this, DeviceSituationActivity.class);
-                Device device=new Device(" ","振动传感"," "," "," "," ","防区一","区域一");
+                Device device=new Device(" ","振动传感",null,null,null,null,"防区一","区域一","参数设置");
                 intent.putExtra("device", (Serializable) device);
                 startActivity(intent);
             }
@@ -173,23 +173,23 @@ public class DeviceListActivity extends AppCompatActivity {
 
     private void initDeviceList() {
         mdeviceList.clear();
-        Device device1=new Device("MAC1000","振动传感","正常运转","理工大学","5555","运行很好","防区二","区域一");
+        Device device1=new Device("MAC1000","振动传感","正常运转","理工大学","5555","运行很好","防区二","区域一","参数设置");
         mdeviceList.add(device1);
-        Device device2=new Device("MAC1000","振动传感","正常运转","理工大学","5555","运行很好","防区二","区域二");
+        Device device2=new Device("MAC1000","振动传感","正常运转","理工大学","5555","运行很好","防区二","区域二","参数设置");
         mdeviceList.add(device2);
-        Device device3=new Device("MAC1000","振动传感","正常运转","理工大学","5555","运行很好","防区二","区域三");
+        Device device3=new Device("MAC1000","振动传感","正常运转","理工大学","5555","运行很好","防区二","区域三","参数设置");
         mdeviceList.add(device3);
-        Device device4=new Device("MAC1000","监控","正常运转","理工大学","5555","运行很好","防区一","区域一");
+        Device device4=new Device("MAC1000","监控","正常运转","理工大学","5555","运行很好","防区一","区域一","参数设置");
         mdeviceList.add(device4);
-        Device device5=new Device("MAC1000","监控","正常运转","理工大学","5555","运行很好","防区二","区域一");
+        Device device5=new Device("MAC1000","监控","正常运转","理工大学","5555","运行很好","防区二","区域一","参数设置");
         mdeviceList.add(device5);
-        Device device6=new Device("MAC1000","监控","正常运转","理工大学","5555","运行很好","防区二","区域一");
+        Device device6=new Device("MAC1000","监控","正常运转","理工大学","5555","运行很好","防区二","区域一","参数设置");
         mdeviceList.add(device6);
-        Device device7=new Device("MAC1000","雷达","正常运转","理工大学","5555","运行很好","防区二","区域一");
+        Device device7=new Device("MAC1000","雷达","正常运转","理工大学","5555","运行很好","防区二","区域一","参数设置");
         mdeviceList.add(device7);
-        Device device8=new Device("MAC1000","雷达","正常运转","理工大学","5555","运行很好","防区二","区域一");
+        Device device8=new Device("MAC1000","雷达","正常运转","理工大学","5555","运行很好","防区二","区域一","参数设置");
         mdeviceList.add(device8);
-        Device device9=new Device("MAC1000","雷达","正常运转","理工大学","5555","运行很好","防区二","区域一");
+        Device device9=new Device("MAC1000","雷达","正常运转","理工大学","5555","运行很好","防区二","区域一","参数设置");
         mdeviceList.add(device9);
     }
     private void initNowDeviceList(String sort,String defend,String region){

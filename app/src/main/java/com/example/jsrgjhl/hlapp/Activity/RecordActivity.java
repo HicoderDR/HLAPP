@@ -71,9 +71,9 @@ public class RecordActivity extends AppCompatActivity implements Serializable{
     }
 
     private void initRecords() {
-        Records record1=new Records("预警","待处理","2018-12-7 19:26:00","金沙路","MAC1000");
+        Records record1=new Records("预警","待处理","2018-12-7 19:26:00","金沙路","MAC1000",null,null);
         mrecordsList.add(record1);
-        Records record2=new Records("预警","已处理","2018-12-7 19:26:00","金沙路","MAC1000");
+        Records record2=new Records("预警","已处理","2018-12-7 19:26:00","金沙路","MAC1000","没啥问题","系统故障");
         mrecordsList.add(record2);
     }
 
