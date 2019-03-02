@@ -42,4 +42,12 @@
     <string name="setting">设置</string>
     <string name="cancel">取消</string>
     <string name="addressshare">实时位置共享</string>
+    <string name="personalacount">个人设置信息</string>
+    <string name="changepassword">修改密码</string>
+    <string name="newpassword">新密码</string>
+    <string name="oldpassword">旧密码</string>
+    <string name="confirm">确定</string>
+    <string name="personid">员工编号</string>
+    <string name="areadefense">区域/防区</string>
+    <string name="certificationdevice">认证设备</string>
 </resources>
