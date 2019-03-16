@@ -1,18 +1,39 @@
 package com.example.jsrgjhl.hlapp.Activity;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Build;
-import android.support.v7.app.AppCompatActivity;
-import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.*;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.jsrgjhl.hlapp.R;
+import com.example.jsrgjhl.hlapp.Utils.OkManager;
+import com.example.jsrgjhl.hlapp.Utils.jsonstr2map;
+import com.xiasuhuei321.loadingdialog.view.LoadingDialog;
+
+import java.util.Map;
+
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
+import static com.xiasuhuei321.loadingdialog.view.LoadingDialog.Speed.SPEED_TWO;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
     //布局内的控件
@@ -23,6 +44,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private CheckBox checkBox_login;
     private ImageView iv_see_password;
     private TextView Apptitle;
+    private  LoadingDialog mLoadingDialog;
+    SharedPreferences sp;
+
+    private final static String Tag = MainActivity.class.getSimpleName();
+    private OkManager manager;
+    private OkHttpClient clients;
+    private String loginpath="http://47.100.107.158:8080/api/user/login";
+
+    private static int flag;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,6 +66,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             window.setNavigationBarColor(Color.TRANSPARENT);
         }
         setContentView(R.layout.activity_login);
+        sp=getSharedPreferences("userinfo", MODE_PRIVATE);
+        manager = OkManager.getInstance();
         initViews();
         setupEvents();
         initData();
@@ -83,13 +115,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
      * 获得保存在本地的用户名
      */
     public String getLocalName() {
-        //获取SharedPreferences对象，使用自定义类的方法来获取对象
-        /*
-        SharedPreferencesUtils helper = new SharedPreferencesUtils(this, "setting");
-        String name = helper.getString("name");
+        String name = sp.getString("username","");
         return name;
-        */
-        return "dr";
     }
 
 
@@ -104,33 +131,25 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         return Base64Utils.decryptBASE64(password);   //解码一下
 //       return password;   //解码一下
         */
-        return "123456";
+        String password = sp.getString("password","");
+        return password;
     }
 
     /**
      * 判断是否自动登录
      */
     private boolean autoLogin() {
-        //获取SharedPreferences对象，使用自定义类的方法来获取对象
-        /*
-        SharedPreferencesUtils helper = new SharedPreferencesUtils(this, "setting");
-        boolean autoLogin = helper.getBoolean("autoLogin", false);
+        boolean autoLogin = sp.getBoolean("autologin", false);
         return autoLogin;
-        */
-        return false;
     }
 
     /**
      * 判断是否记住密码
      */
     private boolean remenberPassword() {
-        //获取SharedPreferences对象，使用自定义类的方法来获取对象
-        /*
-        SharedPreferencesUtils helper = new SharedPreferencesUtils(this, "setting");
-        boolean remenberPassword = helper.getBoolean("remenberPassword", false);
-        return remenberPassword;
-        */
-        return false;
+
+        boolean rememberPassword = sp.getBoolean("rememberpassword", false);
+        return rememberPassword;
     }
 
 
@@ -145,6 +164,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         Typeface typeface=Typeface.createFromAsset(getAssets(),"micro.ttf");
         mLoginBtn.setTypeface(typeface);
         et_name.setTypeface(typeface);
+        et_password.setTypeface(typeface);
         checkBox_password.setTypeface(typeface);
         checkBox_login.setTypeface(typeface);
         Apptitle.setTypeface(typeface);
@@ -165,23 +185,27 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         /*
         //获取SharedPreferences对象，使用自定义类的方法来获取对象
         SharedPreferencesUtils helper = new SharedPreferencesUtils(this, "setting");
-        boolean first = helper.getBoolean("first", true);
-        if (first) {
-            //创建一个ContentVa对象（自定义的）设置不是第一次登录，,并创建记住密码和自动登录是默认不选，创建账号和密码为空
-            helper.putValues(new SharedPreferencesUtils.ContentValue("first", false),
-                    new SharedPreferencesUtils.ContentValue("remenberPassword", false),
-                    new SharedPreferencesUtils.ContentValue("autoLogin", false),
-                    new SharedPreferencesUtils.ContentValue("name", ""),
-                    new SharedPreferencesUtils.ContentValue("password", ""));
-            return true;
-        }
+
+
         return false;
         */
+        boolean first = sp.getBoolean("first", true);
+        if (first) {
+            //创建一个ContentVa对象（自定义的）设置不是第一次登录，,并创建记住密码和自动登录是默认不选，创建账号和密码为空
+            SharedPreferences.Editor editor = sp.edit();
+            editor.putString("username","");
+            editor.putString("password","");
+            editor.putBoolean("first",false);
+            editor.putBoolean("rememberpassword",false);
+            editor.putBoolean("autologin",false);
+            editor.commit();
+            return true;
+        }
         return false;
     }
 
     @Override
-    public void onClick(View v) {
+    public void onClick(View v){
         switch (v.getId()) {
             case R.id.btn_login:
                 loadUserName();    //无论如何保存一下用户名
@@ -194,15 +218,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
+    public void setLoaded(int result) {
+        if (result==1) mLoadingDialog.loadSuccess(); else if(result==2) mLoadingDialog.loadFailed();
+    }
+
     /**
      * 模拟登录情况
      * 用户名csdn，密码123456，就能登录成功，否则登录失败
      */
     private void login() {
-        Intent mainintent = new Intent(LoginActivity.this, MainActivity.class);
-        LoginActivity.this.startActivity(mainintent);
-        LoginActivity.this.finish();
-        /*
         //先做一些基本的判断，比如输入的用户命为空，密码为空，网络不可用多大情况，都不需要去链接服务器了，而是直接返回提示错误
         if (getAccount().isEmpty()){
             showToast("你输入的账号为空！");
@@ -214,40 +238,42 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             return;
         }
         //登录一般都是请求服务器来判断密码是否正确，要请求网络，要子线程
+        flag=0;
         showLoading();//显示加载框
-        Thread loginRunnable = new Thread() {
-
+        new Thread(new Runnable() {
             @Override
             public void run() {
-                super.run();
                 setLoginBtnClickable(false);//点击登录后，设置登录按钮不可点击状态
-
-
-                //睡眠3秒
+                OkHttpClient client = new OkHttpClient();
+                RequestBody requestBody = new FormBody.Builder().add("username", getAccount()).add("password", getPassword()).build();
+                Request request = new Request.Builder().url(loginpath).post(requestBody).build();
                 try {
-                    Thread.sleep(3000);
-                } catch (InterruptedException e) {
+                    Response response = client.newCall(request).execute();//发送请求
+                    String result = response.body().string();
+                    Map<String, Object> map=jsonstr2map.jsonstr2map(result);
+                    String x=map.get("data").toString();
+                    Log.i(Tag,"drresult"+result);
+                    Log.i(Tag,"drresult"+map.toString());
+                    Log.i(Tag,"drresult"+x);
+                    if(x=="true"){
+                        flag=1;
+                    }else{
+                        flag=2;
+                    }
+                    loadCheckBoxState();//记录下当前用户记住密码和自动登录的状态;
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
-
-                //判断账号和密码
-                if (getAccount().equals("csdn") && getPassword().equals("123456")) {
-                    showToast("登录成功");
-                    loadCheckBoxState();//记录下当前用户记住密码和自动登录的状态;
-
-                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                    finish();//关闭页面
-                } else {
-                    showToast("输入的登录账号或密码不正确");
-                }
-
-                setLoginBtnClickable(true);  //这里解放登录按钮，设置为可以点击
-                hideLoading();//隐藏加载框
             }
-        };
-        loginRunnable.start();
-
-        */
+        }).start();
+        while (flag==0);
+        setLoaded(flag);
+        setLoginBtnClickable(true);  //这里解放登录按钮，设置为可以点击\*/
+        if(flag==1){
+            Intent mainintent = new Intent(LoginActivity.this, MainActivity.class);
+            LoginActivity.this.startActivity(mainintent);
+            LoginActivity.this.finish();
+        }
     }
 
 
@@ -255,12 +281,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
      * 保存用户账号
      */
     public void loadUserName() {
-        /*
         if (!getAccount().equals("") || !getAccount().equals("请输入登录账号")) {
-            SharedPreferencesUtils helper = new SharedPreferencesUtils(this, "setting");
-            helper.putValues(new SharedPreferencesUtils.ContentValue("name", getAccount()));
+            SharedPreferences.Editor editor = sp.edit();
+            editor.putString("username",getAccount());
+            editor.commit();
         }
-        */
     }
 
     /**
@@ -306,32 +331,26 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
      * 保存按钮的状态值
      */
     public void loadCheckBoxState(CheckBox checkBox_password, CheckBox checkBox_login) {
-        /*
-        //获取SharedPreferences对象，使用自定义类的方法来获取对象
-        SharedPreferencesUtils helper = new SharedPreferencesUtils(this, "setting");
 
         //如果设置自动登录
+        SharedPreferences.Editor editor = sp.edit();
         if (checkBox_login.isChecked()) {
             //创建记住密码和自动登录是都选择,保存密码数据
-            helper.putValues(
-                    new SharedPreferencesUtils.ContentValue("remenberPassword", true),
-                    new SharedPreferencesUtils.ContentValue("autoLogin", true),
-                    new SharedPreferencesUtils.ContentValue("password", Base64Utils.encryptBASE64(getPassword())));
-
+            editor.putString("password",getPassword());
+            editor.putBoolean("rememberpassword",true);
+            editor.putBoolean("autologin",true);
         } else if (!checkBox_password.isChecked()) { //如果没有保存密码，那么自动登录也是不选的
             //创建记住密码和自动登录是默认不选,密码为空
-            helper.putValues(
-                    new SharedPreferencesUtils.ContentValue("remenberPassword", false),
-                    new SharedPreferencesUtils.ContentValue("autoLogin", false),
-                    new SharedPreferencesUtils.ContentValue("password", ""));
+            editor.putString("password","");
+            editor.putBoolean("rememberpassword",false);
+            editor.putBoolean("autologin",false);
         } else if (checkBox_password.isChecked()) {   //如果保存密码，没有自动登录
             //创建记住密码为选中和自动登录是默认不选,保存密码数据
-            helper.putValues(
-                    new SharedPreferencesUtils.ContentValue("remenberPassword", true),
-                    new SharedPreferencesUtils.ContentValue("autoLogin", false),
-                    new SharedPreferencesUtils.ContentValue("password", Base64Utils.encryptBASE64(getPassword())));
+            editor.putString("password",getPassword());
+            editor.putBoolean("rememberpassword",true);
+            editor.putBoolean("autologin",false);
         }
-        */
+        editor.commit();
     }
 
     /**
@@ -348,29 +367,32 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
      * 显示加载的进度款
      */
     public void showLoading() {
-        /*
         if (mLoadingDialog == null) {
-            mLoadingDialog = new LoadingDialog(this, getString(R.string.loading), false);
+            mLoadingDialog = new LoadingDialog(this);
+            mLoadingDialog.setLoadingText("加载中")
+                    .setSuccessText("登陆成功")//显示加载成功时的文字
+                    .setFailedText("登陆失败")
+                    .setInterceptBack(false)
+                    .setLoadSpeed(SPEED_TWO)
+                    .show();
         }
         mLoadingDialog.show();
-        */
     }
-
 
     /**
      * 隐藏加载的进度框
      */
     public void hideLoading() {
-        /*
+
         if (mLoadingDialog != null) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    mLoadingDialog.hide();
+                    mLoadingDialog.close();
                 }
             });
 
-        }*/
+        }
     }
 
 
@@ -395,12 +417,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     /**
      * 监听回退键
-     */
+
     @Override
     public void onBackPressed() {
-        /*
+
         if (mLoadingDialog != null) {
-            if (mLoadingDialog.isShowing()) {
+            if (mLoadingDialog.()) {
                 mLoadingDialog.cancel();
             } else {
                 finish();
@@ -408,8 +430,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         } else {
             finish();
         }
-        */
-    }
+
+    } */
 
     /**
      * 页面销毁前回调的方法
@@ -425,11 +447,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
 
-    public void showToast(String msg) {
+    public void showToast(final String msg) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                //Toast.makeText(LoginActivity.this, msg, Toast.LENGTH_SHORT).show();
+                Toast.makeText(LoginActivity.this,msg, Toast.LENGTH_SHORT).show();
             }
         });
 
