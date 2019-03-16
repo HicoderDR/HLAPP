@@ -1,17 +1,14 @@
 package com.example.jsrgjhl.hlapp.Activity;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
+import android.content.SharedPreferences;
 import android.location.LocationManager;
-import android.os.Build;
+import android.os.Bundle;
 import android.provider.Settings;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -32,7 +29,7 @@ public class PersonActivity extends AppCompatActivity {
     private TextView aboutus;
     private TextView logout;
     private Switch aSwitch;
-
+    SharedPreferences sp;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,7 +48,7 @@ public class PersonActivity extends AppCompatActivity {
             }
         });
 
-
+        sp=getSharedPreferences("userinfo", MODE_PRIVATE);
         personalAccount=(TextView)findViewById(R.id.accountTextview);
         operateRecord=(TextView)findViewById(R.id.operateRecordTextview);
         aboutreversion=(TextView)findViewById(R.id.versionTextview);
@@ -126,6 +123,13 @@ public class PersonActivity extends AppCompatActivity {
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                SharedPreferences.Editor editor=sp.edit();
+                editor.putString("username","");
+                editor.putString("password","");
+                editor.putBoolean("first",true);
+                editor.putBoolean("rememberpassword",false);
+                editor.putBoolean("autologin",false);
+                editor.commit();
                 Intent intent=new Intent(PersonActivity.this,LoginActivity.class);
                 Toast.makeText(PersonActivity.this,"退出登录成功",Toast.LENGTH_SHORT).show();
                 startActivity(intent);
