@@ -219,7 +219,13 @@ public class DeviceListActivity extends AppCompatActivity {
                 }
             }
         }).start();
-        while (flag==0);
+        while (flag==0){
+            try{
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        };
         if(flag==1){
             Log.i(Tag,"drresult"+"成功");
         }
