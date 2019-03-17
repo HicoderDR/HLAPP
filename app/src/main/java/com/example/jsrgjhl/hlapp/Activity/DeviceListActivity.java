@@ -18,10 +18,19 @@ import android.widget.TextView;
 import com.example.jsrgjhl.hlapp.Adapter.Device;
 import com.example.jsrgjhl.hlapp.Adapter.DeviceAdapter;
 import com.example.jsrgjhl.hlapp.R;
+import com.example.jsrgjhl.hlapp.Utils.OkManager;
+import com.example.jsrgjhl.hlapp.Utils.jsonstr2map;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class DeviceListActivity extends AppCompatActivity {
 
@@ -35,6 +44,13 @@ public class DeviceListActivity extends AppCompatActivity {
     private String[] regiontype={"区域","区域一","区域二","区域三"};
     private String[] defendtype={"防区","防区一","防区二","防区三"};
     private DeviceAdapter adapter;
+
+    private final static String Tag = MainActivity.class.getSimpleName();
+//    private OkManager manager;
+//    private OkHttpClient clients;
+    private String getdevicepath="http://47.100.107.158:8080/api/device/getdevicelist";
+    private Thread myThread;
+    private static int flag;
 
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
@@ -171,27 +187,48 @@ public class DeviceListActivity extends AppCompatActivity {
         });
     }
 
+        //向服务器请求列表
     private void initDeviceList() {
-        mdeviceList.clear();
-        Device device1=new Device("MAC1000","振动传感","正常运转","理工大学","5555","运行很好","防区二","区域一","参数设置");
-        mdeviceList.add(device1);
-        Device device2=new Device("MAC1000","振动传感","正常运转","理工大学","5555","运行很好","防区二","区域二","参数设置");
-        mdeviceList.add(device2);
-        Device device3=new Device("MAC1000","振动传感","正常运转","理工大学","5555","运行很好","防区二","区域三","参数设置");
-        mdeviceList.add(device3);
-        Device device4=new Device("MAC1000","监控","正常运转","理工大学","5555","运行很好","防区一","区域一","参数设置");
-        mdeviceList.add(device4);
-        Device device5=new Device("MAC1000","监控","正常运转","理工大学","5555","运行很好","防区二","区域一","参数设置");
-        mdeviceList.add(device5);
-        Device device6=new Device("MAC1000","监控","正常运转","理工大学","5555","运行很好","防区二","区域一","参数设置");
-        mdeviceList.add(device6);
-        Device device7=new Device("MAC1000","雷达","正常运转","理工大学","5555","运行很好","防区二","区域一","参数设置");
-        mdeviceList.add(device7);
-        Device device8=new Device("MAC1000","雷达","正常运转","理工大学","5555","运行很好","防区二","区域一","参数设置");
-        mdeviceList.add(device8);
-        Device device9=new Device("MAC1000","雷达","正常运转","理工大学","5555","运行很好","防区二","区域一","参数设置");
-        mdeviceList.add(device9);
+       flag=0;
+        showLoading();//显示加载框
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                OkHttpClient client = new OkHttpClient();
+                Request request = new Request.Builder().url(getdevicepath).build();
+                try {
+                    Response response = client.newCall(request).execute();//发送请求
+                    String result = response.body().string();
+                    Map<String, Object> map= jsonstr2map.jsonstr2map(result);
+                    List<Map<String, Object>> map2=jsonstr2map.jsonstr2list(map.get("data").toString());
+                   //Log.i(Tag,"message"+map.get("message"));
+//                    Log.i(Tag,"drresult"+result);
+//                    Log.i(Tag,"drresult"+map.toString());
+                    Log.i(Tag,"message"+map2.toString());
+                    Log.i(Tag,"message"+map.get("message"));
+                    Log.i(Tag,"message"+map.get("message").toString().equals("SUCCESS"));
+                    for (int i=0;i<map2.size();i++){
+                        Device device1=new Device((String) map2.get(i).get("devicenum"), (String) map2.get(i).get("devicetype"), (String) map2.get(i).get("devicestatus"), (String) map2.get(i).get("deviceaddress"), (String) map2.get(i).get("ip"),"运行很好", (String) map2.get(i).get("defposID"), (String) map2.get(i).get("regionID"),"参数设置");
+                        mdeviceList.add(device1);
+                    }
+                    if(mdeviceList.size()!=0){
+                        flag=1;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+        while (flag==0);
+        if(flag==1){
+            Log.i(Tag,"drresult"+"成功");
+        }
     }
+
+
+    private void showLoading() {
+    }
+
     private void initNowDeviceList(String sort,String defend,String region){
         //完成设备类型的选择
         for(int i=0;i<mnowdeviceList.size();i++){
