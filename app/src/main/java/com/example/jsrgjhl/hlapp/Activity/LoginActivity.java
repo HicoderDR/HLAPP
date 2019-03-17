@@ -8,7 +8,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -175,7 +174,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         checkBox_password.setOnCheckedChangeListener(this);
         checkBox_login.setOnCheckedChangeListener(this);
         iv_see_password.setOnClickListener(this);
-
     }
 
     /**
@@ -214,7 +212,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             case R.id.iv_see_password:
                 setPasswordVisibility();    //改变图片并设置输入框的文本可见或不可见
                 break;
-
         }
     }
 
@@ -232,7 +229,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             showToast("你输入的账号为空！");
             return;
         }
-
         if (getPassword().isEmpty()){
             showToast("你输入的密码为空！");
             return;
@@ -243,7 +239,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         new Thread(new Runnable() {
             @Override
             public void run() {
-                setLoginBtnClickable(false);//点击登录后，设置登录按钮不可点击状态
                 OkHttpClient client = new OkHttpClient();
                 RequestBody requestBody = new FormBody.Builder().add("username", getAccount()).add("password", getPassword()).build();
                 Request request = new Request.Builder().url(loginpath).post(requestBody).build();
@@ -252,30 +247,25 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     String result = response.body().string();
                     Map<String, Object> map=jsonstr2map.jsonstr2map(result);
                     String x=map.get("data").toString();
-                    Log.i(Tag,"drresult"+result);
-                    Log.i(Tag,"drresult"+map.toString());
-                    Log.i(Tag,"drresult"+x);
                     if(x=="true"){
                         flag=1;
+                        loadCheckBoxState();//记录下当前用户记住密码和自动登录的状态;
                     }else{
                         flag=2;
                     }
-                    loadCheckBoxState();//记录下当前用户记住密码和自动登录的状态;
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         }).start();
-        while (flag==0);
+        while(flag==0);
         setLoaded(flag);
-        setLoginBtnClickable(true);  //这里解放登录按钮，设置为可以点击\*/
         if(flag==1){
             Intent mainintent = new Intent(LoginActivity.this, MainActivity.class);
             LoginActivity.this.startActivity(mainintent);
             LoginActivity.this.finish();
         }
     }
-
 
     /**
      * 保存用户账号
@@ -367,23 +357,19 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
      * 显示加载的进度款
      */
     public void showLoading() {
-        if (mLoadingDialog == null) {
-            mLoadingDialog = new LoadingDialog(this);
-            mLoadingDialog.setLoadingText("加载中")
-                    .setSuccessText("登陆成功")//显示加载成功时的文字
-                    .setFailedText("登陆失败")
-                    .setInterceptBack(false)
-                    .setLoadSpeed(SPEED_TWO)
-                    .show();
-        }
-        mLoadingDialog.show();
+        mLoadingDialog = new LoadingDialog(this);
+        mLoadingDialog.setLoadingText("加载中")
+              .setSuccessText("登陆成功")//显示加载成功时的文字
+              .setFailedText("登陆失败")
+              .setInterceptBack(false)
+              .setLoadSpeed(SPEED_TWO)
+              .show();
     }
 
     /**
      * 隐藏加载的进度框
      */
     public void hideLoading() {
-
         if (mLoadingDialog != null) {
             runOnUiThread(new Runnable() {
                 @Override
@@ -391,7 +377,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     mLoadingDialog.close();
                 }
             });
-
         }
     }
 
@@ -415,33 +400,28 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
 
-    /**
-     * 监听回退键
+
 
     @Override
-    public void onBackPressed() {
-
+    public void onBackPressed(){
         if (mLoadingDialog != null) {
-            if (mLoadingDialog.()) {
-                mLoadingDialog.cancel();
-            } else {
+                hideLoading();
                 finish();
-            }
         } else {
             finish();
         }
 
-    } */
+    }
 
     /**
      * 页面销毁前回调的方法
      */
     protected void onDestroy() {
-        /*
+
         if (mLoadingDialog != null) {
-            mLoadingDialog.cancel();
+            mLoadingDialog.close();
             mLoadingDialog = null;
-        }*/
+        }
         super.onDestroy();
 
     }
@@ -458,3 +438,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
 }
+
+
+
