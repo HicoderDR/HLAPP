@@ -68,6 +68,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.activity_login);
         sp=getSharedPreferences("userinfo", MODE_PRIVATE);
         manager = OkManager.getInstance();
+        clients = new OkHttpClient();
         initViews();
         setupEvents();
         initData();
@@ -175,20 +176,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         checkBox_password.setOnCheckedChangeListener(this);
         checkBox_login.setOnCheckedChangeListener(this);
         iv_see_password.setOnClickListener(this);
-
     }
 
     /**
      * 判断是否是第一次登陆
      */
     private boolean firstLogin() {
-        /*
-        //获取SharedPreferences对象，使用自定义类的方法来获取对象
-        SharedPreferencesUtils helper = new SharedPreferencesUtils(this, "setting");
-
-
-        return false;
-        */
         boolean first = sp.getBoolean("first", true);
         if (first) {
             //创建一个ContentVa对象（自定义的）设置不是第一次登录，,并创建记住密码和自动登录是默认不选，创建账号和密码为空
@@ -214,7 +207,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             case R.id.iv_see_password:
                 setPasswordVisibility();    //改变图片并设置输入框的文本可见或不可见
                 break;
-
         }
     }
 
@@ -227,55 +219,60 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
      * 用户名csdn，密码123456，就能登录成功，否则登录失败
      */
     private void login() {
+        Log.i(Tag,"drresult1 "+flag);
         //先做一些基本的判断，比如输入的用户命为空，密码为空，网络不可用多大情况，都不需要去链接服务器了，而是直接返回提示错误
         if (getAccount().isEmpty()){
             showToast("你输入的账号为空！");
             return;
         }
-
         if (getPassword().isEmpty()){
             showToast("你输入的密码为空！");
             return;
         }
         //登录一般都是请求服务器来判断密码是否正确，要请求网络，要子线程
         flag=0;
+        Log.i(Tag,"drresult2 "+flag);
         showLoading();//显示加载框
         new Thread(new Runnable() {
             @Override
             public void run() {
-                setLoginBtnClickable(false);//点击登录后，设置登录按钮不可点击状态
-                OkHttpClient client = new OkHttpClient();
+                Log.i(Tag,"drresult3 "+flag);
                 RequestBody requestBody = new FormBody.Builder().add("username", getAccount()).add("password", getPassword()).build();
                 Request request = new Request.Builder().url(loginpath).post(requestBody).build();
                 try {
-                    Response response = client.newCall(request).execute();//发送请求
+                    Response response = clients.newCall(request).execute();//发送请求
                     String result = response.body().string();
+
                     Map<String, Object> map=jsonstr2map.jsonstr2map(result);
                     String x=map.get("data").toString();
-                    Log.i(Tag,"drresult"+result);
-                    Log.i(Tag,"drresult"+map.toString());
-                    Log.i(Tag,"drresult"+x);
                     if(x=="true"){
                         flag=1;
+                        loadCheckBoxState();//记录下当前用户记住密码和自动登录的状态;
                     }else{
                         flag=2;
                     }
-                    loadCheckBoxState();//记录下当前用户记住密码和自动登录的状态;
+                    Log.i(Tag,"drresult4 "+flag);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         }).start();
-        while (flag==0);
+        Log.i(Tag,"drresult5 "+flag);
+        while(flag==0){
+            try{
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        };
+        Log.i(Tag,"drresult6 "+flag);
         setLoaded(flag);
-        setLoginBtnClickable(true);  //这里解放登录按钮，设置为可以点击\*/
         if(flag==1){
             Intent mainintent = new Intent(LoginActivity.this, MainActivity.class);
             LoginActivity.this.startActivity(mainintent);
             LoginActivity.this.finish();
         }
     }
-
 
     /**
      * 保存用户账号
@@ -367,23 +364,19 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
      * 显示加载的进度款
      */
     public void showLoading() {
-        if (mLoadingDialog == null) {
-            mLoadingDialog = new LoadingDialog(this);
-            mLoadingDialog.setLoadingText("加载中")
-                    .setSuccessText("登陆成功")//显示加载成功时的文字
-                    .setFailedText("登陆失败")
-                    .setInterceptBack(false)
-                    .setLoadSpeed(SPEED_TWO)
-                    .show();
-        }
-        mLoadingDialog.show();
+        mLoadingDialog = new LoadingDialog(this);
+        mLoadingDialog.setLoadingText("加载中")
+              .setSuccessText("登陆成功")//显示加载成功时的文字
+              .setFailedText("登陆失败")
+              .setInterceptBack(false)
+              .setLoadSpeed(SPEED_TWO)
+              .show();
     }
 
     /**
      * 隐藏加载的进度框
      */
     public void hideLoading() {
-
         if (mLoadingDialog != null) {
             runOnUiThread(new Runnable() {
                 @Override
@@ -391,7 +384,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     mLoadingDialog.close();
                 }
             });
-
         }
     }
 
@@ -415,33 +407,28 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
 
-    /**
-     * 监听回退键
+
 
     @Override
-    public void onBackPressed() {
-
+    public void onBackPressed(){
         if (mLoadingDialog != null) {
-            if (mLoadingDialog.()) {
-                mLoadingDialog.cancel();
-            } else {
+                hideLoading();
                 finish();
-            }
         } else {
             finish();
         }
 
-    } */
+    }
 
     /**
      * 页面销毁前回调的方法
      */
     protected void onDestroy() {
-        /*
+
         if (mLoadingDialog != null) {
-            mLoadingDialog.cancel();
+            mLoadingDialog.close();
             mLoadingDialog = null;
-        }*/
+        }
         super.onDestroy();
 
     }
@@ -458,3 +445,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
 }
+
+
+

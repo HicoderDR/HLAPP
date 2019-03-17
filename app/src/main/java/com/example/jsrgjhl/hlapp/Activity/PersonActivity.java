@@ -133,6 +133,7 @@ public class PersonActivity extends AppCompatActivity {
                 Intent intent=new Intent(PersonActivity.this,LoginActivity.class);
                 Toast.makeText(PersonActivity.this,"退出登录成功",Toast.LENGTH_SHORT).show();
                 startActivity(intent);
+                PersonActivity.this.finish();
             }
         });
     }
