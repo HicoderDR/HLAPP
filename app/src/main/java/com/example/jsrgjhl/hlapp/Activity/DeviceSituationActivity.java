@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,17 +14,24 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.amap.api.maps.CameraUpdateFactory;
-import com.amap.api.maps.model.LatLng;
 import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.geocoder.GeocodeResult;
-import com.amap.api.services.geocoder.RegeocodeAddress;
 import com.amap.api.services.geocoder.RegeocodeQuery;
 import com.amap.api.services.geocoder.RegeocodeResult;
 import com.example.jsrgjhl.hlapp.Adapter.Device;
 import com.example.jsrgjhl.hlapp.R;
 import com.amap.api.services.geocoder.GeocodeSearch;
 import com.amap.api.services.geocoder.GeocodeSearch.OnGeocodeSearchListener;
+import com.example.jsrgjhl.hlapp.Utils.OkManager;
+import com.example.jsrgjhl.hlapp.Utils.jsonstr2map;
+
+import java.util.Map;
+
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class DeviceSituationActivity extends AppCompatActivity implements OnGeocodeSearchListener{
     private GeocodeSearch geocodeSearch;
@@ -36,6 +44,14 @@ public class DeviceSituationActivity extends AppCompatActivity implements OnGeoc
     private EditText ipEditText;
     private EditText aboutEditText;
     private ImageView chooseAddressImg;
+    private int createormodify=0;
+    private final static String Tag = MainActivity.class.getSimpleName();
+    private OkManager manager;
+    private OkHttpClient clients;
+    private String createDevicepath="http://47.100.107.158:8080/api/device/createdevice";
+    private String modifyDevicepath="http://47.100.107.158:8080/api/device/modifydevice";
+
+    private static int flag;
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,15 +71,6 @@ public class DeviceSituationActivity extends AppCompatActivity implements OnGeoc
             }
         });
 
-//        //选择地图按钮事件
-        //这里有个问题，无法点击图片
-//        chooseAddressImg.findViewById(R.id.choose_img);
-//        chooseAddressImg.setOnClickListener(new android.view.View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Toast.makeText(DeviceSituationActivity.this,"选择地图",Toast.LENGTH_SHORT).show();
-//            }
-//        });
         //设备详情中各个部分
         idEditText=findViewById(R.id.idEditText);
         addressEditText=findViewById(R.id.deviece_address_EditText);
@@ -79,10 +86,18 @@ public class DeviceSituationActivity extends AppCompatActivity implements OnGeoc
         regionSpinner.setDropDownVerticalOffset(140);
         defendSpinner.setDropDownVerticalOffset(140);
 
+
         //得到设备列表的数据，并填充
         Intent intent = getIntent();
         Device device = (Device) intent.getSerializableExtra("device");
-        idEditText.setText(String.valueOf(device.getId()));
+        if(String.valueOf(device.getId())!="null") {
+            /*
+            createormodify=1表示点击提交的时候为更新设备
+            createormodify=0表示点击提交的时候为新建设备
+             */
+            createormodify=1;
+            idEditText.setText(String.valueOf(device.getId()));
+        }
         addressEditText.setText((CharSequence) device.getAddress());
         for(int i=0;i<4;i++) {
             if (device.getSort().equals(sortSpinner.getItemAtPosition(i))) {
@@ -106,11 +121,11 @@ public class DeviceSituationActivity extends AppCompatActivity implements OnGeoc
         ipEditText.setText(device.getIpaddress());
 
         //提交按钮事件
-        Button submit=(Button)findViewById(R.id.submit_Btn);
+        final Button submit=(Button)findViewById(R.id.submit_Btn);
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(DeviceSituationActivity.this,"提交成功", Toast.LENGTH_SHORT).show();
+                submit();
             }
         });
         chooseAddressImg.setOnClickListener(new View.OnClickListener() {
@@ -154,4 +169,134 @@ public class DeviceSituationActivity extends AppCompatActivity implements OnGeoc
     public void onGeocodeSearched(GeocodeResult result, int rCode) {
     }
 
+    //得到设备Id
+    public String getDeviceId(){
+        return idEditText.getText().toString().trim();
+    }
+    //得到设备类型
+    public String getDeviceSort(){
+        return  sortSpinner.getSelectedItem().toString().trim();
+    }
+    //得到设备区域
+    public String getDeviceRegion(){
+        return regionSpinner.getSelectedItem().toString().trim();
+    }
+    //得到设备防区
+    public String getDeviceDefend(){
+        return defendSpinner.getSelectedItem().toString().trim();
+    }
+    //得到设备地址
+    public String getDeviceAddress(){
+        return addressEditText.getText().toString().trim();
+    }
+    //得到设备运行情况
+    public String getDeviceStatus(){
+        return aboutEditText.getText().toString().trim();
+    }
+    //得到设备ip地址
+    public String getDeviceIp(){
+        return ipEditText.getText().toString().trim();
+    }
+    //按钮提交事件
+    private void submit(){
+        //new一个device对象
+        final Device device=new Device(getDeviceId(),getDeviceSort(),getDeviceStatus(),getDeviceAddress(),getDeviceIp(),getDeviceStatus(),getDeviceDefend(),getDeviceRegion(),"参数设置");
+        //先做一些基本的判断，比如输入的用户命为空，密码为空，网络不可用多大情况，都不需要去链接服务器了，而是直接返回提示错误
+        if (getDeviceId().isEmpty()){
+            showToast("你输入的设备号为空！");
+            return;
+        }
+        if (getDeviceAddress().isEmpty()){
+            showToast("你输入的设备地址为空！");
+            return;
+        }
+        if (getDeviceIp().isEmpty()){
+            showToast("你输入的设备IP为空！");
+            return;
+        }
+        if (getDeviceStatus().isEmpty()){
+            showToast("你输入的相关参数为空！");
+            return;
+        }
+        //登录一般都是请求服务器来判断密码是否正确，要请求网络，要子线程
+         flag = 0;
+        showLoading();//显示加载框
+        if(createormodify==0) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    //这里的地址还未填写好
+                    RequestBody requestBody = new FormBody.Builder().add("devicenum", device.getId()).add("deicetype",device.getSort()).add("devicestatus",device.getSituation()).add("devicelat","12").add("devicelng","13").add("regionID",device.getRegion()).add("defposID",device.getDefend()).add("deviceaddress",device.getAddress()).add("IP",device.getIpaddress()).build();
+                    Request request = new Request.Builder().url(createDevicepath).post(requestBody).build();
+                    try {
+                        Response response = clients.newCall(request).execute();//发送请求
+                        String result = response.body().string();
+                        Map<String, Object> map = jsonstr2map.jsonstr2map(result);
+                        Log.i(Tag,"message"+map.toString());
+                        String x = map.get("data").toString();
+                        if (x == "true") {
+                            flag = 1;
+                        }else {
+                            flag=2;
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }).start();
+        }
+        /*
+        修改指定设备参数
+         */
+//        if(createormodify==1){
+//            new Thread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    RequestBody requestBody = new FormBody.Builder().add("username", getAccount()).add("password", getPassword()).build();
+//                    Request request = new Request.Builder().url(loginpath).post(requestBody).build();
+//                    try {
+//                        Response response = clients.newCall(request).execute();//发送请求
+//                        String result = response.body().string();
+//
+//                        Map<String, Object> map = jsonstr2map.jsonstr2map(result);
+//                        String x = map.get("data").toString();
+//                        if (x == "true") {
+//                            flag = 1;
+//                            loadCheckBoxState();//记录下当前用户记住密码和自动登录的状态;
+//                        } else {
+//                            flag = 2;
+//                        }
+//                        Log.i(Tag, "drresult4 " + flag);
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }).start();
+//        }
+        while(flag==0){
+            try{
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        };
+        Log.i(Tag,"flag"+flag);
+        if(flag==1){
+            DeviceSituationActivity.this.finish();
+        }
+    }
+
+    private void showLoading() {
+    }
+
+    //showToast提示窗
+    public void showToast(final String msg) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(DeviceSituationActivity.this,msg, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
 }
