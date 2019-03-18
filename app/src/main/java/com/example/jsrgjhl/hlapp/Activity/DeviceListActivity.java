@@ -13,12 +13,10 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
-import android.widget.TextView;
 
 import com.example.jsrgjhl.hlapp.Adapter.Device;
 import com.example.jsrgjhl.hlapp.Adapter.DeviceAdapter;
 import com.example.jsrgjhl.hlapp.R;
-import com.example.jsrgjhl.hlapp.Utils.OkManager;
 import com.example.jsrgjhl.hlapp.Utils.jsonstr2map;
 
 import java.io.Serializable;
@@ -26,10 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class DeviceListActivity extends AppCompatActivity {
@@ -219,7 +215,13 @@ public class DeviceListActivity extends AppCompatActivity {
                 }
             }
         }).start();
-        while (flag==0);
+        while (flag==0){
+            try{
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        };
         if(flag==1){
             Log.i(Tag,"drresult"+"成功");
         }
