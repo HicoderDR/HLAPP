@@ -58,6 +58,7 @@ public class DeviceListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_device_list);
+        mdeviceList.clear();
         initDeviceList();
         Toolbar toolbar = (Toolbar) findViewById(R.id.deviece_list_toolbar);
         toolbar.setTitle("");
@@ -105,11 +106,13 @@ public class DeviceListActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
 
                 if (sortSpinner.getSelectedItemPosition()==0&&defendSpinner.getSelectedItemPosition()==0&&regionSpinner.getSelectedItemPosition()==0){
+                    mdeviceList.clear();
                     initDeviceList();
                     mnowdeviceList=mdeviceList;
                     adapter.notifyDataSetChanged();
                 }
                 else {
+                    mdeviceList.clear();
                     initDeviceList();
                     mnowdeviceList=mdeviceList;
                     initNowDeviceList(sorttype[sortSpinner.getSelectedItemPosition()],defendtype[defendSpinner.getSelectedItemPosition()],regiontype[regionSpinner.getSelectedItemPosition()]);
@@ -125,11 +128,13 @@ public class DeviceListActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 if (sortSpinner.getSelectedItemPosition()==0&&defendSpinner.getSelectedItemPosition()==0&&regionSpinner.getSelectedItemPosition()==0){
+                    mdeviceList.clear();
                     initDeviceList();
                     mnowdeviceList=mdeviceList;
                     adapter.notifyDataSetChanged();
                 }
                 else {
+                    mdeviceList.clear();
                     initDeviceList();
                     mnowdeviceList=mdeviceList;
                     initNowDeviceList(sorttype[sortSpinner.getSelectedItemPosition()],defendtype[defendSpinner.getSelectedItemPosition()],regiontype[regionSpinner.getSelectedItemPosition()]);
@@ -144,11 +149,13 @@ public class DeviceListActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 if (sortSpinner.getSelectedItemPosition()==0&&defendSpinner.getSelectedItemPosition()==0&&regionSpinner.getSelectedItemPosition()==0){
+                    mdeviceList.clear();
                     initDeviceList();
                     mnowdeviceList=mdeviceList;
                     adapter.notifyDataSetChanged();
                 }
                 else {
+                    mdeviceList.clear();
                     initDeviceList();
                     mnowdeviceList=mdeviceList;
                     initNowDeviceList(sorttype[sortSpinner.getSelectedItemPosition()],defendtype[defendSpinner.getSelectedItemPosition()],regiontype[regionSpinner.getSelectedItemPosition()]);
@@ -180,7 +187,7 @@ public class DeviceListActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent();
                 intent.setClass(DeviceListActivity.this, DeviceSituationActivity.class);
-                Device device=new Device(" ","振动传感",null,null,null,null,"防区一","区域一","参数设置");
+                Device device=new Device(null,"振动传感",null,null,null,null,"防区一","区域一","参数设置");
                 intent.putExtra("device", (Serializable) device);
                 startActivity(intent);
             }
