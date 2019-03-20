@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.geocoder.GeocodeResult;
+import com.amap.api.services.geocoder.RegeocodeAddress;
 import com.amap.api.services.geocoder.RegeocodeQuery;
 import com.amap.api.services.geocoder.RegeocodeResult;
 import com.example.jsrgjhl.hlapp.Adapter.Device;
@@ -163,7 +164,9 @@ public class DeviceSituationActivity extends AppCompatActivity implements OnGeoc
     }
     @Override
     public void onRegeocodeSearched(RegeocodeResult result, int rCode) {
-        addressEditText.setText(result.getRegeocodeAddress().getFormatAddress());
+        RegeocodeAddress now=result.getRegeocodeAddress();
+        String ans=now.getFormatAddress();
+        addressEditText.setText(ans);
     }
     @Override
     public void onGeocodeSearched(GeocodeResult result, int rCode) {

@@ -5,17 +5,11 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.Toast;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
@@ -26,14 +20,12 @@ import com.amap.api.maps.AMapOptions;
 import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.LocationSource;
 import com.amap.api.maps.MapView;
-import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
 import com.autonavi.ae.pos.Feedback;
 import com.example.jsrgjhl.hlapp.R;
-import com.example.jsrgjhl.hlapp.Sample.Gifmarker;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -54,6 +46,7 @@ public class MapActivity extends AppCompatActivity implements AMap.OnMapClickLis
     private MyLocationStyle mLocationStyle = null;
     private LocationSource.OnLocationChangedListener mListener = null;
     private Marker next=null;
+    private static LatLng latlng0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,6 +74,7 @@ public class MapActivity extends AppCompatActivity implements AMap.OnMapClickLis
         myLocationStyle.strokeColor(Color.argb(0, 0, 0, 0));// 设置圆形的边框颜色
         myLocationStyle.radiusFillColor(Color.argb(0, 0, 0, 0));// 设置圆形的填充颜色
         aMap.setMyLocationStyle(myLocationStyle);//设置定位蓝点的Style
+
         doneSelect = (FloatingActionButton)findViewById(R.id.doneSelect);
         doneSelect.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -181,7 +175,9 @@ public class MapActivity extends AppCompatActivity implements AMap.OnMapClickLis
         // 启动高德地图定位
         mLocationClient.startLocation();
         aMap.setOnMapClickListener(this);
-
+        latlng0=new LatLng(mLocationClient.getLastKnownLocation().getLatitude(),mLocationClient.getLastKnownLocation().getLongitude());
+        this.latitude=latlng0.latitude;
+        this.longtitude=latlng0.longitude;
     }
 
     @Override
