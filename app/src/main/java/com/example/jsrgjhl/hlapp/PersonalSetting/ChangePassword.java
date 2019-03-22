@@ -1,5 +1,7 @@
 package com.example.jsrgjhl.hlapp.PersonalSetting;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -7,8 +9,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
+import com.example.jsrgjhl.hlapp.Activity.DeviceSituationActivity;
 import com.example.jsrgjhl.hlapp.Activity.LoginActivity;
+import com.example.jsrgjhl.hlapp.Activity.PersonActivity;
 import com.example.jsrgjhl.hlapp.Adapter.Records;
 import com.example.jsrgjhl.hlapp.R;
 import com.example.jsrgjhl.hlapp.Utils.jsonstr2map;
@@ -31,6 +36,7 @@ public class ChangePassword extends AppCompatActivity {
     private EditText confirmpassword;
     private String getuserInfo="http://47.100.107.158:8080/api/user/getuserInfo";
     private String changePassword="http://47.100.107.158:8080/api/user/changepassword";
+    SharedPreferences sp;
 
     private static int flag;
     private final static String Tag=ChangePassword.class.getSimpleName();
@@ -68,9 +74,18 @@ public class ChangePassword extends AppCompatActivity {
                 {
                     if(confirmTwoPassword()){
                         if(changePassword()){
-                            Log.i(Tag,"密码修改成功");
+                            /**
+                             * 如何将密码直接保存到本地？？
+                             */
+                            showToast("密码修改成功");
+                        }else{
+                            showToast("密码修改失败");
                         }
+                    }else{
+                        showToast("请确认新密码");
                     }
+                }else{
+                    showToast("旧密码错误");
                 }
 
             }
@@ -178,12 +193,23 @@ public class ChangePassword extends AppCompatActivity {
                 return true;
 
             }else {
-                Log.i(Tag,"password"+"失败");
+                oldpassword.setText("");
+                newpassword.setText("");
+                confirmpassword.setText("");
                 return false;
             }
         }catch (Exception e) {
                 e.printStackTrace();
         }
         return false;
+    }
+    //showToast提示窗
+    public void showToast(final String msg) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(ChangePassword.this,msg, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }
