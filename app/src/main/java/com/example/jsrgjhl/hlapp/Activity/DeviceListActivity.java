@@ -226,11 +226,13 @@ public class DeviceListActivity extends AppCompatActivity {
     }
 
 
-//    @Override
-//    protected void onRestart() {
-//        super.onRestart();
-//        initDeviceList();
-//    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mdeviceList.clear();
+        initDeviceList();
+        adapter.notifyDataSetChanged();
+    }
 
     private void showLoading() {
     }

@@ -49,9 +49,11 @@ public class DeviceSituationActivity extends AppCompatActivity implements OnGeoc
     private ImageView chooseAddressImg;
     private int createormodify=0;
     private final static String Tag = MainActivity.class.getSimpleName();
+    private Device getDevice;
     private OkManager manager;
     private OkHttpClient clients;
     private LoadingDialog mLoadingDialog;
+    private int viewSort;
     private String createDevicepath="http://47.100.107.158:8080/api/device/createdevice";
     private String modifyDevicepath="http://47.100.107.158:8080/api/device/modifydevice";
 
@@ -60,6 +62,17 @@ public class DeviceSituationActivity extends AppCompatActivity implements OnGeoc
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //得到设备列表的数据，并填充
+        Intent intent = getIntent();
+        getDevice = (Device) intent.getSerializableExtra("device");
+        if(String.valueOf(getDevice.getId())!="null") {
+            /**
+             createormodify=1表示点击提交的时候为更新设备
+             createormodify=0表示点击提交的时候为新建设备
+             */
+            createormodify=1;
+        }
         setContentView(R.layout.activity_device_situation);
         Toolbar toolbar = (Toolbar) findViewById(R.id.devicesituationbar);
         toolbar.setTitle("");
@@ -90,39 +103,29 @@ public class DeviceSituationActivity extends AppCompatActivity implements OnGeoc
         regionSpinner.setDropDownVerticalOffset(140);
         defendSpinner.setDropDownVerticalOffset(140);
 
-
-        //得到设备列表的数据，并填充
-        Intent intent = getIntent();
-        Device device = (Device) intent.getSerializableExtra("device");
-        if(String.valueOf(device.getId())!="null") {
-            /**
-            createormodify=1表示点击提交的时候为更新设备
-            createormodify=0表示点击提交的时候为新建设备
-             */
-            createormodify=1;
-            idEditText.setText(String.valueOf(device.getId()));
-        }
-        addressEditText.setText((CharSequence) device.getAddress());
+        if(String.valueOf(getDevice.getId())!="null")
+        idEditText.setText(String.valueOf(getDevice.getId()));
+        addressEditText.setText((CharSequence) getDevice.getAddress());
         for(int i=0;i<4;i++) {
-            if (device.getSort().equals(sortSpinner.getItemAtPosition(i))) {
+            if (getDevice.getSort().equals(sortSpinner.getItemAtPosition(i))) {
                 sortSpinner.setSelection(i, true);
                 break;
             }
         }
             for (int i=0;i<4;i++){
-            if (device.getRegion().equals(regionSpinner.getItemAtPosition(i))) {
+            if (getDevice.getRegion().equals(regionSpinner.getItemAtPosition(i))) {
                 regionSpinner.setSelection(i, true);
                 break;
             }
             }
             for (int i=0;i<4;i++) {
-                if (device.getDefend().equals(defendSpinner.getItemAtPosition(i))) {
+                if (getDevice.getDefend().equals(defendSpinner.getItemAtPosition(i))) {
                     defendSpinner.setSelection(i, true);
                     break;
                 }
             }
-        aboutEditText.setText(device.getAbout());
-        ipEditText.setText(device.getIpaddress());
+        aboutEditText.setText(getDevice.getAbout());
+        ipEditText.setText(getDevice.getIpaddress());
 
         //提交按钮事件
         final Button submit=(Button)findViewById(R.id.submit_Btn);
