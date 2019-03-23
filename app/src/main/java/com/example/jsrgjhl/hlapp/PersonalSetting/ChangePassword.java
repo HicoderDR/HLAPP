@@ -164,7 +164,7 @@ public class ChangePassword extends AppCompatActivity {
                          * 将 string 转为json格式
                          */
                         String temp=map.get("data").toString();
-                        temp=temp.substring(1,temp.length()-1);
+                        temp=temp.substring(1,temp.length()-1).replace(" ", "");;
                         String[] strs=temp.split(",");
                          Map<String,String> m=new HashMap<String,String>();
                         for(String s:strs){
