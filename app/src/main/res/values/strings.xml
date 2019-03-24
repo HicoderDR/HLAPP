@@ -52,4 +52,5 @@
     <string name="areadefense">区域/防区</string>
     <string name="certificationdevice">认证设备</string>
     <string name="confrimpassword">确认密码</string>
+    <string name="operaterecord">账户操作记录</string>
 </resources>

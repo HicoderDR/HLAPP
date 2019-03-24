@@ -36,6 +36,7 @@ public class ChangePassword extends AppCompatActivity {
     private EditText confirmpassword;
     private String getuserInfo="http://47.100.107.158:8080/api/user/getuserInfo";
     private String changePassword="http://47.100.107.158:8080/api/user/changepassword";
+
     SharedPreferences sp;
 
     private static int flag;
@@ -78,6 +79,7 @@ public class ChangePassword extends AppCompatActivity {
                              * 如何将密码直接保存到本地？？
                              */
                             showToast("密码修改成功");
+
                         }else{
                             showToast("密码修改失败");
                         }

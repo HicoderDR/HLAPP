@@ -1,0 +1,56 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:background="@color/white"
+    android:layout_height="wrap_content">
+    <TextView
+        android:id="@+id/record_num"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="15sp"
+        android:textColor="@color/black"
+        android:layout_margin="20dp"/>
+
+    <TextView
+        android:id="@+id/solutiontitle"
+        android:layout_width="wrap_content"
+        android:layout_height="25dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="10dp"
+        android:text="处理结论"
+        android:textColor="@color/list_text"
+        android:layout_below="@id/record_num"/>
+    <TextView
+        android:id="@+id/solutiontitleTv"
+        android:layout_width="wrap_content"
+        android:layout_height="25dp"
+        android:height="25dp"
+        android:layout_toRightOf="@id/solutiontitle"
+        android:layout_below="@id/record_num"
+        android:layout_alignBaseline="@+id/solutiontitle"
+        android:layout_margin="5dp"
+        android:textSize="15sp"
+        android:textColor="@color/black" />
+
+    <TextView
+        android:id="@+id/solutioncontext"
+        android:layout_width="wrap_content"
+        android:layout_height="25dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="10dp"
+        android:textColor="@color/list_text"
+        android:text="补充内容"
+        android:layout_below="@id/solutiontitle"/>
+    <TextView
+        android:id="@+id/solutioncontexttv"
+        android:layout_width="wrap_content"
+        android:layout_alignTop="@id/solutioncontext"
+        android:layout_toRightOf="@id/solutioncontext"
+        android:layout_below="@id/timetv"
+        android:layout_margin="5dp"
+        android:textSize="15sp"
+        android:layout_alignBaseline="@+id/solutioncontext"
+        android:textColor="@color/black"
+        android:layout_height="wrap_content" />
+
+
+</RelativeLayout>
