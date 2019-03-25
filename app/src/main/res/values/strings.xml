@@ -11,6 +11,8 @@
     <string name="recordtime">警报时间</string>
     <string name="recordlocation">设备地点</string>
     <string name="deviceid">设备编号</string>
+    <string name="devicenum">设备编号：</string>
+    <string name="devicestatus">设备状态：</string>>
     <string name="submit">提   交</string>
     <string name="record">警报记录</string>
     <string name="statistic">统计</string>
