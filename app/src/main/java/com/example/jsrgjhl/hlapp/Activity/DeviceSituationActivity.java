@@ -25,6 +25,7 @@ import com.amap.api.services.geocoder.GeocodeSearch;
 import com.amap.api.services.geocoder.GeocodeSearch.OnGeocodeSearchListener;
 import com.example.jsrgjhl.hlapp.Utils.OkManager;
 import com.example.jsrgjhl.hlapp.Utils.jsonstr2map;
+import com.xiasuhuei321.loadingdialog.view.LoadingDialog;
 
 import java.util.Map;
 
@@ -33,6 +34,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+
+import static com.xiasuhuei321.loadingdialog.view.LoadingDialog.Speed.SPEED_TWO;
 
 public class DeviceSituationActivity extends AppCompatActivity implements OnGeocodeSearchListener{
     private GeocodeSearch geocodeSearch;
@@ -47,8 +50,11 @@ public class DeviceSituationActivity extends AppCompatActivity implements OnGeoc
     private ImageView chooseAddressImg;
     private int createormodify=0;
     private final static String Tag = MainActivity.class.getSimpleName();
+    private Device getDevice;
     private OkManager manager;
     private OkHttpClient clients;
+    private LoadingDialog mLoadingDialog;
+    private int viewSort;
     private String createDevicepath="http://47.100.107.158:8080/api/device/createdevice";
     private String modifyDevicepath="http://47.100.107.158:8080/api/device/modifydevice";
 
@@ -57,6 +63,17 @@ public class DeviceSituationActivity extends AppCompatActivity implements OnGeoc
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //得到设备列表的数据，并填充
+        Intent intent = getIntent();
+        getDevice = (Device) intent.getSerializableExtra("device");
+        if(String.valueOf(getDevice.getId())!="null") {
+            /**
+             createormodify=1表示点击提交的时候为更新设备
+             createormodify=0表示点击提交的时候为新建设备
+             */
+            createormodify=1;
+        }
         setContentView(R.layout.activity_device_situation);
         Toolbar toolbar = (Toolbar) findViewById(R.id.devicesituationbar);
         toolbar.setTitle("");
@@ -87,39 +104,29 @@ public class DeviceSituationActivity extends AppCompatActivity implements OnGeoc
         regionSpinner.setDropDownVerticalOffset(140);
         defendSpinner.setDropDownVerticalOffset(140);
 
-
-        //得到设备列表的数据，并填充
-        Intent intent = getIntent();
-        Device device = (Device) intent.getSerializableExtra("device");
-        if(String.valueOf(device.getId())!="null") {
-            /*
-            createormodify=1表示点击提交的时候为更新设备
-            createormodify=0表示点击提交的时候为新建设备
-             */
-            createormodify=1;
-            idEditText.setText(String.valueOf(device.getId()));
-        }
-        addressEditText.setText((CharSequence) device.getAddress());
+        if(String.valueOf(getDevice.getId())!="null")
+        idEditText.setText(String.valueOf(getDevice.getId()));
+        addressEditText.setText((CharSequence) getDevice.getAddress());
         for(int i=0;i<4;i++) {
-            if (device.getSort().equals(sortSpinner.getItemAtPosition(i))) {
+            if (getDevice.getSort().equals(sortSpinner.getItemAtPosition(i))) {
                 sortSpinner.setSelection(i, true);
                 break;
             }
         }
             for (int i=0;i<4;i++){
-            if (device.getRegion().equals(regionSpinner.getItemAtPosition(i))) {
+            if (getDevice.getRegion().equals(regionSpinner.getItemAtPosition(i))) {
                 regionSpinner.setSelection(i, true);
                 break;
             }
             }
             for (int i=0;i<4;i++) {
-                if (device.getDefend().equals(defendSpinner.getItemAtPosition(i))) {
+                if (getDevice.getDefend().equals(defendSpinner.getItemAtPosition(i))) {
                     defendSpinner.setSelection(i, true);
                     break;
                 }
             }
-        aboutEditText.setText(device.getAbout());
-        ipEditText.setText(device.getIpaddress());
+        aboutEditText.setText(getDevice.getAbout());
+        ipEditText.setText(getDevice.getIpaddress());
 
         //提交按钮事件
         final Button submit=(Button)findViewById(R.id.submit_Btn);
@@ -204,7 +211,7 @@ public class DeviceSituationActivity extends AppCompatActivity implements OnGeoc
     private void submit(){
         //new一个device对象
         final Device device=new Device(getDeviceId(),getDeviceSort(),getDeviceStatus(),getDeviceAddress(),getDeviceIp(),getDeviceStatus(),getDeviceDefend(),getDeviceRegion(),"参数设置");
-        //先做一些基本的判断，比如输入的用户命为空，密码为空，网络不可用多大情况，都不需要去链接服务器了，而是直接返回提示错误
+        //先做一些基本的判断
         if (getDeviceId().isEmpty()){
             showToast("你输入的设备号为空！");
             return;
@@ -221,22 +228,24 @@ public class DeviceSituationActivity extends AppCompatActivity implements OnGeoc
             showToast("你输入的相关参数为空！");
             return;
         }
-        //登录一般都是请求服务器来判断密码是否正确，要请求网络，要子线程
+        //要请求网络，要子线程
          flag = 0;
         showLoading();//显示加载框
         if(createormodify==0) {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
+                    clients=new OkHttpClient();
                     //这里的地址还未填写好
-                    RequestBody requestBody = new FormBody.Builder().add("devicenum", device.getId()).add("deicetype",device.getSort()).add("devicestatus",device.getSituation()).add("devicelat","12").add("devicelng","13").add("regionID",device.getRegion()).add("defposID",device.getDefend()).add("deviceaddress",device.getAddress()).add("IP",device.getIpaddress()).build();
+                    RequestBody requestBody = new FormBody.Builder().add("devicenum", device.getId()).add("devicetype",device.getSort()).add("devicestatus",device.getSituation()).add("devicelat","12").add("devicelng","13").add("regionID",device.getRegion()).add("defposID",device.getDefend()).add("deviceaddress",device.getAddress()).add("IP",device.getIpaddress()).build();
                     Request request = new Request.Builder().url(createDevicepath).post(requestBody).build();
                     try {
                         Response response = clients.newCall(request).execute();//发送请求
                         String result = response.body().string();
                         Map<String, Object> map = jsonstr2map.jsonstr2map(result);
-                        Log.i(Tag,"message"+map.toString());
+                        Log.i(Tag,"device"+map.toString());
                         String x = map.get("data").toString();
+                        Log.i(Tag,"device"+map.get("data"));
                         if (x == "true") {
                             flag = 1;
                         }else {
@@ -247,6 +256,14 @@ public class DeviceSituationActivity extends AppCompatActivity implements OnGeoc
                     }
                 }
             }).start();
+            while(flag==0){
+                try{
+                    Thread.sleep(1);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            };
+            setLoaded(flag);
         }
         /*
         修改指定设备参数
@@ -276,22 +293,50 @@ public class DeviceSituationActivity extends AppCompatActivity implements OnGeoc
 //                }
 //            }).start();
 //        }
-        while(flag==0){
-            try{
-                Thread.sleep(1);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        };
         Log.i(Tag,"flag"+flag);
-        if(flag==1){
-            DeviceSituationActivity.this.finish();
+    }
+
+    private void setLoaded(int result) {
+        if (result==1) mLoadingDialog.loadSuccess(); else if(result==2) mLoadingDialog.loadFailed();
+    }
+
+    /**
+     * 显示加载的进度款
+     */
+    public void showLoading() {
+        mLoadingDialog = new LoadingDialog(this);
+        mLoadingDialog.setLoadingText("加载中")
+                .setSuccessText("创建成功")//显示加载成功时的文字
+                .setFailedText("创建失败")
+                .setInterceptBack(false)
+                .setLoadSpeed(SPEED_TWO)
+                .show();
+    }
+
+    /**
+     * 隐藏加载的进度框
+     */
+    public void hideLoading() {
+        if (mLoadingDialog != null) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mLoadingDialog.close();
+                }
+            });
         }
     }
 
-    private void showLoading() {
-    }
+    @Override
+    public void onBackPressed(){
+        if (mLoadingDialog != null) {
+            hideLoading();
+            finish();
+        } else {
+            finish();
+        }
 
+    }
     //showToast提示窗
     public void showToast(final String msg) {
         runOnUiThread(new Runnable() {
@@ -300,6 +345,5 @@ public class DeviceSituationActivity extends AppCompatActivity implements OnGeoc
                 Toast.makeText(DeviceSituationActivity.this,msg, Toast.LENGTH_SHORT).show();
             }
         });
-
     }
 }

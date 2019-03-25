@@ -51,6 +51,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private OkManager manager;
     private OkHttpClient clients;
     private String loginpath="http://47.100.107.158:8080/api/user/login";
+    public static String userName;
 
     private static int flag;
     @Override
@@ -72,6 +73,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         initViews();
         setupEvents();
         initData();
+        userName=getAccount();
+        Log.i(Tag,"name"+"loginusernam"+userName);
     }
 
     private void initData() {

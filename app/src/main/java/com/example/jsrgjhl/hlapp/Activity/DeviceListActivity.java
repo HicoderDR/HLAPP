@@ -42,10 +42,7 @@ public class DeviceListActivity extends AppCompatActivity {
     private DeviceAdapter adapter;
 
     private final static String Tag = MainActivity.class.getSimpleName();
-//    private OkManager manager;
-//    private OkHttpClient clients;
     private String getdevicepath="http://47.100.107.158:8080/api/device/getdevicelist";
-    private Thread myThread;
     private static int flag;
 
 
@@ -204,12 +201,6 @@ public class DeviceListActivity extends AppCompatActivity {
                     String result = response.body().string();
                     Map<String, Object> map= jsonstr2map.jsonstr2map(result);
                     List<Map<String, Object>> map2=jsonstr2map.jsonstr2list(map.get("data").toString());
-                   //Log.i(Tag,"message"+map.get("message"));
-//                    Log.i(Tag,"drresult"+result);
-//                    Log.i(Tag,"drresult"+map.toString());
-                    Log.i(Tag,"message"+map2.toString());
-                    Log.i(Tag,"message"+map.get("message"));
-                    Log.i(Tag,"message"+map.get("message").toString().equals("SUCCESS"));
                     for (int i=0;i<map2.size();i++){
                         Device device1=new Device((String) map2.get(i).get("devicenum"), (String) map2.get(i).get("devicetype"), (String) map2.get(i).get("devicestatus"), (String) map2.get(i).get("deviceaddress"), (String) map2.get(i).get("ip"),"运行很好", (String) map2.get(i).get("defposID"), (String) map2.get(i).get("regionID"),"参数设置");
                         mdeviceList.add(device1);
@@ -234,6 +225,14 @@ public class DeviceListActivity extends AppCompatActivity {
         }
     }
 
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mdeviceList.clear();
+        initDeviceList();
+        adapter.notifyDataSetChanged();
+    }
 
     private void showLoading() {
     }
