@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.TranslateAnimation;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
@@ -41,7 +42,6 @@ import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
 import com.example.jsrgjhl.hlapp.Adapter.Records;
-import com.example.jsrgjhl.hlapp.Adapter.RecordsAdapter;
 import com.example.jsrgjhl.hlapp.PersonalSetting.OperateRecord;
 import com.example.jsrgjhl.hlapp.R;
 import com.example.jsrgjhl.hlapp.Sample.DeviceList;
@@ -72,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
     private Context mContext = null;
     private TextView location = null;
     private RelativeLayout Back = null;
+    private RelativeLayout warn=null;
     private MapView mapView;
     private AMap aMap;
     private AMapLocationClient mLocationClient = null;
@@ -95,7 +96,6 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
     private String getdevicepath="http://47.100.107.158:8080/api/device/getdevicelist";
     private String getrecordpath="http://47.100.107.158:8080/api/record/getrecordlist";
     private List<Records> mrecordsList=new ArrayList<>();
-    AMap.InfoWindowAdapter InfoWindowAdapter;
     private int flag;
     private final static String Tag= OperateRecord.class.getSimpleName();
     @Override
@@ -166,7 +166,19 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
                 showPopupWindow(v);
             }
         });
-
+        warn=(RelativeLayout) findViewById(R.id.warningback);
+        warn.getBackground().setAlpha(125);
+        warn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                float startx=warn.getX();
+                float starty=warn.getY();
+                TranslateAnimation translateAnimation = new TranslateAnimation(startx,startx+300,starty,starty+400);
+                translateAnimation.setDuration(300); //设置动画世界
+                warn.startAnimation(translateAnimation);
+                showPopWindow(v);
+            }
+        });
         if (aMap == null) {
             // 显示地图
             aMap = mapView.getMap();
@@ -182,7 +194,7 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
         // 设置为true表示显示定位层并可触发定位，false表示隐藏定位层并不可触发定位，默认是false
         aMap.setMyLocationEnabled(true);
         aMap.setMyLocationType(AMap.LOCATION_TYPE_LOCATE);
-        aMap.setInfoWindowAdapter(InfoWindowAdapter);
+        aMap.setInfoWindowAdapter(this);
         // 初始化定位
         mLocationClient = new AMapLocationClient(getApplicationContext());
         // 设置高德地图定位回调监听
@@ -242,7 +254,7 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
                 marker.startAnimation();
                 */
                 String number = marker.getId().substring(6);
-                if (!number.equals("") && number != null) {
+                if (!number.equals("")) {
                     Log.i(TAG, "position" + number);
                 }
                 return true;
@@ -540,10 +552,10 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
         ColorDrawable dw = new ColorDrawable(0xb0000000);
         popWindow.setBackgroundDrawable(dw);
         // 设置好参数之后再show
-        initRecords();
-        RecordsAdapter adapter=new RecordsAdapter(MainActivity.this, R.layout.record_list,mrecordsList);
+        //initRecords();
+        //RecordsAdapter adapter=new RecordsAdapter(this, R.layout.record_list,mrecordsList);
         ListView recordlistView=(ListView)findViewById(R.id.warninglist);
-        recordlistView.setAdapter(adapter);
+        //recordlistView.setAdapter(adapter);
         //获取listvie
         popWindow.setAnimationStyle(R.style.pop_anim);
         popWindow.showAtLocation(v, Gravity.TOP | Gravity.START, windowPos[0], windowPos[1]);
