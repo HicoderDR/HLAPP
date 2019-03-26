@@ -108,54 +108,12 @@ public class SolveActivity extends AppCompatActivity implements Serializable {
             @Override
             public void onClick(View view) {
                 if(addSolution()){
-                    Log.i(Tag,"更新成功");
+                    Slove_status.setText("已处理");
+                    Slove_status.setTextColor(Color.rgb(00, 00, 00));
+                    Log.i(Tag,"更新记录成功");
                 }
             }
         });
-    }
-
-    private boolean updaterecord() {
-        flag=0;
-        try{
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    OkHttpClient client=new OkHttpClient();
-                    RequestBody requestBody = new FormBody.Builder().add("recordID", record.getRecord_id()).add("userID", String.valueOf(1)).add("username",login.userName).add("title",tabletitle.getText().toString()).add("context",tablecontent.getText().toString()).add("status","已处理").build();
-                    Request request = new Request.Builder().url(addsolutionpath).post(requestBody).build();
-                    try{
-                        Response response=client.newCall(request).execute();
-                        String result = response.body().string();
-                        Map<String, Object> map= jsonstr2map.jsonstr2map(result);
-
-                        String x=map.get("data").toString();
-                        if(x=="true"){
-                            flag=1;
-                        }else{
-                            flag=2;
-                        }
-                    }catch (Exception e){
-
-                    }
-                }
-            }).start();
-            while (flag==0){
-                try{
-                    Thread.sleep(1);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            };
-            if(flag==1){
-                return true;
-
-            }else {
-                return false;
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        return false;
     }
 
     private void setLoaded(int result) {
@@ -202,6 +160,7 @@ public class SolveActivity extends AppCompatActivity implements Serializable {
 
     private boolean addSolution() {
         flag=0;
+        showLoading();
         Date now=new Date();
         final String ddate=(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(now);
         try{
@@ -218,12 +177,28 @@ public class SolveActivity extends AppCompatActivity implements Serializable {
 
                         String x=map.get("data").toString();
                         if(x=="true"){
-                            flag=1;
+                            RequestBody requestBody2=new FormBody.Builder().add("recordID", record.getRecord_id()).add("userID", String.valueOf(1)).add("username",login.userName).add("title",tabletitle.getText().toString()).add("context",tablecontent.getText().toString()).add("status","已处理").build();
+                            Request request2 = new Request.Builder().url(updaterecordpath).post(requestBody2).build();
+
+                            try {
+                                Response response2=client.newCall(request2).execute();
+                               String result2=response2.body().string();
+                                Map<String, Object> map2= jsonstr2map.jsonstr2map(result2);
+
+                                String x2=map2.get("data").toString();
+                                if(x2=="true"){
+                                    flag=1;
+                                }else{
+                                    flag=2;
+                                }
+                            }catch (Exception e){
+                                e.printStackTrace();
+                            }
                         }else{
                             flag=2;
                         }
                     }catch (Exception e){
-
+                            e.printStackTrace();
                     }
                 }
             }).start();
@@ -234,6 +209,7 @@ public class SolveActivity extends AppCompatActivity implements Serializable {
                     e.printStackTrace();
                 }
             };
+            setLoaded(flag);
             if(flag==1){
                 return true;
 

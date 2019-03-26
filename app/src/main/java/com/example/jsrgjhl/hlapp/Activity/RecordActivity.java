@@ -33,6 +33,7 @@ public class RecordActivity extends AppCompatActivity implements Serializable{
     private List<Records> mrecordsList=new ArrayList<>();
     private String getrecordpath="http://47.100.107.158:8080/api/record/getrecordlist";
     private int flag;
+    private RecordsAdapter adapter;
     private final static String Tag= OperateRecord.class.getSimpleName();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +64,7 @@ public class RecordActivity extends AppCompatActivity implements Serializable{
 
         //初始化Records列表
         initRecords();
-        RecordsAdapter adapter=new RecordsAdapter(RecordActivity.this, R.layout.record_list,mrecordsList);
+        adapter=new RecordsAdapter(RecordActivity.this, R.layout.record_list,mrecordsList);
         ListView recordlistView=(ListView)findViewById(R.id.record_listview);
         recordlistView.setAdapter(adapter);
 
@@ -81,7 +82,17 @@ public class RecordActivity extends AppCompatActivity implements Serializable{
 
     }
 
-    //向服务器请求记录列表
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mrecordsList.clear();
+        initRecords();
+        adapter.notifyDataSetChanged();
+    }
+
+    /**
+     * 向服务器请求记录列表
+     */
     private void initRecords() {
         flag=0;
         new Thread(new Runnable() {

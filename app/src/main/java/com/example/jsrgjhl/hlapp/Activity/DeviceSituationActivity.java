@@ -54,7 +54,6 @@ public class DeviceSituationActivity extends AppCompatActivity implements OnGeoc
     private OkManager manager;
     private OkHttpClient clients;
     private LoadingDialog mLoadingDialog;
-    private int viewSort;
     private String createDevicepath="http://47.100.107.158:8080/api/device/createdevice";
     private String modifyDevicepath="http://47.100.107.158:8080/api/device/modifydevice";
 
