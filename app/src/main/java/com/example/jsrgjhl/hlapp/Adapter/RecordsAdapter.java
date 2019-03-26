@@ -52,7 +52,7 @@ public class RecordsAdapter extends ArrayAdapter<Records> {
         viewHolder.addressTextview.setText(records.getAddress());
 
         //由不同的处理状态显示不同的数据
-        if(records.getSolve_status()=="已处理"){
+        if(records.getSolve_status().equals("已处理")){
             viewHolder.solveStatusTextview.setTextColor(Color.rgb(00, 00, 00));
         }
         return view;

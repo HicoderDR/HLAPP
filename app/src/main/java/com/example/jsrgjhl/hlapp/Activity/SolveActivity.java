@@ -18,17 +18,37 @@ import com.example.jsrgjhl.hlapp.Adapter.Device;
 import com.example.jsrgjhl.hlapp.Adapter.Records;
 import com.example.jsrgjhl.hlapp.Adapter.RecordsAdapter;
 import com.example.jsrgjhl.hlapp.R;
+import com.example.jsrgjhl.hlapp.Utils.jsonstr2map;
+import com.xiasuhuei321.loadingdialog.view.LoadingDialog;
 
 import org.w3c.dom.Text;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
+
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
+import static com.xiasuhuei321.loadingdialog.view.LoadingDialog.Speed.SPEED_TWO;
 
 public class SolveActivity extends AppCompatActivity implements Serializable {
+    private LoginActivity login=new LoginActivity();
     private EditText tabletitle,tablecontent;
     private TextView Warn_status;
     private TextView Slove_status,Timetv,Addresstv,Idtv;
+    private String addsolutionpath="http://47.100.107.158:8080/api/solution/addsolution";
+    private String updaterecordpath="http://47.100.107.158:8080/api/record/updatestatus";
+    private final static String Tag = SolveActivity.class.getSimpleName();
+    private static int flag;
+    private Records record;
+    private LoadingDialog mLoadingDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,14 +69,14 @@ public class SolveActivity extends AppCompatActivity implements Serializable {
 
 
         Intent intent = getIntent();
-        Records record = (Records)intent.getSerializableExtra("record");
+        record = (Records)intent.getSerializableExtra("record");
 
 
         tablecontent=findViewById(R.id.tablecontent);
         tabletitle=findViewById(R.id.tabletitle);
         Warn_status=findViewById(R.id.warn_status);
         Slove_status=findViewById(R.id.slove_status);
-        Button submit=(Button)findViewById(R.id.submit_Btn);
+        final Button submit=(Button)findViewById(R.id.submit_Btn);
         Timetv=findViewById(R.id.timetv);
         Addresstv=findViewById(R.id.addresstv);
         Idtv=findViewById(R.id.idtv);
@@ -70,7 +90,7 @@ public class SolveActivity extends AppCompatActivity implements Serializable {
         Addresstv.setText(record.getAddress());
         tabletitle.setText(record.getSolve_title());
         tablecontent.setText(record.getSolve_context());
-
+        Log.i(Tag,record.getRecord_id());
 
         //处理状态为已处理 页面布局的调整
         if(record.getSolve_status().equals("已处理")){
@@ -80,12 +100,149 @@ public class SolveActivity extends AppCompatActivity implements Serializable {
             submit.setVisibility(View.GONE);
 
         }
-        //提交按钮事件
+        /**
+         * 提交按钮事件
+         * 首先 先提交solution  然后更新记录状态
+         */
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(SolveActivity.this,"提交成功", Toast.LENGTH_SHORT).show();
+                if(addSolution()){
+                    Log.i(Tag,"更新成功");
+                }
             }
         });
+    }
+
+    private boolean updaterecord() {
+        flag=0;
+        try{
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    OkHttpClient client=new OkHttpClient();
+                    RequestBody requestBody = new FormBody.Builder().add("recordID", record.getRecord_id()).add("userID", String.valueOf(1)).add("username",login.userName).add("title",tabletitle.getText().toString()).add("context",tablecontent.getText().toString()).add("status","已处理").build();
+                    Request request = new Request.Builder().url(addsolutionpath).post(requestBody).build();
+                    try{
+                        Response response=client.newCall(request).execute();
+                        String result = response.body().string();
+                        Map<String, Object> map= jsonstr2map.jsonstr2map(result);
+
+                        String x=map.get("data").toString();
+                        if(x=="true"){
+                            flag=1;
+                        }else{
+                            flag=2;
+                        }
+                    }catch (Exception e){
+
+                    }
+                }
+            }).start();
+            while (flag==0){
+                try{
+                    Thread.sleep(1);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            };
+            if(flag==1){
+                return true;
+
+            }else {
+                return false;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    private void setLoaded(int result) {
+        if (result==1) mLoadingDialog.loadSuccess(); else if(result==2) mLoadingDialog.loadFailed();
+    }
+
+    /**
+     * 显示加载的进度款
+     */
+    public void showLoading() {
+        mLoadingDialog = new LoadingDialog(this);
+        mLoadingDialog.setLoadingText("加载中")
+                .setSuccessText("提交成功")//显示加载成功时的文字
+                .setFailedText("提交失败")
+                .setInterceptBack(false)
+                .setLoadSpeed(SPEED_TWO)
+                .show();
+    }
+
+    /**
+     * 隐藏加载的进度框
+     */
+    public void hideLoading() {
+        if (mLoadingDialog != null) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mLoadingDialog.close();
+                }
+            });
+        }
+    }
+
+    @Override
+    public void onBackPressed(){
+        if (mLoadingDialog != null) {
+            hideLoading();
+            finish();
+        } else {
+            finish();
+        }
+
+    }
+
+    private boolean addSolution() {
+        flag=0;
+        Date now=new Date();
+        final String ddate=(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(now);
+        try{
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    OkHttpClient client=new OkHttpClient();
+                    RequestBody requestBody = new FormBody.Builder().add("recordnum",Idtv.getText().toString()).add("recordID", record.getRecord_id()).add("deltime",ddate).add("userID", String.valueOf(1)).add("username",login.userName).add("title",tabletitle.getText().toString()).add("context",tablecontent.getText().toString()).build();
+                    Request request = new Request.Builder().url(addsolutionpath).post(requestBody).build();
+                    try{
+                        Response response=client.newCall(request).execute();
+                        String result = response.body().string();
+                        Map<String, Object> map= jsonstr2map.jsonstr2map(result);
+
+                        String x=map.get("data").toString();
+                        if(x=="true"){
+                            flag=1;
+                        }else{
+                            flag=2;
+                        }
+                    }catch (Exception e){
+
+                    }
+                }
+            }).start();
+            while (flag==0){
+                try{
+                    Thread.sleep(1);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            };
+            if(flag==1){
+                return true;
+
+            }else {
+                return false;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return false;
     }
 }

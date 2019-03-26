@@ -101,7 +101,7 @@ public class RecordActivity extends AppCompatActivity implements Serializable{
 
                         String temp = map.get("data").toString();
                         Log.i(Tag, temp);
-                        temp = temp.substring(1, temp.length() - 1).replace(" ", "").replace("{", "").replace("}", "");
+                        temp = temp.substring(1, temp.length() - 1).replace(" ", "").replace("{", "").replace("}", "").replace("\"","").replace("\"","");
                         ;
                         String[] strs = temp.split(",");
                         Map<String, String> map2 = new HashMap<String, String>();
@@ -109,26 +109,13 @@ public class RecordActivity extends AppCompatActivity implements Serializable{
                             String sss=s.replace(" ","");
                             String[] ms = sss.split("=");
 
-                            /**
-                             * 这个地方警报类型 强制判断
-                             * 如果解决方案为空 就是未处理
-                             * 如果解决方案不为空 就是已处理
-                             */
-                            String recordstatus="";
-                            if(ms[0].equals("title")) {
-                                if (ms[1].equals("null")) {
-                                    recordstatus = "未处理";
-                                } else {
-                                    recordstatus = "已处理";
-                                }
-                            }
                             if (ms[1].equals("null")) {
                                 ms[1] = "";
                             }
                             map2.put(ms[0], ms[1]);
 
                             if (ms[0].equals("username")) {
-                                Records record1 = new Records((String) map2.get("devicestatus"), recordstatus, (String) map2.get("recordtime"), (String) map2.get("deviceaddress"), (String) map2.get("devicenum"), (String) map2.get("title"), (String) map2.get("context"));
+                                Records record1 = new Records((String) map2.get("devicestatus"), map2.get("recordstatus"), (String) map2.get("recordtime"), (String) map2.get("deviceaddress"), (String) map2.get("devicenum"), (String) map2.get("title"), (String) map2.get("context"),(String)map2.get("recordID"));
                                 mrecordsList.add(record1);
                             }
                         }

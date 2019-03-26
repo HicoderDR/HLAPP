@@ -12,8 +12,9 @@ public class Records implements Serializable {
     private String id;
     private String solve_title;
     private String solve_context;
+    private String record_id;
 
-    public Records(String warn_status, String solve_status, String time, String address, String id, String solve_title, String solve_context) {
+    public Records(String warn_status, String solve_status, String time, String address, String id, String solve_title, String solve_context, String record_id) {
         this.warn_status = warn_status;
         this.solve_status = solve_status;
         this.time = time;
@@ -21,6 +22,7 @@ public class Records implements Serializable {
         this.id = id;
         this.solve_title = solve_title;
         this.solve_context = solve_context;
+        this.record_id = record_id;
     }
 
     public String getWarn_status() {
@@ -77,5 +79,13 @@ public class Records implements Serializable {
 
     public void setSolve_context(String solve_context) {
         this.solve_context = solve_context;
+    }
+
+    public String getRecord_id() {
+        return record_id;
+    }
+
+    public void setRecord_id(String record_id) {
+        this.record_id = record_id;
     }
 }
