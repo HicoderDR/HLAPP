@@ -1,7 +1,6 @@
 package com.example.jsrgjhl.hlapp.Activity;
 
 import android.content.Intent;
-import android.icu.text.AlphabeticIndex;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -12,7 +11,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.jsrgjhl.hlapp.Adapter.Device;
 import com.example.jsrgjhl.hlapp.Adapter.Records;
 import com.example.jsrgjhl.hlapp.Adapter.RecordsAdapter;
 import com.example.jsrgjhl.hlapp.PersonalSetting.OperateRecord;

@@ -40,16 +40,28 @@
         android:textColor="@color/black"
         android:layout_margin="5dp"
         android:text="@string/about_us"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_below="@id/devicestatus">
 
-    <ImageView
-        android:layout_width="60dp"
-        android:layout_height="20dp"
-        android:layout_alignTop="@+id/devicenum"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginTop="30dp"
-        android:layout_marginEnd="138dp"
-        android:layout_marginRight="138dp"
-        android:src="@drawable/button" />
+        <Button
+            android:id="@+id/p"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/devicestatus"
+            android:textColor="@color/black"
+            android:textSize="15sp"
+            android:background="@drawable/button" />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/p"
+            android:text="@string/devicestatus"
+            android:textColor="@color/black"
+            android:textSize="15sp"
+            android:background="@drawable/button" />
+    </RelativeLayout>
 
 </RelativeLayout>
