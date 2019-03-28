@@ -17,7 +17,6 @@ import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.animation.TranslateAnimation;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
@@ -42,6 +41,7 @@ import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
 import com.example.jsrgjhl.hlapp.Adapter.Records;
+import com.example.jsrgjhl.hlapp.Adapter.RecordsAdapter;
 import com.example.jsrgjhl.hlapp.PersonalSetting.OperateRecord;
 import com.example.jsrgjhl.hlapp.R;
 import com.example.jsrgjhl.hlapp.Sample.DeviceList;
@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
     //menu
     private String[] menunames = {"报表记录", "警报记录", "设备列表", "个人设置"};
     private int[] menuimgs = {R.mipmap.btn_map, R.mipmap.btn_record, R.mipmap.btn_equip, R.mipmap.btn_file};
-    private ListView listview;
+    private ListView menulistview,recordlistView;
     //segment
     private SegmentView segmentView;
     //marker
@@ -94,6 +94,7 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
     ArrayList<Marker> vibrationmarkers = new ArrayList();
 
     private String getdevicepath="http://47.100.107.158:8080/api/device/getdevicelist";
+    private String getunsolvedpath="http://47.100.107.158:8080/api/record/searchRecordbyrecordstatus";
     private String getrecordpath="http://47.100.107.158:8080/api/record/getrecordlist";
     private List<Records> mrecordsList=new ArrayList<>();
     private int flag;
@@ -127,32 +128,6 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
         aMap.setMyLocationStyle(myLocationStyle);//设置定位蓝点的Style
     }
 
-    public static String sHA1(Context context) {
-        try {
-            PackageInfo info = context.getPackageManager().getPackageInfo(
-                    context.getPackageName(), PackageManager.GET_SIGNATURES);
-            byte[] cert = info.signatures[0].toByteArray();
-            MessageDigest md = MessageDigest.getInstance("SHA1");
-            byte[] publicKey = md.digest(cert);
-            StringBuffer hexString = new StringBuffer();
-            for (int i = 0; i < publicKey.length; i++) {
-                String appendString = Integer.toHexString(0xFF & publicKey[i])
-                        .toUpperCase(Locale.US);
-                if (appendString.length() == 1)
-                    hexString.append("0");
-                hexString.append(appendString);
-                hexString.append(":");
-            }
-            String result = hexString.toString();
-            return result.substring(0, result.length() - 1);
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
     private void init() {
         mContext = this;
         Log.i(TAG, "init()");
@@ -171,11 +146,6 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
         warn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                float startx=warn.getX();
-                float starty=warn.getY();
-                TranslateAnimation translateAnimation = new TranslateAnimation(startx,startx+300,starty,starty+400);
-                translateAnimation.setDuration(300); //设置动画世界
-                warn.startAnimation(translateAnimation);
                 showPopWindow(v);
             }
         });
@@ -262,6 +232,334 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
         });
     }
 
+    private void initmarkers(){
+        for(int i=0;i<cameraList.size();i++){
+            cameramarkers.add(drawMarkerOnMap(cameraList.getbyId(i), cameraList.getbyId(i).getType()));
+        }
+
+        for(int i=0;i<radarList.size();i++){
+            radarmarkers.add(drawMarkerOnMap(radarList.getbyId(i),radarList.getbyId(i).getType()));
+        }
+        for(int i=0;i<vibrationList.size();i++){
+            vibrationmarkers.add(drawMarkerOnMap(vibrationList.getbyId(i),vibrationList.getbyId(i).getType()));
+        }
+    }
+
+    private Marker drawMarkerOnMap(Devicepoint info, String Type) {
+        LatLng latLng = new LatLng(info.getLat(),info.getLng());
+        View marker_camera = LayoutInflater.from(this).inflate(R.layout.marker_camera_g,null);
+        View marker_radar = LayoutInflater.from(this).inflate(R.layout.marker_radar_g,null);
+        switch (Type) {
+            case "camera":
+                MarkerOptions options = new MarkerOptions()
+                        .position(latLng)
+                        .title(info.getType())
+                        .snippet(info.getStringId())
+                        .icon(BitmapDescriptorFactory.fromView(marker_camera))
+                        .draggable(true);
+                Marker marker = aMap.addMarker(options);
+                marker.setObject(info);//传入数据bean
+                return marker;
+            case "radar":
+                MarkerOptions options1 = new MarkerOptions()
+                        .position(latLng)
+                        .title(info.getType())
+                        .snippet(info.getStringId())
+                        .icon(BitmapDescriptorFactory.fromView(marker_radar))
+                        .draggable(true);
+                Marker marker1 = aMap.addMarker(options1);
+                marker1.setObject(info);//传入数据bean
+                return marker1;
+            case "vibration":
+                break;
+            default:
+                break;
+            }
+
+        return null;
+    }
+
+    private void setvisible(ArrayList<Marker> list,boolean x){
+        for(int i=0;i<list.size();i++){
+            list.get(i).setVisible(x);
+        }
+    }
+    private void showPopupWindow(View v) {
+        // 一个自定义的布局，作为显示的内容
+        View contentView = LayoutInflater.from(mContext).inflate(
+                R.layout.pop_menu, null);
+        // 设置按钮的点击事件
+        final PopupWindow popupWindow = new PopupWindow(contentView,
+                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, true);
+        int windowPos[] = calculatePopWindowPos(v, contentView);
+        int xOff =800;// 可以自己调整偏移
+        //windowPos[0] +=500;
+        //windowPos[1] -= 520;
+        popupWindow.setOutsideTouchable(true);
+        //    mMenuView添加OnTouchListener监听判断获取触屏位置如果在选择框外面则销毁弹出框
+        contentView.setOnTouchListener(new View.OnTouchListener() {
+
+            public boolean onTouch(View v, MotionEvent event) {
+                int height = v.findViewById(R.id.popback).getTop();
+                int y = (int) event.getY();
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    if (y < height) {
+                        popupWindow.dismiss();
+                    }
+                }
+                return true;
+            }
+        });
+        // 如果不设置PopupWindow的背景，无论是点击外部区域还是Back键都无法dismiss弹框
+        // 我觉得这里是API的一个bug
+        ColorDrawable dw = new ColorDrawable(0xb0000000);
+        popupWindow.setBackgroundDrawable(dw);
+        // 设置好参数之后再show
+
+        //menu的list设置
+        ArrayList<HashMap<String, Object>> menulist = new ArrayList<HashMap<String, Object>>();
+        for (int i = 0; i < 4; i++) {
+            HashMap<String, Object> unit = new HashMap<String, Object>();
+            unit.put("img", menuimgs[i]);
+            unit.put("name", menunames[i]);
+            menulist.add(unit);
+        }
+        SimpleAdapter saImageItems = new SimpleAdapter(this,
+                menulist,//数据来源
+                R.layout.menu_unit,//每一个用户xml相当ListView的一个组件
+                new String[]{"img", "name"},
+                //分别对应view view的ids
+                new int[]{R.id.img, R.id.name});
+        //获取listview
+        menulistview = (ListView) contentView.findViewById(R.id.list_menu);
+        menulistview.setAdapter(saImageItems);
+        menulistview.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                switch (position){
+                    case 1:
+                        Intent intentRecord=new Intent(MainActivity.this,RecordActivity.class);
+                        startActivity(intentRecord);
+                        break;
+                    case 2:
+                        Intent intentDeviceList=new Intent(MainActivity.this,DeviceListActivity.class);
+                        startActivity(intentDeviceList);
+                        break;
+                    case 3:
+                        Intent intentPerson=new Intent(MainActivity.this,PersonActivity.class);
+                        startActivity(intentPerson);
+                        break;
+                    default:
+                        Toast.makeText(MainActivity.this,"功能还未实现",Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        popupWindow.setAnimationStyle(R.style.pop_anim);
+        popupWindow.showAtLocation(v, Gravity.TOP | Gravity.START, windowPos[0], windowPos[1]);
+    }
+
+    private void showPopWindow(View v) {
+        // 一个自定义的布局，作为显示的内容
+        View contentView = LayoutInflater.from(mContext).inflate(
+                R.layout.warninglist, null);
+        // 设置按钮的点击事件
+        final PopupWindow popWindow = new PopupWindow(contentView,
+                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, true);
+        int windowPos[] = calculatePopWindowPos(v, contentView);
+        int xOff =800;// 可以自己调整偏移
+        //windowPos[0] +=500;
+        //windowPos[1] -= 520;
+        popWindow.setOutsideTouchable(true);
+        //    mMenuView添加OnTouchListener监听判断获取触屏位置如果在选择框外面则销毁弹出框
+        contentView.setOnTouchListener(new View.OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                int height = v.findViewById(R.id.popwarning).getTop();
+                int y = (int) event.getY();
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    if (y < height) {
+                        popWindow.dismiss();
+                    }
+                }
+                return true;
+            }
+        });
+        // 如果不设置PopupWindow的背景，无论是点击外部区域还是Back键都无法dismiss弹框
+        // 我觉得这里是API的一个bug
+        ColorDrawable dw = new ColorDrawable(0xb0000000);
+        popWindow.setBackgroundDrawable(dw);
+        // 设置好参数之后再show
+        initRecords();
+        RecordsAdapter adapter=new RecordsAdapter(this, R.layout.record_list,mrecordsList);
+        recordlistView=(ListView)contentView.findViewById(R.id.warninglist);
+        recordlistView.setAdapter(adapter);
+        recordlistView.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Records x=(Records)recordlistView.getItemAtPosition(position);
+                String title=x.getTime();
+                Toast.makeText(MainActivity.this,"你点击了" + title ,Toast.LENGTH_SHORT).show();
+            }
+        });
+        //获取listvie
+        popWindow.setAnimationStyle(R.style.pop_anim);
+        popWindow.showAtLocation(v, Gravity.TOP | Gravity.START, windowPos[0], windowPos[1]);
+    }
+    //计算menu弹窗位置
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position,long id) {
+
+    }
+    /**
+     * 监听自定义infowindow窗口的infocontents事件回调
+     */
+    @Override
+    public View getInfoContents(Marker marker) {
+
+        View infoContent = getLayoutInflater().inflate(
+                R.layout.info_window, null);
+        render(marker, infoContent);
+        return infoContent;
+    }
+
+    /**
+     * 监听自定义infowindow窗口的infowindow事件回调
+     */
+    @Override
+    public View getInfoWindow(Marker marker) {
+        View infoWindow = getLayoutInflater().inflate(
+                R.layout.info_window, null);
+        render(marker, infoWindow);
+        return infoWindow;
+    }
+
+    /**
+     * 自定义infowinfow窗口
+     */
+    public void render(Marker marker, View view) {
+        String devicenum=marker.getTitle();
+        String devicestatus=marker.getSnippet();
+        TextView UInum=(TextView) view.findViewById(R.id.devicenum);
+        TextView UIstatus=(TextView) view.findViewById((R.id.devicestatus));
+        UInum.setText(devicenum);
+        UIstatus.setText(devicestatus);
+        /*String title = marker.getTitle();
+        TextView titleUi = ((TextView) view.findViewById(R.id.title));
+        if (title != null) {
+            SpannableString titleText = new SpannableString(title);
+            titleText.setSpan(new ForegroundColorSpan(Color.RED), 0,
+                    titleText.length(), 0);
+            titleUi.setTextSize(15);
+            titleUi.setText(titleText);
+
+        } else {
+            titleUi.setText("");
+        }
+        String snippet = marker.getSnippet();
+        TextView snippetUi = ((TextView) view.findViewById(R.id.snippet));
+        if (snippet != null) {
+            SpannableString snippetText = new SpannableString(snippet);
+            snippetText.setSpan(new ForegroundColorSpan(Color.GREEN), 0,
+                    snippetText.length(), 0);
+            snippetUi.setTextSize(20);
+            snippetUi.setText(snippetText);
+        } else {
+            snippetUi.setText("");
+        }*/
+    }
+
+    private void initRecords() {
+        flag=0;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                OkHttpClient client = new OkHttpClient();
+                Request request = new Request.Builder().url(getrecordpath).build();
+                try {
+                    Response response = client.newCall(request).execute();//发送请求
+                    String result = response.body().string();
+                    Map<String, Object> map= jsonstr2map.jsonstr2map(result);
+                    /**
+                     * 将 string 转为json格式
+                     */
+
+                    String temp = map.get("data").toString();
+                    Log.i(Tag, temp);
+                    temp = temp.substring(1, temp.length() - 1).replace(" ", "").replace("{", "").replace("}", "").replace("\"","").replace("\"","");
+                    ;
+                    String[] strs = temp.split(",");
+                    Map<String, String> map2 = new HashMap<String, String>();
+                    for (String s : strs) {
+                        String sss=s.replace(" ","");
+                        String[] ms = sss.split("=");
+
+                        if (ms[1].equals("null")) {
+                            ms[1] = "";
+                        }
+                        map2.put(ms[0], ms[1]);
+
+                        if (ms[0].equals("username")) {
+                            Records record1 = new Records((String) map2.get("devicestatus"), map2.get("recordstatus"), (String) map2.get("recordtime"), (String) map2.get("deviceaddress"), (String) map2.get("devicenum"), (String) map2.get("title"), (String) map2.get("context"),(String)map2.get("recordID"));
+                            mrecordsList.add(record1);
+                        }
+                    }
+
+                    if(mrecordsList.size()!=0){
+                        flag=1;
+                    }else flag=2;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+        while (flag==0){
+            try{
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        };
+        if(flag==1){
+            Log.i(Tag,"设备记录请求成功");
+        }
+
+    }
+
+
+    //segmental
+    private void initsegment(){
+        segmentView = (SegmentView) findViewById(R.id.segmentview);
+        segmentView.setOnSegmentViewClickListener(new SegmentView.onSegmentViewClickListener() {
+            @Override
+            public void onSegmentViewClick(View view, int position) {
+                switch (position) {
+                    case 0:
+                        setvisible(cameramarkers,true);
+                        setvisible(radarmarkers,true);
+                        setvisible(vibrationmarkers,true);
+                        break;
+                    case 1:
+                        setvisible(cameramarkers,true);
+                        setvisible(radarmarkers,false);
+                        setvisible(vibrationmarkers,false);
+                        break;
+                    case 2:
+                        setvisible(cameramarkers,false);
+                        setvisible(radarmarkers,true);
+                        setvisible(vibrationmarkers,false);
+                        break;
+                    case 3:
+                        setvisible(cameramarkers,false);
+                        setvisible(radarmarkers,false);
+                        setvisible(vibrationmarkers,true);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
+    }
     //定位
     @Override
     public void onLocationChanged(AMapLocation aMapLocation) {
@@ -381,186 +679,31 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
         mapView.onSaveInstanceState(outState);
     }
 
-    private void initmarkers(){
-        for(int i=0;i<cameraList.size();i++){
-            cameramarkers.add(drawMarkerOnMap(cameraList.getbyId(i), cameraList.getbyId(i).getType()));
-        }
-
-        for(int i=0;i<radarList.size();i++){
-            radarmarkers.add(drawMarkerOnMap(radarList.getbyId(i),radarList.getbyId(i).getType()));
-        }
-        for(int i=0;i<vibrationList.size();i++){
-            vibrationmarkers.add(drawMarkerOnMap(vibrationList.getbyId(i),vibrationList.getbyId(i).getType()));
-        }
-    }
-
-    private Marker drawMarkerOnMap(Devicepoint info, String Type) {
-        LatLng latLng = new LatLng(info.getLat(),info.getLng());
-        View marker_camera = LayoutInflater.from(this).inflate(R.layout.marker_camera_g,null);
-        View marker_radar = LayoutInflater.from(this).inflate(R.layout.marker_radar_g,null);
-        switch (Type) {
-            case "camera":
-                MarkerOptions options = new MarkerOptions()
-                        .position(latLng)
-                        .title(info.getType())
-                        .snippet(info.getStringId())
-                        .icon(BitmapDescriptorFactory.fromView(marker_camera))
-                        .draggable(true);
-                Marker marker = aMap.addMarker(options);
-                marker.setObject(info);//传入数据bean
-                return marker;
-            case "radar":
-                MarkerOptions options1 = new MarkerOptions()
-                        .position(latLng)
-                        .title(info.getType())
-                        .snippet(info.getStringId())
-                        .icon(BitmapDescriptorFactory.fromView(marker_radar))
-                        .draggable(true);
-                Marker marker1 = aMap.addMarker(options1);
-                marker1.setObject(info);//传入数据bean
-                return marker1;
-            case "vibration":
-                break;
-            default:
-                break;
+    public static String sHA1(Context context) {
+        try {
+            PackageInfo info = context.getPackageManager().getPackageInfo(
+                    context.getPackageName(), PackageManager.GET_SIGNATURES);
+            byte[] cert = info.signatures[0].toByteArray();
+            MessageDigest md = MessageDigest.getInstance("SHA1");
+            byte[] publicKey = md.digest(cert);
+            StringBuffer hexString = new StringBuffer();
+            for (int i = 0; i < publicKey.length; i++) {
+                String appendString = Integer.toHexString(0xFF & publicKey[i])
+                        .toUpperCase(Locale.US);
+                if (appendString.length() == 1)
+                    hexString.append("0");
+                hexString.append(appendString);
+                hexString.append(":");
             }
-
+            String result = hexString.toString();
+            return result.substring(0, result.length() - 1);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
         return null;
     }
-
-    //segmental
-    private void initsegment(){
-        segmentView = (SegmentView) findViewById(R.id.segmentview);
-        segmentView.setOnSegmentViewClickListener(new SegmentView.onSegmentViewClickListener() {
-            @Override
-            public void onSegmentViewClick(View view, int position) {
-                switch (position) {
-                    case 0:
-                        setvisible(cameramarkers,true);
-                        setvisible(radarmarkers,true);
-                        setvisible(vibrationmarkers,true);
-                        break;
-                    case 1:
-                        setvisible(cameramarkers,true);
-                        setvisible(radarmarkers,false);
-                        setvisible(vibrationmarkers,false);
-                        break;
-                    case 2:
-                        setvisible(cameramarkers,false);
-                        setvisible(radarmarkers,true);
-                        setvisible(vibrationmarkers,false);
-                        break;
-                    case 3:
-                        setvisible(cameramarkers,false);
-                        setvisible(radarmarkers,false);
-                        setvisible(vibrationmarkers,true);
-                        break;
-                    default:
-                        break;
-                }
-            }
-        });
-    }
-    private void setvisible(ArrayList<Marker> list,boolean x){
-        for(int i=0;i<list.size();i++){
-            list.get(i).setVisible(x);
-        }
-    }
-    private void showPopupWindow(View v) {
-        // 一个自定义的布局，作为显示的内容
-        View contentView = LayoutInflater.from(mContext).inflate(
-                R.layout.pop_menu, null);
-        // 设置按钮的点击事件
-        final PopupWindow popupWindow = new PopupWindow(contentView,
-                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, true);
-        int windowPos[] = calculatePopWindowPos(v, contentView);
-        int xOff =800;// 可以自己调整偏移
-        //windowPos[0] +=500;
-        //windowPos[1] -= 520;
-        popupWindow.setOutsideTouchable(true);
-        //    mMenuView添加OnTouchListener监听判断获取触屏位置如果在选择框外面则销毁弹出框
-        contentView.setOnTouchListener(new View.OnTouchListener() {
-
-            public boolean onTouch(View v, MotionEvent event) {
-                int height = v.findViewById(R.id.popback).getTop();
-                int y = (int) event.getY();
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-                    if (y < height) {
-                        popupWindow.dismiss();
-                    }
-                }
-                return true;
-            }
-        });
-        // 如果不设置PopupWindow的背景，无论是点击外部区域还是Back键都无法dismiss弹框
-        // 我觉得这里是API的一个bug
-        ColorDrawable dw = new ColorDrawable(0xb0000000);
-        popupWindow.setBackgroundDrawable(dw);
-        // 设置好参数之后再show
-
-        //menu的list设置
-        ArrayList<HashMap<String, Object>> menulist = new ArrayList<HashMap<String, Object>>();
-        for (int i = 0; i < 4; i++) {
-            HashMap<String, Object> unit = new HashMap<String, Object>();
-            unit.put("img", menuimgs[i]);
-            unit.put("name", menunames[i]);
-            menulist.add(unit);
-        }
-        SimpleAdapter saImageItems = new SimpleAdapter(this,
-                menulist,//数据来源
-                R.layout.menu_unit,//每一个用户xml相当ListView的一个组件
-                new String[]{"img", "name"},
-                //分别对应view view的ids
-                new int[]{R.id.img, R.id.name});
-        //获取listview
-        listview = (ListView) contentView.findViewById(R.id.list_menu);
-        listview.setAdapter(saImageItems);
-        listview.setOnItemClickListener(this);
-
-        popupWindow.setAnimationStyle(R.style.pop_anim);
-        popupWindow.showAtLocation(v, Gravity.TOP | Gravity.START, windowPos[0], windowPos[1]);
-    }
-
-    private void showPopWindow(View v) {
-        // 一个自定义的布局，作为显示的内容
-        View contentView = LayoutInflater.from(mContext).inflate(
-                R.layout.warninglist, null);
-        // 设置按钮的点击事件
-        final PopupWindow popWindow = new PopupWindow(contentView,
-                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, true);
-        int windowPos[] = calculatePopWindowPos(v, contentView);
-        int xOff =800;// 可以自己调整偏移
-        //windowPos[0] +=500;
-        //windowPos[1] -= 520;
-        popWindow.setOutsideTouchable(true);
-        //    mMenuView添加OnTouchListener监听判断获取触屏位置如果在选择框外面则销毁弹出框
-        contentView.setOnTouchListener(new View.OnTouchListener() {
-
-            public boolean onTouch(View v, MotionEvent event) {
-                int height = v.findViewById(R.id.popwarning).getTop();
-                int y = (int) event.getY();
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-                    if (y < height) {
-                        popWindow.dismiss();
-                    }
-                }
-                return true;
-            }
-        });
-        // 如果不设置PopupWindow的背景，无论是点击外部区域还是Back键都无法dismiss弹框
-        // 我觉得这里是API的一个bug
-        ColorDrawable dw = new ColorDrawable(0xb0000000);
-        popWindow.setBackgroundDrawable(dw);
-        // 设置好参数之后再show
-        //initRecords();
-        //RecordsAdapter adapter=new RecordsAdapter(this, R.layout.record_list,mrecordsList);
-        ListView recordlistView=(ListView)findViewById(R.id.warninglist);
-        //recordlistView.setAdapter(adapter);
-        //获取listvie
-        popWindow.setAnimationStyle(R.style.pop_anim);
-        popWindow.showAtLocation(v, Gravity.TOP | Gravity.START, windowPos[0], windowPos[1]);
-    }
-    //计算menu弹窗位置
     private static int[] calculatePopWindowPos(final View anchorView, final View contentView) {
         final int windowPos[] = new int[2];
         final int anchorLoc[] = new int[2];
@@ -595,138 +738,4 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
         return windowPos;
     }
 
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position,long id) {
-        // TODO Auto-generated method stub
-        switch (position){
-            case 1:
-                Intent intentRecord=new Intent(MainActivity.this,RecordActivity.class);
-                startActivity(intentRecord);
-                break;
-            case 2:
-                Intent intentDeviceList=new Intent(MainActivity.this,DeviceListActivity.class);
-                startActivity(intentDeviceList);
-                break;
-            case 3:
-                Intent intentPerson=new Intent(MainActivity.this,PersonActivity.class);
-                startActivity(intentPerson);
-                break;
-            default:
-                Toast.makeText(MainActivity.this,"功能还未实现",Toast.LENGTH_SHORT).show();
-        }
-    }
-    /**
-     * 监听自定义infowindow窗口的infocontents事件回调
-     */
-    @Override
-    public View getInfoContents(Marker marker) {
-
-        View infoContent = getLayoutInflater().inflate(
-                R.layout.info_window, null);
-        render(marker, infoContent);
-        return infoContent;
-    }
-
-    /**
-     * 监听自定义infowindow窗口的infowindow事件回调
-     */
-    @Override
-    public View getInfoWindow(Marker marker) {
-        View infoWindow = getLayoutInflater().inflate(
-                R.layout.info_window, null);
-        render(marker, infoWindow);
-        return infoWindow;
-    }
-
-    /**
-     * 自定义infowinfow窗口
-     */
-    public void render(Marker marker, View view) {
-        String devicenum=marker.getTitle();
-        String devicestatus=marker.getSnippet();
-        TextView UInum=(TextView) view.findViewById(R.id.devicenum);
-        TextView UIstatus=(TextView) view.findViewById((R.id.devicestatus));
-        UInum.setText(devicenum);
-        UIstatus.setText(devicestatus);
-        /*String title = marker.getTitle();
-        TextView titleUi = ((TextView) view.findViewById(R.id.title));
-        if (title != null) {
-            SpannableString titleText = new SpannableString(title);
-            titleText.setSpan(new ForegroundColorSpan(Color.RED), 0,
-                    titleText.length(), 0);
-            titleUi.setTextSize(15);
-            titleUi.setText(titleText);
-
-        } else {
-            titleUi.setText("");
-        }
-        String snippet = marker.getSnippet();
-        TextView snippetUi = ((TextView) view.findViewById(R.id.snippet));
-        if (snippet != null) {
-            SpannableString snippetText = new SpannableString(snippet);
-            snippetText.setSpan(new ForegroundColorSpan(Color.GREEN), 0,
-                    snippetText.length(), 0);
-            snippetUi.setTextSize(20);
-            snippetUi.setText(snippetText);
-        } else {
-            snippetUi.setText("");
-        }*/
-    }
-
-    private void initRecords() {
-        flag=0;
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                OkHttpClient client = new OkHttpClient();
-                Request request = new Request.Builder().url(getrecordpath).build();
-                try {
-                    Response response = client.newCall(request).execute();//发送请求
-                    String result = response.body().string();
-                    Map<String, Object> map= jsonstr2map.jsonstr2map(result);
-                    /**
-                     * 将 string 转为json格式
-                     */
-
-                    String temp = map.get("data").toString();
-                    Log.i(Tag, temp);
-                    temp = temp.substring(1, temp.length() - 1).replace(" ", "").replace("{", "").replace("}", "").replace("\"","").replace("\"","");
-                    ;
-                    String[] strs = temp.split(",");
-                    Map<String, String> map2 = new HashMap<String, String>();
-                    for (String s : strs) {
-                        String sss=s.replace(" ","");
-                        String[] ms = sss.split("=");
-
-                        if (ms[1].equals("null")) {
-                            ms[1] = "";
-                        }
-                        map2.put(ms[0], ms[1]);
-
-                        if (ms[0].equals("username")) {
-                            Records record1 = new Records((String) map2.get("devicestatus"), map2.get("recordstatus"), (String) map2.get("recordtime"), (String) map2.get("deviceaddress"), (String) map2.get("devicenum"), (String) map2.get("title"), (String) map2.get("context"),(String)map2.get("recordID"));
-                            mrecordsList.add(record1);
-                        }
-                    }
-
-                    if(mrecordsList.size()!=0){
-                        flag=1;
-                    }else flag=2;
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
-        while (flag==0){
-            try{
-                Thread.sleep(1);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        };
-        if(flag==1){
-            Log.i(Tag,"设备记录请求成功");
-        }
-
-    }
 }
