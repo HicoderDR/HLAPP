@@ -40,6 +40,7 @@ import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
+import com.example.jsrgjhl.hlapp.Adapter.Device;
 import com.example.jsrgjhl.hlapp.Adapter.Records;
 import com.example.jsrgjhl.hlapp.Adapter.RecordsAdapter;
 import com.example.jsrgjhl.hlapp.PersonalSetting.OperateRecord;
@@ -86,6 +87,7 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
     //segment
     private SegmentView segmentView;
     //marker
+    ArrayList<Device> mdevicelist=new ArrayList<Device>();
     DeviceList cameraList=new DeviceList("camera");
     DeviceList radarList=new DeviceList("radar");
     DeviceList vibrationList=new DeviceList("vibration");
@@ -526,7 +528,41 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
 
     }
 
-
+    private void initDeviceList() {
+        flag=0;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                OkHttpClient client = new OkHttpClient();
+                Request request = new Request.Builder().url(getdevicepath).build();
+                try {
+                    Response response = client.newCall(request).execute();//发送请求
+                    String result = response.body().string();
+                    Map<String, Object> map= jsonstr2map.jsonstr2map(result);
+                    List<Map<String, Object>> map2=jsonstr2map.jsonstr2list(map.get("data").toString());
+                    for (int i=0;i<map2.size();i++){
+                        Device device1=new Device((int)map2.get(i).get("deviceID"),(String) map2.get(i).get("devicenum"), (double) map2.get(i).get("devicelat"), (double) map2.get(i).get("devicelng"), (String) map2.get(i).get("deviceaddress"), (String) map2.get(i).get("devicestatus"),(String)map2.get(i).get("devicetype"), (String) map2.get(i).get("regionID"), (String) map2.get(i).get("defposID"),(String) map2.get(i).get("IP"));
+                        mdevicelist.add(device1);
+                    }
+                    if(mdevicelist.size()!=0){
+                        flag=1;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+        while (flag==0){
+            try{
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        };
+        if(flag==1){
+            Log.i(Tag,"drresult"+"成功");
+        }
+    }
     //segmental
     private void initsegment(){
         segmentView = (SegmentView) findViewById(R.id.segmentview);

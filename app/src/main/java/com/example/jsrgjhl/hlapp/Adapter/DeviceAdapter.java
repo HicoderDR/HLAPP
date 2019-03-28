@@ -44,11 +44,11 @@ public class DeviceAdapter extends ArrayAdapter<Device> {
             view=convertView;
             viewHolder=(ViewHolder)view.getTag();
         }
-        viewHolder.idTextview.setText(device.getId());
-        viewHolder.situationTextview.setText(device.getSituation());
-        viewHolder.addressTextview.setText(device.getAddress());
-        viewHolder.sortTextview.setText(device.getSort());
-        viewHolder.otherTextview.setText(device.getOther());
+        viewHolder.idTextview.setText(device.getDevicenum());
+        viewHolder.situationTextview.setText(device.getDevicestatus());
+        viewHolder.addressTextview.setText(device.getDeviceaddress());
+        viewHolder.sortTextview.setText(device.getDevicetype());
+        viewHolder.otherTextview.setText(device.getIP());
 
         return view;
     }
@@ -58,7 +58,6 @@ public class DeviceAdapter extends ArrayAdapter<Device> {
         TextView situationTextview;
         TextView addressTextview;
         TextView otherTextview;
-
     }
 
 }

@@ -180,7 +180,7 @@ public class DeviceListActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent();
                 intent.setClass(DeviceListActivity.this, DeviceSituationActivity.class);
-                Device device=new Device(null,"振动传感",null,null,null,null,"防区一","区域一","参数设置");
+                Device device=new Device(null,null,null,null,null,"振动传感","防区一","区域一",null);
                 intent.putExtra("device", (Serializable) device);
                 startActivity(intent);
             }
@@ -202,7 +202,7 @@ public class DeviceListActivity extends AppCompatActivity {
                     Map<String, Object> map= jsonstr2map.jsonstr2map(result);
                     List<Map<String, Object>> map2=jsonstr2map.jsonstr2list(map.get("data").toString());
                     for (int i=0;i<map2.size();i++){
-                        Device device1=new Device((String) map2.get(i).get("devicenum"), (String) map2.get(i).get("devicetype"), (String) map2.get(i).get("devicestatus"), (String) map2.get(i).get("deviceaddress"), (String) map2.get(i).get("ip"),"运行很好", (String) map2.get(i).get("defposID"), (String) map2.get(i).get("regionID"),"参数设置");
+                        Device device1=new Device((int)map2.get(i).get("deviceID"),(String) map2.get(i).get("devicenum"), (double) map2.get(i).get("devicelat"), (double) map2.get(i).get("devicelng"), (String) map2.get(i).get("deviceaddress"), (String) map2.get(i).get("devicestatus"),(String)map2.get(i).get("devicetype"), (String) map2.get(i).get("regionID"), (String) map2.get(i).get("defposID"),(String) map2.get(i).get("IP"));
                         mdeviceList.add(device1);
                     }
                     if(mdeviceList.size()!=0){
@@ -224,8 +224,6 @@ public class DeviceListActivity extends AppCompatActivity {
             Log.i(Tag,"drresult"+"成功");
         }
     }
-
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -243,7 +241,7 @@ public class DeviceListActivity extends AppCompatActivity {
             if (sort.equals("类型")){
                 break;
             }
-           else if(mnowdeviceList.get(i).getSort().equals(sort)){
+           else if(mnowdeviceList.get(i).getDevicetype().equals(sort)){
                 continue;
             }
             else {
@@ -256,7 +254,7 @@ public class DeviceListActivity extends AppCompatActivity {
             if(defend.equals("防区")){
                 break;
             }
-            else if(mnowdeviceList.get(j).getDefend().equals(defend)){
+            else if(mnowdeviceList.get(j).getDefposID().equals(defend)){
                 continue;
             }else{
                 mnowdeviceList.remove(j);
@@ -268,7 +266,7 @@ public class DeviceListActivity extends AppCompatActivity {
             if(region.equals("区域")){
                 break;
             }
-            else if(mnowdeviceList.get(k).getRegion().equals(region)){
+            else if(mnowdeviceList.get(k).getRegionID().equals(region)){
                 continue;
             }else{
                 mnowdeviceList.remove(k);

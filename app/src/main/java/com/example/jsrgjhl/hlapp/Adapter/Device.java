@@ -7,7 +7,7 @@ import java.io.Serializable;
  */
 
 public class Device implements Serializable {
-    private int DeviceID;
+    private int deviceID;
 
     private String devicenum;
 
@@ -19,7 +19,7 @@ public class Device implements Serializable {
 
     private String devicestatus;
 
-    private  String devicetype;
+    private String devicetype;
 
     private String regionID;
 
@@ -27,8 +27,31 @@ public class Device implements Serializable {
 
     private String IP;
 
+    public Device( String devicenum, Double devicelat, Double devicelng, String deviceaddress, String devicestatus, String devicetype, String regionID, String defposID, String IP){
+        this.defposID=defposID;
+        this.deviceaddress=deviceaddress;
+        this.devicenum=devicenum;
+        this.devicelat=devicelat;
+        this.devicelng=devicelng;
+        this.devicestatus=devicestatus;
+        this.devicetype=devicetype;
+        this.IP=IP;
+        this.regionID=regionID;
+    }
+    public Device(int deviceID, String devicenum, Double devicelat, Double devicelng, String deviceaddress, String devicestatus, String devicetype, String regionID, String defposID, String IP){
+        this.deviceID=deviceID;
+        this.defposID=defposID;
+        this.deviceaddress=deviceaddress;
+        this.devicenum=devicenum;
+        this.devicelat=devicelat;
+        this.devicelng=devicelng;
+        this.devicestatus=devicestatus;
+        this.devicetype=devicetype;
+        this.IP=IP;
+        this.regionID=regionID;
+    }
     public int getDeviceID() {
-        return DeviceID;
+        return deviceID;
     }
 
     public Double getDevicelat() {
@@ -76,7 +99,7 @@ public class Device implements Serializable {
     }
 
     public void setDeviceID(int deviceID) {
-        DeviceID = deviceID;
+        this.deviceID = deviceID;
     }
 
     public void setDevicelat(Double devicelat) {
