@@ -84,7 +84,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             checkBox_login.setChecked(false);//取消自动登录的复选框
         }
         //判断是否记住密码
-        if (remenberPassword()) {
+        if (rememberPassword()) {
             checkBox_password.setChecked(true);//勾选记住密码
             setTextNameAndPassword();//把密码和账号输入到输入框中
         } else {
@@ -150,7 +150,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     /**
      * 判断是否记住密码
      */
-    private boolean remenberPassword() {
+    private boolean rememberPassword() {
 
         boolean rememberPassword = sp.getBoolean("rememberpassword", false);
         return rememberPassword;

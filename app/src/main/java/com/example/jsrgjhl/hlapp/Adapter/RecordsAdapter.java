@@ -12,13 +12,17 @@ import android.widget.TextView;
 
 import com.example.jsrgjhl.hlapp.R;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
  * Created by xuxiaojin on 2018/12/7.
  */
 
-public class RecordsAdapter extends ArrayAdapter<Records> {
+public class RecordsAdapter extends ArrayAdapter<Records>{
 
     private int resourceId;
     public RecordsAdapter(@NonNull Context context, int textViewResourceId, @NonNull List<Records> objects) {
@@ -47,7 +51,16 @@ public class RecordsAdapter extends ArrayAdapter<Records> {
         }
         viewHolder.warnStatusTextview.setText(records.getWarn_status());
         viewHolder.solveStatusTextview.setText(records.getSolve_status());
-        viewHolder.timeTextview.setText(records.getTime());
+        try {
+            DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+            Date dt=df.parse(records.getTime());
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String date=format.format(dt);
+            viewHolder.timeTextview.setText(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
         viewHolder.idTextview.setText(records.getId());
         viewHolder.addressTextview.setText(records.getAddress());
 

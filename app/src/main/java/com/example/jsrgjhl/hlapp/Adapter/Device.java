@@ -7,97 +7,127 @@ import java.io.Serializable;
  */
 
 public class Device implements Serializable {
-    private String id;
-    private String sort;
-    private String situation;
-    private String address;
-    private String ipaddress;
-    private String about;
-    private String defend;
-    private String region;
-    private String other; //参数设置
+    private int deviceID;
 
-    public Device(String id, String sort, String situation, String address, String ipaddress, String about, String defend, String region, String other) {
-        this.id = id;
-        this.sort = sort;
-        this.situation = situation;
-        this.address = address;
-        this.ipaddress = ipaddress;
-        this.about = about;
-        this.defend = defend;
-        this.region = region;
-        this.other = other;
+    private String devicenum;
+
+    private Double devicelat;
+
+    private Double devicelng;
+
+    private String deviceaddress;
+
+    private String devicestatus;
+
+    private String devicetype;
+
+    private String regionID;
+
+    private String defposID;
+
+    private String IP;
+
+    public Device( String devicenum, Double devicelat, Double devicelng, String deviceaddress, String devicestatus, String devicetype, String regionID, String defposID, String IP){
+        this.defposID=defposID;
+        this.deviceaddress=deviceaddress;
+        this.devicenum=devicenum;
+        this.devicelat=devicelat;
+        this.devicelng=devicelng;
+        this.devicestatus=devicestatus;
+        this.devicetype=devicetype;
+        this.IP=IP;
+        this.regionID=regionID;
+    }
+    public Device(int deviceID, String devicenum, Double devicelat, Double devicelng, String deviceaddress, String devicestatus, String devicetype, String regionID, String defposID, String IP){
+        this.deviceID=deviceID;
+        this.defposID=defposID;
+        this.deviceaddress=deviceaddress;
+        this.devicenum=devicenum;
+        this.devicelat=devicelat;
+        this.devicelng=devicelng;
+        this.devicestatus=devicestatus;
+        this.devicetype=devicetype;
+        this.IP=IP;
+        this.regionID=regionID;
+    }
+    public int getDeviceID() {
+        return deviceID;
     }
 
-    public String getId() {
-        return id;
+    public Double getDevicelat() {
+        return devicelat;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public Double getDevicelng() {
+        return devicelng;
     }
 
-    public String getSort() {
-        return sort;
+    public String getDeviceaddress() {
+        return deviceaddress;
     }
 
-    public void setSort(String sort) {
-        this.sort = sort;
+    public String getDevicenum() {
+        return devicenum;
     }
 
-    public String getSituation() {
-        return situation;
+    public String getDefposID() {
+        return defposID;
     }
 
-    public void setSituation(String situation) {
-        this.situation = situation;
+    public String getDevicestatus() {
+        return devicestatus;
     }
 
-    public String getAddress() {
-        return address;
+    public String getDevicetype() {
+        return devicetype;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public String getRegionID() {
+        return regionID;
     }
 
-    public String getIpaddress() {
-        return ipaddress;
+    public void setDefposID(String defposID) {
+        this.defposID = defposID;
     }
 
-    public void setIpaddress(String ipaddress) {
-        this.ipaddress = ipaddress;
+    public String getIP() {
+        return IP;
     }
 
-    public String getAbout() {
-        return about;
+    public void setDeviceaddress(String deviceaddress) {
+        this.deviceaddress = deviceaddress;
     }
 
-    public void setAbout(String about) {
-        this.about = about;
+    public void setDeviceID(int deviceID) {
+        this.deviceID = deviceID;
     }
 
-    public String getDefend() {
-        return defend;
+    public void setDevicelat(Double devicelat) {
+        this.devicelat = devicelat;
     }
 
-    public void setDefend(String defend) {
-        this.defend = defend;
+    public void setDevicelng(Double devicelng) {
+        this.devicelng = devicelng;
     }
 
-    public String getRegion() {
-        return region;
+    public void setDevicenum(String devicenum) {
+        this.devicenum = devicenum;
     }
 
-    public void setRegion(String region) {
-        this.region = region;
+    public void setDevicestatus(String devicestatus) {
+        this.devicestatus = devicestatus;
     }
 
-    public String getOther() {
-        return other;
+    public void setDevicetype(String devicetype) {
+        this.devicetype = devicetype;
     }
 
-    public void setOther(String other) {
-        this.other = other;
+    public void setRegionID(String regionID) {
+        this.regionID = regionID;
     }
+
+    public void setIP(String IP) {
+        this.IP = IP;
+    }
+
 }
