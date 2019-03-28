@@ -68,6 +68,9 @@ public class RecordsAdapter extends ArrayAdapter<Records>{
         if(records.getSolve_status().equals("已处理")){
             viewHolder.solveStatusTextview.setTextColor(Color.rgb(00, 00, 00));
         }
+        if(records.getSolve_status().equals("未处理")){
+            viewHolder.solveStatusTextview.setTextColor(Color.rgb(255,0,0));
+        }
         return view;
     }
     class ViewHolder{
