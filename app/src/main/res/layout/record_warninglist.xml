@@ -1,0 +1,77 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:background="@color/white"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/warn_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:textSize="15sp" />
+
+    <TextView
+        android:id="@+id/timeimg"
+        android:layout_width="wrap_content"
+        android:layout_height="25dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="10dp"
+        android:text="警报时间"
+        android:textColor="@color/list_text"
+        android:layout_below="@id/warn_status"/>
+    <TextView
+        android:id="@+id/timetv"
+        android:layout_width="wrap_content"
+        android:layout_height="25dp"
+        android:height="25dp"
+        android:layout_toRightOf="@id/timeimg"
+        android:layout_below="@id/warn_status"
+        android:layout_alignBaseline="@+id/timeimg"
+        android:layout_margin="5dp"
+        android:textSize="15sp"
+        android:textColor="@color/black" />
+
+    <TextView
+        android:id="@+id/addressimg"
+        android:layout_width="wrap_content"
+        android:layout_height="25dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="10dp"
+        android:textColor="@color/list_text"
+        android:text="设备地点"
+        android:layout_below="@id/timeimg"/>
+    <TextView
+        android:id="@+id/addresstv"
+        android:layout_width="wrap_content"
+        android:layout_alignTop="@id/addressimg"
+        android:layout_toRightOf="@id/addressimg"
+        android:layout_below="@id/timetv"
+        android:layout_margin="5dp"
+        android:textSize="15sp"
+        android:layout_alignBaseline="@+id/addressimg"
+        android:textColor="@color/black"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/idimg"
+        android:layout_width="wrap_content"
+        android:layout_height="25dp"
+        android:layout_marginLeft="20dp"
+        android:text="设备编号"
+        android:layout_marginRight="10dp"
+        android:textColor="@color/list_text"
+        android:layout_below="@id/addressimg"/>
+    <TextView
+        android:id="@+id/idtv"
+        android:layout_width="wrap_content"
+        android:layout_alignTop="@id/idimg"
+        android:layout_toRightOf="@id/idimg"
+        android:layout_below="@id/addresstv"
+        android:layout_margin="5dp"
+        android:layout_alignBaseline="@+id/idimg"
+        android:layout_marginBottom="10dp"
+        android:textSize="15sp"
+        android:textColor="@color/black"
+        android:layout_height="wrap_content" />
+
+</RelativeLayout>
