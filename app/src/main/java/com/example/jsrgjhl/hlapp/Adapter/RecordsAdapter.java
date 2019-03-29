@@ -22,10 +22,10 @@ import java.util.List;
  * Created by xuxiaojin on 2018/12/7.
  */
 
-public class RecordsAdapter extends ArrayAdapter<Records>{
+public class RecordsAdapter extends ArrayAdapter<Record>{
 
     private int resourceId;
-    public RecordsAdapter(@NonNull Context context, int textViewResourceId, @NonNull List<Records> objects) {
+    public RecordsAdapter(@NonNull Context context, int textViewResourceId, @NonNull List<Record> objects) {
         super(context, textViewResourceId, objects);
         resourceId=textViewResourceId;
     }
@@ -33,7 +33,7 @@ public class RecordsAdapter extends ArrayAdapter<Records>{
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        Records records=getItem(position);
+        Record record=getItem(position);
         View view;
         ViewHolder viewHolder;
         if (convertView==null){
@@ -49,11 +49,11 @@ public class RecordsAdapter extends ArrayAdapter<Records>{
             view=convertView;
             viewHolder=(ViewHolder)view.getTag();
         }
-        viewHolder.warnStatusTextview.setText(records.getWarn_status());
-        viewHolder.solveStatusTextview.setText(records.getSolve_status());
+        viewHolder.warnStatusTextview.setText(record.getDevicestatus());
+        viewHolder.solveStatusTextview.setText(record.getRecordstatus());
         try {
             DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-            Date dt=df.parse(records.getTime());
+            Date dt=df.parse(String.valueOf(record.getRecordtime()));
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String date=format.format(dt);
             viewHolder.timeTextview.setText(date);
@@ -61,14 +61,14 @@ public class RecordsAdapter extends ArrayAdapter<Records>{
             e.printStackTrace();
         }
 
-        viewHolder.idTextview.setText(records.getId());
-        viewHolder.addressTextview.setText(records.getAddress());
+        viewHolder.idTextview.setText(record.getDeviceID());
+        viewHolder.addressTextview.setText(record.getDeviceaddress());
 
         //由不同的处理状态显示不同的数据
-        if(records.getSolve_status().equals("已处理")){
+        if(record.getRecordstatus().equals("已处理")){
             viewHolder.solveStatusTextview.setTextColor(Color.rgb(00, 00, 00));
         }
-        if(records.getSolve_status().equals("未处理")){
+        if(record.getRecordstatus().equals("未处理")){
             viewHolder.solveStatusTextview.setTextColor(Color.rgb(255,0,0));
         }
         return view;

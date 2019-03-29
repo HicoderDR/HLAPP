@@ -41,7 +41,7 @@ import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
 import com.example.jsrgjhl.hlapp.Adapter.Device;
-import com.example.jsrgjhl.hlapp.Adapter.Records;
+import com.example.jsrgjhl.hlapp.Adapter.Record;
 import com.example.jsrgjhl.hlapp.Adapter.RecordsAdapter;
 import com.example.jsrgjhl.hlapp.PersonalSetting.OperateRecord;
 import com.example.jsrgjhl.hlapp.R;
@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
     private String getdevicepath="http://47.100.107.158:8080/api/device/getdevicelist";
     private String getunsolvedpath="http://47.100.107.158:8080/api/record/searchRecordbyrecordstatus";
     private String getrecordpath="http://47.100.107.158:8080/api/record/getrecordlist";
-    private List<Records> mrecordsList=new ArrayList<>();
+    private List<Record> mrecordsList=new ArrayList<>();
     private int flag;
     private final static String Tag= OperateRecord.class.getSimpleName();
     @Override
@@ -398,8 +398,8 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
         recordlistView.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Records x=(Records)recordlistView.getItemAtPosition(position);
-                String title=x.getTime();
+                Record x=(Record)recordlistView.getItemAtPosition(position);
+                String title= String.valueOf(x.getRecordtime());
                 Toast.makeText(MainActivity.this,"你点击了" + title ,Toast.LENGTH_SHORT).show();
             }
         });
@@ -489,7 +489,7 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
                     String temp = map.get("data").toString();
                     Log.i(Tag, temp);
                     temp = temp.substring(1, temp.length() - 1).replace(" ", "").replace("{", "").replace("}", "").replace("\"","").replace("\"","");
-                    ;
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     String[] strs = temp.split(",");
                     Map<String, String> map2 = new HashMap<String, String>();
                     for (String s : strs) {
@@ -501,9 +501,11 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
                         }
                         map2.put(ms[0], ms[1]);
 
-                        if (ms[0].equals("username")) {
-                            Records record1 = new Records((String) map2.get("devicestatus"), map2.get("recordstatus"), (String) map2.get("recordtime"), (String) map2.get("deviceaddress"), (String) map2.get("devicenum"), (String) map2.get("title"), (String) map2.get("context"),(String)map2.get("recordID"));
+                        if (ms[0].equals("deltime")) {
+
+                            Record record1 = new Record((String) map2.get("recordnum"),sdf.parse(map2.get("recordtime")), map2.get("recordstatus"), Integer.parseInt(map2.get("solutionID")) , Integer.parseInt(map2.get("userID")) , (String) map2.get("username"), (String) map2.get("title"), (String) map2.get("context"),Integer.parseInt(map2.get("deviceID")),(String)map2.get("devicenum"),(String)map2.get("deviceaddress"),map2.get("regionID"),map2.get("defposID"),Double.parseDouble(map2.get("devicelat")),Double.parseDouble(map2.get("devicelng")),map2.get("devicetype"),map2.get("devicestatus"),sdf.parse(map2.get("deltime")));
                             mrecordsList.add(record1);
+                            map2.clear();
                         }
                     }
 

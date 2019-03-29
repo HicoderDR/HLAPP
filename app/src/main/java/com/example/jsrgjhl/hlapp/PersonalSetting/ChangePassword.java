@@ -14,7 +14,6 @@ import android.widget.Toast;
 import com.example.jsrgjhl.hlapp.Activity.DeviceSituationActivity;
 import com.example.jsrgjhl.hlapp.Activity.LoginActivity;
 import com.example.jsrgjhl.hlapp.Activity.PersonActivity;
-import com.example.jsrgjhl.hlapp.Adapter.Records;
 import com.example.jsrgjhl.hlapp.R;
 import com.example.jsrgjhl.hlapp.Utils.jsonstr2map;
 

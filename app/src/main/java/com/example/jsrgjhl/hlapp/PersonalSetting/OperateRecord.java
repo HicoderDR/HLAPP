@@ -11,7 +11,6 @@ import android.widget.Toast;
 
 import com.example.jsrgjhl.hlapp.Activity.LoginActivity;
 import com.example.jsrgjhl.hlapp.Activity.RecordActivity;
-import com.example.jsrgjhl.hlapp.Adapter.Records;
 import com.example.jsrgjhl.hlapp.Adapter.RecordsAdapter;
 import com.example.jsrgjhl.hlapp.Adapter.Solutions;
 import com.example.jsrgjhl.hlapp.Adapter.SolutionsAdapter;

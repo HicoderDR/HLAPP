@@ -15,7 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.jsrgjhl.hlapp.Adapter.Device;
-import com.example.jsrgjhl.hlapp.Adapter.Records;
+import com.example.jsrgjhl.hlapp.Adapter.Record;
 import com.example.jsrgjhl.hlapp.Adapter.RecordsAdapter;
 import com.example.jsrgjhl.hlapp.R;
 import com.example.jsrgjhl.hlapp.Utils.jsonstr2map;
@@ -47,7 +47,7 @@ public class SolveActivity extends AppCompatActivity implements Serializable {
     private String updaterecordpath="http://47.100.107.158:8080/api/record/updatestatus";
     private final static String Tag = SolveActivity.class.getSimpleName();
     private static int flag;
-    private Records record;
+    private Record record;
     private LoadingDialog mLoadingDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +69,7 @@ public class SolveActivity extends AppCompatActivity implements Serializable {
 
 
         Intent intent = getIntent();
-        record = (Records)intent.getSerializableExtra("record");
+        record = (Record)intent.getSerializableExtra("record");
 
 
         tablecontent=findViewById(R.id.tablecontent);
@@ -83,17 +83,15 @@ public class SolveActivity extends AppCompatActivity implements Serializable {
 
 
 
-        Warn_status.setText(record.getWarn_status());
-        Slove_status.setText(record.getSolve_status());
-        Timetv.setText(record.getTime());
-        Idtv.setText(record.getId());
-        Addresstv.setText(record.getAddress());
-        tabletitle.setText(record.getSolve_title());
-        tablecontent.setText(record.getSolve_context());
-        Log.i(Tag,record.getRecord_id());
-
+        Warn_status.setText(record.getDevicestatus());
+        Slove_status.setText(record.getRecordstatus());
+        Timetv.setText((CharSequence) record.getRecordtime());
+        Idtv.setText(record.getDevicenum());
+        Addresstv.setText(record.getDeviceaddress());
+        tabletitle.setText(record.getTitle());
+        tablecontent.setText(record.getContext());
         //处理状态为已处理 页面布局的调整
-        if(record.getSolve_status().equals("已处理")){
+        if(record.getRecordstatus().equals("已处理")){
             Slove_status.setTextColor(Color.rgb(00, 00, 00));
             tabletitle.setEnabled(false);
             tablecontent.setEnabled(false);
@@ -168,7 +166,7 @@ public class SolveActivity extends AppCompatActivity implements Serializable {
                 @Override
                 public void run() {
                     OkHttpClient client=new OkHttpClient();
-                    RequestBody requestBody = new FormBody.Builder().add("recordnum",Idtv.getText().toString()).add("recordID", record.getRecord_id()).add("deltime",ddate).add("userID", String.valueOf(1)).add("username",login.userName).add("title",tabletitle.getText().toString()).add("context",tablecontent.getText().toString()).build();
+                    RequestBody requestBody = new FormBody.Builder().add("recordnum",Idtv.getText().toString()).add("recordID", String.valueOf(record.getRecordID())).add("deltime",ddate).add("userID", String.valueOf(1)).add("username",login.userName).add("title",tabletitle.getText().toString()).add("context",tablecontent.getText().toString()).build();
                     Request request = new Request.Builder().url(addsolutionpath).post(requestBody).build();
                     try{
                         Response response=client.newCall(request).execute();
@@ -177,7 +175,7 @@ public class SolveActivity extends AppCompatActivity implements Serializable {
 
                         String x=map.get("data").toString();
                         if(x=="true"){
-                            RequestBody requestBody2=new FormBody.Builder().add("recordID", record.getRecord_id()).add("userID", String.valueOf(1)).add("username",login.userName).add("title",tabletitle.getText().toString()).add("context",tablecontent.getText().toString()).add("status","已处理").build();
+                            RequestBody requestBody2=new FormBody.Builder().add("recordID", String.valueOf(record.getRecordID())).add("userID", String.valueOf(1)).add("username",login.userName).add("title",tabletitle.getText().toString()).add("context",tablecontent.getText().toString()).add("status","已处理").build();
                             Request request2 = new Request.Builder().url(updaterecordpath).post(requestBody2).build();
 
                             try {
