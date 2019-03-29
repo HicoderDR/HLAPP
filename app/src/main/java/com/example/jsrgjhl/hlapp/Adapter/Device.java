@@ -27,7 +27,7 @@ public class Device implements Serializable {
 
     private String IP;
 
-    public Device( String devicenum, Double devicelat, Double devicelng, String deviceaddress, String devicestatus, String devicetype, String regionID, String defposID, String IP){
+    public Device(String devicenum, Double devicelat, Double devicelng, String deviceaddress, String devicestatus, String devicetype, String regionID, String defposID, String IP){
         this.defposID=defposID;
         this.deviceaddress=deviceaddress;
         this.devicenum=devicenum;
