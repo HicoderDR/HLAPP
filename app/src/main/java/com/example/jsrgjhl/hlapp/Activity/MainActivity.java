@@ -19,6 +19,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
@@ -42,7 +43,7 @@ import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
 import com.example.jsrgjhl.hlapp.Adapter.Device;
 import com.example.jsrgjhl.hlapp.Adapter.Records;
-import com.example.jsrgjhl.hlapp.Adapter.RecordsAdapter;
+import com.example.jsrgjhl.hlapp.Adapter.WarningRecordsAdapter;
 import com.example.jsrgjhl.hlapp.PersonalSetting.OperateRecord;
 import com.example.jsrgjhl.hlapp.R;
 import com.example.jsrgjhl.hlapp.Utils.ScreenUtils;
@@ -50,6 +51,7 @@ import com.example.jsrgjhl.hlapp.Utils.jsonstr2map;
 import com.example.jsrgjhl.hlapp.View.SegmentView;
 import com.xiasuhuei321.loadingdialog.view.LoadingDialog;
 
+import java.io.Serializable;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
@@ -67,7 +69,7 @@ import okhttp3.Response;
 import static com.xiasuhuei321.loadingdialog.view.LoadingDialog.Speed.SPEED_TWO;
 
 
-public class MainActivity extends AppCompatActivity implements LocationSource, AMapLocationListener,OnItemClickListener, AMap.InfoWindowAdapter {
+public class MainActivity extends AppCompatActivity implements AMap.OnMapClickListener,LocationSource, AMapLocationListener,OnItemClickListener, AMap.InfoWindowAdapter {
 
     private static final String TAG = "TestLocation";
     private Context mContext = null;
@@ -76,6 +78,7 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
     private RelativeLayout warn=null;
     private MapView mapView;
     private AMap aMap;
+    private Marker currentMarker;
     private AMapLocationClient mLocationClient = null;
     private AMapLocationClientOption mLocationOption = null;
     private MyLocationStyle mLocationStyle = null;
@@ -98,10 +101,12 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
 
 
     private String getdevicepath="http://47.100.107.158:8080/api/device/getdevicelist";
-    private String getunsolvedpath="http://47.100.107.158:8080/api/record/searchRecordbyrecordstatus";
+    private String getunsolvedpath="http://47.100.107.158:8080/api/record/searchRecordbyrecordstatus?status="+"未处理";
     private String getrecordpath="http://47.100.107.158:8080/api/record/getrecordlist";
     private List<Records> mrecordsList=new ArrayList<>();
-    private HashMap<String,Device> deviceHashMap=new HashMap<>();
+    private HashMap<String,Device> DeviceHashMap=new HashMap<>();
+    private HashMap<String,Marker> MarkerHashMap=new HashMap<>();
+
 
     private int flag;
     private final static String Tag= OperateRecord.class.getSimpleName();
@@ -232,17 +237,15 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
             public boolean onMarkerClick(Marker marker) {
                //CameraUpdate mCameraUpdate = CameraUpdateFactory.newCameraPosition(new CameraPosition(marker.getPosition(),17,0,0));
                 //aMap.moveCamera(mCameraUpdate);
+                currentMarker=marker;
                 aMap.moveCamera(CameraUpdateFactory.changeLatLng(marker.getPosition()));
                 marker.showInfoWindow();
+                return true;
                 /*String type=marker.getTitle();
                 Gifmarker cameragif=new Gifmarker(type,mContext);
                 marker.setIcons(cameragif.iconList);
                 */
-                String number = marker.getId().substring(6);
-                if (!number.equals("")) {
-                    Log.i(TAG, "position" + number);
-                }
-                return true;
+
             }
         });
     }
@@ -252,15 +255,18 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
         cameramarkers.clear();
         radarmarkers.clear();
         sensormarkers.clear();
-        deviceHashMap.clear();
+        DeviceHashMap.clear();
         for(int i=0;i<cameraList.size();i++){
             cameramarkers.add(drawMarkerOnMap(cameraList.get(i)));
+            MarkerHashMap.put(cameraList.get(i).getDevicenum(),cameramarkers.get(i));
         }
         for(int i=0;i<radarList.size();i++){
             radarmarkers.add(drawMarkerOnMap(radarList.get(i)));
+            MarkerHashMap.put(radarList.get(i).getDevicenum(),radarmarkers.get(i));
         }
         for(int i=0;i<sensorList.size();i++){
             sensormarkers.add(drawMarkerOnMap(sensorList.get(i)));
+            MarkerHashMap.put(sensorList.get(i).getDevicenum(),sensormarkers.get(i));
         }
     }
 
@@ -268,11 +274,10 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
         LatLng latLng = new LatLng(info.getDevicelat(),info.getDevicelng());
         String devicetype= info.getDevicetype();
         String devicestatus= info.getDevicestatus();
-        deviceHashMap.put(info.getDevicenum(),info);
         MarkerOptions options = new MarkerOptions()
                 .position(latLng)
                 .title(info.getDevicenum())
-                .snippet(info.getDeviceaddress())
+                .snippet(info.getDevicestatus())
                 .draggable(false);
         switch(devicestatus){
             case "正常运转":
@@ -326,6 +331,9 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
         }
         Marker marker = aMap.addMarker(options);
         marker.setObject(info);//传入数据bean
+
+        //hashmap双向关联
+        DeviceHashMap.put(info.getDevicenum(),info);
         return marker;
     }
 
@@ -441,15 +449,22 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
         popWindow.setBackgroundDrawable(dw);
         // 设置好参数之后再show
         initRecords();
-        RecordsAdapter adapter=new RecordsAdapter(this, R.layout.record_list,mrecordsList);
+        if(mrecordsList.isEmpty()) {
+            Toast.makeText(MainActivity.this,"目前没有未处理的警报哦",Toast.LENGTH_SHORT).show();
+            return;
+        }
+        WarningRecordsAdapter adapter=new WarningRecordsAdapter(this, R.layout.record_warninglist,mrecordsList);
         recordlistView=(ListView)contentView.findViewById(R.id.warninglist);
         recordlistView.setAdapter(adapter);
         recordlistView.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Records x=(Records)recordlistView.getItemAtPosition(position);
-                String title=x.getTime();
-                Toast.makeText(MainActivity.this,"你点击了" + title ,Toast.LENGTH_SHORT).show();
+                String title="MAC1236";
+                Marker now=MarkerHashMap.get(title);
+                popWindow.dismiss();
+                aMap.moveCamera(CameraUpdateFactory.changeLatLng(now.getPosition()));
+                now.showInfoWindow();
             }
         });
         //获取listvie
@@ -467,7 +482,7 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
      */
     @Override
     public View getInfoContents(Marker marker) {
-
+        if(marker.getTitle().equals("")) return null;
         View infoContent = getLayoutInflater().inflate(
                 R.layout.info_window, null);
         render(marker, infoContent);
@@ -479,6 +494,7 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
      */
     @Override
     public View getInfoWindow(Marker marker) {
+        if(marker.getTitle().equals("")) return null;
         View infoWindow = getLayoutInflater().inflate(
                 R.layout.info_window, null);
         render(marker, infoWindow);
@@ -489,35 +505,31 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
      * 自定义infowinfow窗口
      */
     public void render(Marker marker, View view) {
-        String devicenum=marker.getTitle();
+        final String devicenum=marker.getTitle();
         String devicestatus=marker.getSnippet();
         TextView UInum=(TextView) view.findViewById(R.id.devicenum);
         TextView UIstatus=(TextView) view.findViewById((R.id.devicestatus));
+        Button UIsituation=(Button) view.findViewById(R.id.btn_sitution);
+        Button UIcamera=(Button) view.findViewById(R.id.btn_camera);
+
         UInum.setText(devicenum);
         UIstatus.setText(devicestatus);
-        /*String title = marker.getTitle();
-        TextView titleUi = ((TextView) view.findViewById(R.id.title));
-        if (title != null) {
-            SpannableString titleText = new SpannableString(title);
-            titleText.setSpan(new ForegroundColorSpan(Color.RED), 0,
-                    titleText.length(), 0);
-            titleUi.setTextSize(15);
-            titleUi.setText(titleText);
-
-        } else {
-            titleUi.setText("");
-        }
-        String snippet = marker.getSnippet();
-        TextView snippetUi = ((TextView) view.findViewById(R.id.snippet));
-        if (snippet != null) {
-            SpannableString snippetText = new SpannableString(snippet);
-            snippetText.setSpan(new ForegroundColorSpan(Color.GREEN), 0,
-                    snippetText.length(), 0);
-            snippetUi.setTextSize(20);
-            snippetUi.setText(snippetText);
-        } else {
-            snippetUi.setText("");
-        }*/
+        UIsituation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setClass(MainActivity.this, DeviceSituationActivity.class);
+                Device device=DeviceHashMap.get(devicenum);
+                intent.putExtra("device", (Serializable) device);
+                startActivity(intent);
+            }
+        });
+        UIcamera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(MainActivity.this,"功能还未实现",Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void initRecords() {
@@ -719,10 +731,10 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
                         + "--date:" + date);
 
                 // 设置缩放级别
-                aMap.moveCamera(CameraUpdateFactory.zoomTo(17));
+                //aMap.moveCamera(CameraUpdateFactory.zoomTo(17));
                 // 将地图移动到定位点
-                aMap.moveCamera(CameraUpdateFactory.changeLatLng(
-                        new LatLng(aMapLocation.getLatitude(), aMapLocation.getLongitude())));
+                //aMap.moveCamera(CameraUpdateFactory.changeLatLng(
+                        //new LatLng(aMapLocation.getLatitude(), aMapLocation.getLongitude())));
                 // 点击定位按钮 能够将地图的中心移动到定位点
                 mListener.onLocationChanged(aMapLocation);
 
@@ -783,6 +795,12 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
         Log.i(TAG, "onSaveInstanceState()");
         super.onSaveInstanceState(outState);
         mapView.onSaveInstanceState(outState);
+    }
+    @Override
+    public void onMapClick(LatLng arg0) {
+        if(currentMarker.isInfoWindowShown()){
+            currentMarker.hideInfoWindow();//这个是隐藏infowindow窗口的方法
+        }
     }
 
     public static String sHA1(Context context) {
@@ -846,8 +864,8 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
     public void showLoading() {
         mLoadingDialog = new LoadingDialog(this);
         mLoadingDialog.setLoadingText("正在加载设备列表")
-                .setSuccessText("加载成功")//显示加载成功时的文字
-                .setFailedText("加载失败")
+                .setSuccessText("设备加载成功")//显示加载成功时的文字
+                .setFailedText("设备加载失败")
                 .setInterceptBack(false)
                 .setLoadSpeed(SPEED_TWO)
                 .show();
