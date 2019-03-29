@@ -47,7 +47,11 @@ public class DeviceSituationActivity extends AppCompatActivity implements OnGeoc
     private Spinner defendSpinner;
     private EditText ipEditText;
     private ImageView chooseAddressImg;
-    private int createormodify=0;
+    /**
+     * true表示新建新设备
+     * false 表示更改设备参数
+     */
+    private boolean createormodify=true;
     private final static String Tag = MainActivity.class.getSimpleName();
     private Device getDevice;
     private OkManager manager;
@@ -56,6 +60,13 @@ public class DeviceSituationActivity extends AppCompatActivity implements OnGeoc
     private String createDevicepath="http://47.100.107.158:8080/api/device/createdevice";
     private String modifyDevicepath="http://47.100.107.158:8080/api/device/modifydevice";
 
+    private double lat;
+    private double lng;
+
+    private RequestBody newdevicerequestBody;
+    private RequestBody modifydevicerequestBody;
+    private Request newdevicerequest;
+    private Request modifydevicerequest;
     private static int flag;
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
@@ -65,13 +76,6 @@ public class DeviceSituationActivity extends AppCompatActivity implements OnGeoc
         //得到设备列表的数据，并填充
         Intent intent = getIntent();
         getDevice = (Device) intent.getSerializableExtra("device");
-        if(String.valueOf(getDevice.getDefposID())!="null") {
-            /**
-             createormodify=1表示点击提交的时候为更新设备
-             createormodify=0表示点击提交的时候为新建设备
-             */
-            createormodify=1;
-        }
         setContentView(R.layout.activity_device_situation);
         Toolbar toolbar = (Toolbar) findViewById(R.id.devicesituationbar);
         toolbar.setTitle("");
@@ -101,12 +105,15 @@ public class DeviceSituationActivity extends AppCompatActivity implements OnGeoc
         regionSpinner.setDropDownVerticalOffset(140);
         defendSpinner.setDropDownVerticalOffset(140);
 
+        ipEditText.setText(String.valueOf(getDevice.getIP()));
         if(String.valueOf(getDevice.getDevicenum())!="null") {
-            idEditText.setText(String.valueOf(getDevice.getDevicenum()));}
+            idEditText.setText(String.valueOf(getDevice.getDevicenum()));
+            createormodify=false;
+        }
         else{
             getDevice.setDevicestatus("停机状态");
         }
-        addressEditText.setText((CharSequence) getDevice.getDeviceaddress());
+        addressEditText.setText(getDevice.getDeviceaddress());
         for(int i=0;i<4;i++) {
             if (getDevice.getDevicetype().equals(sortSpinner.getItemAtPosition(i))) {
                 sortSpinner.setSelection(i, true);
@@ -125,7 +132,7 @@ public class DeviceSituationActivity extends AppCompatActivity implements OnGeoc
                     break;
                 }
             }
-        ipEditText.setText(String.valueOf(getDevice.getIP()));
+
         //提交按钮事件
         final Button submit=(Button)findViewById(R.id.submit_Btn);
         submit.setOnClickListener(new View.OnClickListener() {
@@ -155,8 +162,8 @@ public class DeviceSituationActivity extends AppCompatActivity implements OnGeoc
             if (resultCode==MapActivity.RESULT_CODE)
             {
                 Bundle bundle=data.getExtras();
-                double lat=bundle.getDouble("backlat");
-                double lng=bundle.getDouble("backlng");
+                 lat=bundle.getDouble("backlat");
+                 lng=bundle.getDouble("backlng");
                 String str="lat:"+lat+" lng:"+lng;
                 LatLonPoint latLonPoint=new LatLonPoint(lat,lng);
                 RegeocodeQuery query = new RegeocodeQuery(latLonPoint, 30,GeocodeSearch.AMAP);
@@ -171,6 +178,8 @@ public class DeviceSituationActivity extends AppCompatActivity implements OnGeoc
     public void onRegeocodeSearched(RegeocodeResult result, int rCode) {
         RegeocodeAddress now=result.getRegeocodeAddress();
         String ans=now.getFormatAddress();
+        Toast.makeText(DeviceSituationActivity.this,ans,Toast.LENGTH_SHORT).show();
+        Log.i(Tag,ans);
         addressEditText.setText(ans);
     }
     @Override
@@ -208,7 +217,7 @@ public class DeviceSituationActivity extends AppCompatActivity implements OnGeoc
      * @return
      */
     public Double getDevicelat(){
-        return 12.0;
+        return lat;
     }
 
     /**
@@ -217,13 +226,10 @@ public class DeviceSituationActivity extends AppCompatActivity implements OnGeoc
      * @return
      */
     public Double getDevicelng(){
-        return 12.0;
+        return lng;
     }
     //按钮提交事件
     private void submit(){
-        //new一个device对象
-        //String devicenum, Double devicelat, Double devicelng, String deviceaddress, String devicestatus, String devicetype, String regionID, String defposID, String IP
-        final Device device=new Device(getDevicenum(),getDevicelat(),getDevicelng(),getDeviceAddress(),getDevice.getDevicestatus(),getDeviceType(),getDeviceRegion(),getDeviceDefend(),getDeviceIp());
         //先做一些基本的判断
         if (getDevicenum().isEmpty()){
             showToast("你输入的设备号为空！");
@@ -237,28 +243,56 @@ public class DeviceSituationActivity extends AppCompatActivity implements OnGeoc
             showToast("你输入的设备IP为空！");
             return;
         }
+        if(!createormodify){
+            getDevice.setDefposID(getDeviceDefend());
+            getDevice.setDevicelat(getDevicelat());
+            getDevice.setDeviceaddress(getDeviceAddress());
+            getDevice.setDevicelng(getDevicelng());
+            getDevice.setDevicenum(getDevicenum());
+            getDevice.setIP(getDeviceIp());
+            getDevice.setRegionID(getDeviceRegion());
+            getDevice.setDevicetype(getDeviceType());
+        }
         //要请求网络，要子线程
          flag = 0;
         showLoading();//显示加载框
-        if(createormodify==0) {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
                     clients=new OkHttpClient();
-                    //这里的地址还未填写好
-                    RequestBody requestBody = new FormBody.Builder().add("devicenum", device.getDevicenum()).add("devicetype",device.getDevicetype()).add("devicestatus",device.getDevicestatus()).add("devicelat", String.valueOf(device.getDevicelat())).add("devicelng", String.valueOf(device.getDevicelng())).add("regionID",device.getRegionID()).add("defposID",device.getDefposID()).add("deviceaddress",device.getDeviceaddress()).add("IP",device.getIP()).build();
-                    Request request = new Request.Builder().url(createDevicepath).post(requestBody).build();
+                    /**
+                     * newdevicerequestBody 表示的是新设备
+                     *
+                     */
                     try {
-                        Response response = clients.newCall(request).execute();//发送请求
-                        String result = response.body().string();
-                        Map<String, Object> map = jsonstr2map.jsonstr2map(result);
-                        Log.i(Tag,"device"+map.toString());
-                        String x = map.get("data").toString();
-                        Log.i(Tag,"device"+map.get("data"));
-                        if (x == "true") {
-                            flag = 1;
-                        }else {
-                            flag=2;
+                        if(createormodify){
+                            newdevicerequestBody = new FormBody.Builder().add("devicenum", getDevicenum()).add("devicetype",getDeviceType()).add("devicestatus","").add("devicelat", String.valueOf(getDevicelat())).add("devicelng", String.valueOf(getDevicelng())).add("regionID",getDeviceRegion()).add("defposID",getDeviceDefend()).add("deviceaddress",getDeviceAddress()).add("IP",getDeviceIp()).build();
+                            newdevicerequest = new Request.Builder().url(createDevicepath).post(newdevicerequestBody).build();
+                            Response response = clients.newCall(newdevicerequest).execute();//发送请求
+                            String result = response.body().string();
+                            Map<String, Object> map = jsonstr2map.jsonstr2map(result);
+                            Log.i(Tag,"device"+map.toString());
+                            String x = map.get("data").toString();
+                            Log.i(Tag,"device"+map.get("data"));
+                            if (x == "true") {
+                                flag = 1;
+                            }else {
+                                flag=2;
+                            }
+                        }else{
+                            modifydevicerequestBody = new FormBody.Builder().add("deviceID", String.valueOf(getDevice.getDeviceID())).add("devicenum",getDevice.getDevicenum()).add("devicetype",getDevice.getDevicetype()).add("devicestatus", String.valueOf(getDevice.getDevicestatus())).add("devicelat", String.valueOf(getDevice.getDevicelat())).add("devicelng", String.valueOf(getDevice.getDevicelng())).add("deviceaddress",getDevice.getDeviceaddress()).add("regionID",getDevice.getRegionID()).add("defposID",getDevice.getDefposID()).add("IP",getDevice.getIP()).build();
+                            modifydevicerequest = new Request.Builder().url(createDevicepath).post(modifydevicerequestBody).build();
+                            Response response = clients.newCall(modifydevicerequest).execute();//发送请求
+                            String result = response.body().string();
+                            Map<String, Object> map = jsonstr2map.jsonstr2map(result);
+                            Log.i(Tag,"device"+map.toString());
+                            String x = map.get("data").toString();
+                            Log.i(Tag,"device"+map.get("data"));
+                            if (x == "true") {
+                                flag = 1;
+                            }else {
+                                flag=2;
+                            }
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -273,35 +307,6 @@ public class DeviceSituationActivity extends AppCompatActivity implements OnGeoc
                 }
             };
             setLoaded(flag);
-        }
-        /*
-        修改指定设备参数
-         */
-//        if(createormodify==1){
-//            new Thread(new Runnable() {
-//                @Override
-//                public void run() {
-//                    RequestBody requestBody = new FormBody.Builder().add("username", getAccount()).add("password", getPassword()).build();
-//                    Request request = new Request.Builder().url(loginpath).post(requestBody).build();
-//                    try {
-//                        Response response = clients.newCall(request).execute();//发送请求
-//                        String result = response.body().string();
-//
-//                        Map<String, Object> map = jsonstr2map.jsonstr2map(result);
-//                        String x = map.get("data").toString();
-//                        if (x == "true") {
-//                            flag = 1;
-//                            loadCheckBoxState();//记录下当前用户记住密码和自动登录的状态;
-//                        } else {
-//                            flag = 2;
-//                        }
-//                        Log.i(Tag, "drresult4 " + flag);
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//            }).start();
-//        }
         Log.i(Tag,"flag"+flag);
     }
 
@@ -315,8 +320,8 @@ public class DeviceSituationActivity extends AppCompatActivity implements OnGeoc
     public void showLoading() {
         mLoadingDialog = new LoadingDialog(this);
         mLoadingDialog.setLoadingText("加载中")
-                .setSuccessText("创建成功")//显示加载成功时的文字
-                .setFailedText("创建失败")
+                .setSuccessText("提交成功")//显示加载成功时的文字
+                .setFailedText("提交失败")
                 .setInterceptBack(false)
                 .setLoadSpeed(SPEED_TWO)
                 .show();

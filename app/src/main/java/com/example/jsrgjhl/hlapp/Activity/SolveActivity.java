@@ -39,12 +39,12 @@ import okhttp3.Response;
 import static com.xiasuhuei321.loadingdialog.view.LoadingDialog.Speed.SPEED_TWO;
 
 public class SolveActivity extends AppCompatActivity implements Serializable {
-    private LoginActivity login=new LoginActivity();
     private EditText tabletitle,tablecontent;
     private TextView Warn_status;
     private TextView Slove_status,Timetv,Addresstv,Idtv;
     private String addsolutionpath="http://47.100.107.158:8080/api/solution/addsolution";
     private String updaterecordpath="http://47.100.107.158:8080/api/record/updatestatus";
+    private String updatedevicestatuspath="http://47.100.107.158:8080/api/device/updatestatus";
     private final static String Tag = SolveActivity.class.getSimpleName();
     private static int flag;
     private Record record;
@@ -166,7 +166,7 @@ public class SolveActivity extends AppCompatActivity implements Serializable {
                 @Override
                 public void run() {
                     OkHttpClient client=new OkHttpClient();
-                    RequestBody requestBody = new FormBody.Builder().add("recordnum",Idtv.getText().toString()).add("recordID", String.valueOf(record.getRecordID())).add("deltime",ddate).add("userID", String.valueOf(1)).add("username",login.userName).add("title",tabletitle.getText().toString()).add("context",tablecontent.getText().toString()).build();
+                    RequestBody requestBody = new FormBody.Builder().add("recordnum",record.getRecordnum()).add("recordID", String.valueOf(record.getRecordID())).add("deltime",ddate).add("userID", record.getUserID()).add("username",record.getUsername()).add("title",tabletitle.getText().toString()).add("context",tablecontent.getText().toString()).add("devicenum",record.getDevicenum()).build();
                     Request request = new Request.Builder().url(addsolutionpath).post(requestBody).build();
                     try{
                         Response response=client.newCall(request).execute();
@@ -175,9 +175,8 @@ public class SolveActivity extends AppCompatActivity implements Serializable {
 
                         String x=map.get("data").toString();
                         if(x=="true"){
-                            RequestBody requestBody2=new FormBody.Builder().add("recordID", String.valueOf(record.getRecordID())).add("userID", String.valueOf(1)).add("username",login.userName).add("title",tabletitle.getText().toString()).add("context",tablecontent.getText().toString()).add("status","已处理").build();
+                            RequestBody requestBody2=new FormBody.Builder().add("recordID", String.valueOf(record.getRecordID())).add("userID", record.getUserID()).add("username",record.getUsername()).add("title",tabletitle.getText().toString()).add("context",tablecontent.getText().toString()).add("status","已处理").build();
                             Request request2 = new Request.Builder().url(updaterecordpath).post(requestBody2).build();
-
                             try {
                                 Response response2=client.newCall(request2).execute();
                                String result2=response2.body().string();
@@ -185,7 +184,22 @@ public class SolveActivity extends AppCompatActivity implements Serializable {
 
                                 String x2=map2.get("data").toString();
                                 if(x2=="true"){
-                                    flag=1;
+                                    RequestBody requestBody3=new FormBody.Builder().add("devicenum",record.getDevicenum()).add("newstatus","正常运转").build();
+                                    Request request3=new Request.Builder().url(updatedevicestatuspath).post(requestBody3).build();
+                                    try{
+                                        Response response3=client.newCall(request3).execute();
+                                        String result3=response3.body().string();
+                                        Map<String, Object> map3= jsonstr2map.jsonstr2map(result);
+
+                                        String x3=map.get("data").toString();
+                                        if(x3=="true"){
+                                            flag=1;
+                                        }else{
+                                            flag=2;
+                                        }
+                                    }catch (Exception e){
+                                        e.printStackTrace();
+                                    }
                                 }else{
                                     flag=2;
                                 }

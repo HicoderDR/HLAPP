@@ -17,7 +17,9 @@ import android.widget.Toast;
 
 import com.example.jsrgjhl.hlapp.Adapter.Device;
 import com.example.jsrgjhl.hlapp.Adapter.DeviceAdapter;
+import com.example.jsrgjhl.hlapp.PersonalSetting.ChangePassword;
 import com.example.jsrgjhl.hlapp.R;
+import com.example.jsrgjhl.hlapp.Sample.DeviceList;
 import com.example.jsrgjhl.hlapp.Utils.jsonstr2map;
 
 import java.io.Serializable;
@@ -221,7 +223,7 @@ public class DeviceListActivity extends AppCompatActivity {
                         String[] ms = sss.split("=");
 
                         if (ms.length==1) {
-                            continue;
+                           continue;
                         }
                         if (ms.length==2&&ms[1].equals("null")){
                             ms[1]="";
