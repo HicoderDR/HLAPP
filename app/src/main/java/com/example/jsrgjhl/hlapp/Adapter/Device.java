@@ -50,6 +50,14 @@ public class Device implements Serializable {
         this.IP=IP;
         this.regionID=regionID;
     }
+
+    public Device(String devicenum, String devicetype, String regionID, String defposID) {
+        this.devicenum = devicenum;
+        this.devicetype = devicetype;
+        this.regionID = regionID;
+        this.defposID = defposID;
+    }
+
     public int getDeviceID() {
         return deviceID;
     }

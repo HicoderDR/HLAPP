@@ -21,10 +21,10 @@ import java.util.List;
  * Created by xuxiaojin on 2018/12/7.
  */
 
-public class WarningRecordsAdapter extends ArrayAdapter<Records>{
+public class WarningRecordsAdapter extends ArrayAdapter<Record>{
 
     private int resourceId;
-    public WarningRecordsAdapter(@NonNull Context context, int textViewResourceId, @NonNull List<Records> objects) {
+    public WarningRecordsAdapter(@NonNull Context context, int textViewResourceId, @NonNull List<Record> objects) {
         super(context, textViewResourceId, objects);
         resourceId=textViewResourceId;
     }
@@ -32,7 +32,7 @@ public class WarningRecordsAdapter extends ArrayAdapter<Records>{
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        Records records=getItem(position);
+        Record records=getItem(position);
         View view;
         ViewHolder viewHolder;
         if (convertView==null){
@@ -48,7 +48,7 @@ public class WarningRecordsAdapter extends ArrayAdapter<Records>{
         }
         try {
             DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-            Date dt=df.parse(records.getTime());
+            Date dt=df.parse(records.getRecordtime());
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String date=format.format(dt);
             viewHolder.timeTextview.setText(date);
@@ -56,8 +56,8 @@ public class WarningRecordsAdapter extends ArrayAdapter<Records>{
             e.printStackTrace();
         }
 
-        viewHolder.idTextview.setText(records.getId());
-        viewHolder.addressTextview.setText(records.getAddress());
+        viewHolder.idTextview.setText(records.getDevicenum());
+        viewHolder.addressTextview.setText(records.getDeviceaddress());
 
         return view;
     }

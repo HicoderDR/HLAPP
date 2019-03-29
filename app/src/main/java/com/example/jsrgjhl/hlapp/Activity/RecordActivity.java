@@ -1,7 +1,6 @@
 package com.example.jsrgjhl.hlapp.Activity;
 
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -19,8 +18,6 @@ import com.example.jsrgjhl.hlapp.R;
 import com.example.jsrgjhl.hlapp.Utils.jsonstr2map;
 
 import java.io.Serializable;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -85,6 +82,7 @@ public class RecordActivity extends AppCompatActivity implements Serializable{
                 startActivity(intent);
             }
         });
+
     }
 
     @Override
@@ -112,30 +110,32 @@ public class RecordActivity extends AppCompatActivity implements Serializable{
                     /**
                      * 将 string 转为json格式
                      */
-                        String temp = map.get("data").toString();
-                        if(temp.equals("null")){
-                            flag=1;
-                            return;
-                        }
-                        temp = temp.substring(1, temp.length() - 1).replace(" ", "").replace("{", "").replace("}", "").replace("\"","").replace("\"","");
-                        Log.i(Tag,temp);
-                        String[] strs = temp.split(",");
-                        Map<String, String> map2 = new HashMap<String, String>();
-                        for (String s : strs) {
-                            String sss=s.replace(" ","");
-                            String[] ms = sss.split("=");
+                    String temp = map.get("data").toString();
+                    if(temp.equals("null")){
+                        flag=1;
+                        return;
+                    }
+                    temp = temp.substring(1, temp.length() - 1).replace(" ", "").replace("{", "").replace("}", "").replace("\"","").replace("\"","");
+                    Log.i(Tag,temp);
+                    String[] strs = temp.split(",");
+                    Map<String, String> map2 = new HashMap<String, String>();
+                    for (String s : strs) {
+                        String sss=s.replace(" ","");
+                        String[] ms = sss.split("=");
 
-                            if (ms[1].equals("null")) {
-                                ms[1] = "";
-                            }
+                        if (ms[1].equals("null")) {
+                            ms[1] = "";
+                        }
+                        if (map2.containsKey(ms[0])) {
+                            Record record1 = new Record(map2.get("recordID"),(String) map2.get("recordnum"),map2.get("recordtime"), map2.get("recordstatus"), map2.get("solutionID"),map2.get("userID"), (String) map2.get("title"), (String) map2.get("context"), map2.get("deviceID"),(String)map2.get("devicenum"),(String)map2.get("deviceaddress"),map2.get("regionID"),map2.get("defposID"),map2.get("devicelat"),map2.get("devicelng"),map2.get("devicetype"),map2.get("devicestatus"),map2.get("deltime"));
+                            if(record1.getDevicenum()!="0"&&record1.getDevicestatus()!="0"&&record1.getDevicetype()!="0")   mrecordsList.add(record1);
+                            map2.clear();
+                            map2.put(ms[0],ms[1]);
+                        }
+                        else{
                             map2.put(ms[0], ms[1]);
-
-                            if (ms[0].equals("username")) {
-                                Record record1 = new Record(map2.get("recordID"),(String) map2.get("recordnum"),map2.get("recordtime"), map2.get("recordstatus"), map2.get("solutionID"),map2.get("userID"), (String) map2.get("title"), (String) map2.get("context"), map2.get("deviceID"),(String)map2.get("devicenum"),(String)map2.get("deviceaddress"),map2.get("regionID"),map2.get("defposID"),map2.get("devicelat"),map2.get("devicelng"),map2.get("devicetype"),map2.get("devicestatus"),map2.get("deltime"));
-                                mrecordsList.add(record1);
-                                Log.i(Tag, String.valueOf(map2));
-                            }
                         }
+                    }
 
                     if(mrecordsList.size()!=0){
                         flag=1;

@@ -104,7 +104,7 @@ public class DeviceSituationActivity extends AppCompatActivity implements OnGeoc
         if(String.valueOf(getDevice.getDevicenum())!="null") {
             idEditText.setText(String.valueOf(getDevice.getDevicenum()));}
         else{
-            getDevice.setDevicestatus("");
+            getDevice.setDevicestatus("停机状态");
         }
         addressEditText.setText((CharSequence) getDevice.getDeviceaddress());
         for(int i=0;i<4;i++) {
