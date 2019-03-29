@@ -18,6 +18,7 @@ import com.example.jsrgjhl.hlapp.R;
 import com.example.jsrgjhl.hlapp.Utils.jsonstr2map;
 
 import java.io.Serializable;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -113,7 +114,7 @@ public class RecordActivity extends AppCompatActivity implements Serializable{
                         String temp = map.get("data").toString();
                         Log.i(Tag, temp);
                         temp = temp.substring(1, temp.length() - 1).replace(" ", "").replace("{", "").replace("}", "").replace("\"","").replace("\"","");
-                        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
                         String[] strs = temp.split(",");
                         Map<String, String> map2 = new HashMap<String, String>();
                         for (String s : strs) {
@@ -126,8 +127,8 @@ public class RecordActivity extends AppCompatActivity implements Serializable{
                             map2.put(ms[0], ms[1]);
 
                             if (ms[0].equals("deltime")) {
-                                Date recordtime=format.parse(map2.get("recordtime"));
-                                Date deltime=format.parse(map2.get("deltime"));
+                                Date recordtime=df.parse(String.valueOf(map2.get("recordtime")));
+                                Date deltime=df.parse(String.valueOf(map2.get("deltime")));
                                 Record record1 = new Record((String) map2.get("recordnum"),recordtime, map2.get("recordstatus"), Integer.parseInt(map2.get("solutionID")) , Integer.parseInt(map2.get("userID")) , (String) map2.get("username"), (String) map2.get("title"), (String) map2.get("context"),Integer.parseInt(map2.get("deviceID")),(String)map2.get("devicenum"),(String)map2.get("deviceaddress"),map2.get("regionID"),map2.get("defposID"),Double.parseDouble(map2.get("devicelat")),Double.parseDouble(map2.get("devicelng")),map2.get("devicetype"),map2.get("devicestatus"),deltime);
                                 mrecordsList.add(record1);
                                 map2.clear();
