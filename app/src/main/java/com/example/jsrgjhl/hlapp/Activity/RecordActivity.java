@@ -85,7 +85,6 @@ public class RecordActivity extends AppCompatActivity implements Serializable{
                 startActivity(intent);
             }
         });
-
     }
 
     @Override

@@ -5,7 +5,7 @@
     <ImageView
         android:layout_width="30dp"
         android:layout_height="38dp"
-        android:background="@mipmap/marker_radar_r"
+        android:background="@mipmap/marker_radar_gray"
         android:scaleType="fitXY"
         >
     </ImageView>
