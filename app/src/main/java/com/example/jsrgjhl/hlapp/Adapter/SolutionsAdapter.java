@@ -17,9 +17,9 @@ import java.util.List;
  * Created by xuxiaojin on 2019/3/24.
  */
 
-public class SolutionsAdapter extends ArrayAdapter<Solutions> {
+public class SolutionsAdapter extends ArrayAdapter<Solution> {
     private int resourceId;
-    public SolutionsAdapter(@NonNull Context context, int textViewResourceId, @NonNull List<Solutions> objects) {
+    public SolutionsAdapter(@NonNull Context context, int textViewResourceId, @NonNull List<Solution> objects) {
         super(context,textViewResourceId,objects);
         resourceId=textViewResourceId;
     }
@@ -28,7 +28,7 @@ public class SolutionsAdapter extends ArrayAdapter<Solutions> {
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        Solutions solutions=getItem(position);
+        Solution solution=getItem(position);
         View view;
         SolutionsAdapter.ViewHolder viewHolder;
         if (convertView==null){
@@ -43,10 +43,10 @@ public class SolutionsAdapter extends ArrayAdapter<Solutions> {
             view=convertView;
             viewHolder=(SolutionsAdapter.ViewHolder)view.getTag();
         }
-        viewHolder.recordnumTextview.setText(solutions.getRecordnum());
-        viewHolder.recordtitleTextview.setText(solutions.getSolutionTitle());
-        viewHolder.recordcontextTextview.setText(solutions.getSolutionContext());
-        viewHolder.recordtimeTextview.setText(solutions.getDelTime());
+        viewHolder.recordnumTextview.setText(solution.getDevicenum());
+        viewHolder.recordtitleTextview.setText(solution.getTitle());
+        viewHolder.recordcontextTextview.setText(solution.getContext());
+        viewHolder.recordtimeTextview.setText((CharSequence) solution.getDeltime());
         return view;
     }
     class ViewHolder{

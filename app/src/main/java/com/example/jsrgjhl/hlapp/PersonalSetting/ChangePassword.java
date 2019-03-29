@@ -72,77 +72,20 @@ public class ChangePassword extends AppCompatActivity {
             public void onClick(View view) {
                 if(confirmOldPassword())
                 {
-                    if(confirmTwoPassword()){
-                        if(changePassword()){
-                            /**
-                             * 如何将密码直接保存到本地？？
-                             */
-                            showToast("密码修改成功");
-
-                        }else{
-                            showToast("密码修改失败");
-                        }
-                    }else{
-                        showToast("请确认新密码");
-                    }
+                   showToast("密码修改成功");
                 }else{
-                    showToast("旧密码错误");
+                    showToast("请检查输入");
                 }
 
             }
         });
     }
 
-    private boolean changePassword() {
-        flag=0;
-        try{
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    OkHttpClient client=new OkHttpClient();
-                    RequestBody requestBody = new FormBody.Builder().add("username",login.userName ).add("password",newpassword.getText().toString() ).build();
-                    Request request = new Request.Builder().url(changePassword).post(requestBody).build();
-                    try{
-                        Response response=client.newCall(request).execute();
-                        String result = response.body().string();
-                        Map<String, Object> map= jsonstr2map.jsonstr2map(result);
-
-                        String x=map.get("data").toString();
-                        if(x=="true"){
-                            flag=1;
-                        }else{
-                            flag=2;
-                        }
-                    }catch (Exception e){
-
-                    }
-                }
-            }).start();
-            while (flag==0){
-                try{
-                    Thread.sleep(1);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            };
-            if(flag==1){
-                Log.i(Tag,"password"+"成功");
-                return true;
-
-            }else {
-                Log.i(Tag,"password"+"失败");
-                return false;
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        return false;
-    }
-
     private boolean confirmTwoPassword() {
         if(newpassword.getText().toString().equals(confirmpassword.getText().toString())){
             return true;
         }else {
+            showToast("请确认新密码是否一致");
             newpassword.setText("");
             confirmpassword.setText("");
             return false;
@@ -173,9 +116,28 @@ public class ChangePassword extends AppCompatActivity {
                             m.put(ms[0],ms[1]);
                         }
                         if(m.get("password").equals(String.valueOf(oldpassword.getText()))){
-                            flag=1;
-                        }
-                        else flag=2;
+                            if(confirmTwoPassword()){
+                                OkHttpClient client2=new OkHttpClient();
+                                RequestBody requestBody2 = new FormBody.Builder().add("username",login.userName ).add("password",newpassword.getText().toString() ).build();
+                                Request request2 = new Request.Builder().url(changePassword).post(requestBody2).build();
+                                try{
+                                    Response response2=client2.newCall(request2).execute();
+                                    String result2 = response2.body().string();
+                                    Map<String, Object> map2= jsonstr2map.jsonstr2map(result2);
+
+                                    String x=map2.get("data").toString();
+                                    if(x=="true"){
+                                        flag=1;
+                                    }else{
+                                        flag=2;
+                                    }
+                                }catch (Exception e){
+                                    e.printStackTrace();
+                                }
+                            }else{
+                                flag=2;
+                            }
+                        } else flag=2;
 
                     } catch (Exception e) {
                         e.printStackTrace();

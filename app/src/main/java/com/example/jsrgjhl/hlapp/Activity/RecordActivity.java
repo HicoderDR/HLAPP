@@ -1,6 +1,7 @@
 package com.example.jsrgjhl.hlapp.Activity;
 
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -38,6 +39,8 @@ public class RecordActivity extends AppCompatActivity implements Serializable{
     private int flag;
     private RecordsAdapter adapter;
     private final static String Tag= OperateRecord.class.getSimpleName();
+    private Date recordtime;
+    private Date deltime;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -110,11 +113,13 @@ public class RecordActivity extends AppCompatActivity implements Serializable{
                     /**
                      * 将 string 转为json格式
                      */
-
                         String temp = map.get("data").toString();
-                        Log.i(Tag, temp);
+                        if(temp.equals("null")){
+                            flag=1;
+                            return;
+                        }
                         temp = temp.substring(1, temp.length() - 1).replace(" ", "").replace("{", "").replace("}", "").replace("\"","").replace("\"","");
-                        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+                        Log.i(Tag,temp);
                         String[] strs = temp.split(",");
                         Map<String, String> map2 = new HashMap<String, String>();
                         for (String s : strs) {
@@ -126,12 +131,10 @@ public class RecordActivity extends AppCompatActivity implements Serializable{
                             }
                             map2.put(ms[0], ms[1]);
 
-                            if (ms[0].equals("deltime")) {
-                                Date recordtime=df.parse(String.valueOf(map2.get("recordtime")));
-                                Date deltime=df.parse(String.valueOf(map2.get("deltime")));
-                                Record record1 = new Record((String) map2.get("recordnum"),recordtime, map2.get("recordstatus"), Integer.parseInt(map2.get("solutionID")) , Integer.parseInt(map2.get("userID")) , (String) map2.get("username"), (String) map2.get("title"), (String) map2.get("context"),Integer.parseInt(map2.get("deviceID")),(String)map2.get("devicenum"),(String)map2.get("deviceaddress"),map2.get("regionID"),map2.get("defposID"),Double.parseDouble(map2.get("devicelat")),Double.parseDouble(map2.get("devicelng")),map2.get("devicetype"),map2.get("devicestatus"),deltime);
+                            if (ms[0].equals("username")) {
+                                Record record1 = new Record(map2.get("recordID"),(String) map2.get("recordnum"),map2.get("recordtime"), map2.get("recordstatus"), map2.get("solutionID"),map2.get("userID"), (String) map2.get("title"), (String) map2.get("context"), map2.get("deviceID"),(String)map2.get("devicenum"),(String)map2.get("deviceaddress"),map2.get("regionID"),map2.get("defposID"),map2.get("devicelat"),map2.get("devicelng"),map2.get("devicetype"),map2.get("devicestatus"),map2.get("deltime"));
                                 mrecordsList.add(record1);
-                                map2.clear();
+                                Log.i(Tag, String.valueOf(map2));
                             }
                         }
 

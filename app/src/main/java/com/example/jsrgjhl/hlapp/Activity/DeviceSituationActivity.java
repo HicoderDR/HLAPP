@@ -125,7 +125,7 @@ public class DeviceSituationActivity extends AppCompatActivity implements OnGeoc
                     break;
                 }
             }
-        ipEditText.setText(getDevice.getIP());
+        ipEditText.setText(String.valueOf(getDevice.getIP()));
         //提交按钮事件
         final Button submit=(Button)findViewById(R.id.submit_Btn);
         submit.setOnClickListener(new View.OnClickListener() {

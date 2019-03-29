@@ -503,9 +503,8 @@ public class MainActivity extends AppCompatActivity implements LocationSource, A
 
                         if (ms[0].equals("deltime")) {
 
-                            Record record1 = new Record((String) map2.get("recordnum"),sdf.parse(map2.get("recordtime")), map2.get("recordstatus"), Integer.parseInt(map2.get("solutionID")) , Integer.parseInt(map2.get("userID")) , (String) map2.get("username"), (String) map2.get("title"), (String) map2.get("context"),Integer.parseInt(map2.get("deviceID")),(String)map2.get("devicenum"),(String)map2.get("deviceaddress"),map2.get("regionID"),map2.get("defposID"),Double.parseDouble(map2.get("devicelat")),Double.parseDouble(map2.get("devicelng")),map2.get("devicetype"),map2.get("devicestatus"),sdf.parse(map2.get("deltime")));
+                            Record record1 = new Record((String) map2.get("recordnum"),map2.get("recordtime"), map2.get("recordstatus"), map2.get("solutionID"),map2.get("userID"), (String) map2.get("username"), (String) map2.get("title"), (String) map2.get("context"), map2.get("deviceID"),(String)map2.get("devicenum"),(String)map2.get("deviceaddress"),map2.get("regionID"),map2.get("defposID"),map2.get("devicelat"),map2.get("devicelng"),map2.get("devicetype"),map2.get("devicestatus"),map2.get("deltime"));
                             mrecordsList.add(record1);
-                            map2.clear();
                         }
                     }
 

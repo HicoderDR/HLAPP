@@ -61,8 +61,8 @@ public class RecordsAdapter extends ArrayAdapter<Record>{
             e.printStackTrace();
         }
 
-        viewHolder.idTextview.setText(record.getDeviceID());
-        viewHolder.addressTextview.setText(record.getDeviceaddress());
+        viewHolder.idTextview.setText(String.valueOf(record.getDevicenum()));
+        viewHolder.addressTextview.setText(String.valueOf(record.getDeviceaddress()));
 
         //由不同的处理状态显示不同的数据
         if(record.getRecordstatus().equals("已处理")){

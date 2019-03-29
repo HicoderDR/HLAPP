@@ -7,34 +7,35 @@ import java.util.Date;
  */
 
 public class Record implements Serializable {
-    int recordID;
-    String recordnum;
-    Date recordtime;
-    String recordstatus;
-    int solutionID;
-    int userID;
-    String username;
-    String title;
-    String context;
-    int deviceID;
-    String devicenum;
-    String deviceaddress;
-    String regionID;
-    String defposID;
-    Double devicelat;
-    Double devicelng;
-    String devicetype;
-    String devicestatus;
-    Date deltime;
+    private String recordID;
+    private String recordnum;
+    private String recordtime;
+    private String recordstatus;
+    private String solutionID;
+    private String userID;
+    private String username;
+    private String title;
+    private String context;
+    private String deviceID;
+    private String devicenum;
+    private String deviceaddress;
+    private String regionID;
+    private String defposID;
+    private String devicelat;
+    private String devicelng;
+    private String devicetype;
+    private String devicestatus;
+    private String deltime;
 
     public Record(){}
-    public Record(String recordnum, Date recordtime, String recordstatus, int solutionID, int userID, String username, String title, String context, int deviceID, String devicenum, String deviceaddress, String regionID, String defposID, Double devicelat, Double devicelng, String devicetype, String devicestatus, Date deltime) {
+
+    public Record(String recordID, String recordnum, String recordtime, String recordstatus, String solutionID, String userID, String title, String context, String deviceID, String devicenum, String deviceaddress, String regionID, String defposID, String devicelat, String devicelng, String devicetype, String devicestatus, String deltime) {
+        this.recordID = recordID;
         this.recordnum = recordnum;
         this.recordtime = recordtime;
         this.recordstatus = recordstatus;
         this.solutionID = solutionID;
         this.userID = userID;
-        this.username = username;
         this.title = title;
         this.context = context;
         this.deviceID = deviceID;
@@ -49,33 +50,12 @@ public class Record implements Serializable {
         this.deltime = deltime;
     }
 
-    @Override
-    public String toString() {
-        return "Record{" +
-                "recordID=" + recordID +
-                ", recordnum='" + recordnum + '\'' +
-                ", recordtime='" + recordtime + '\'' +
-                ", recordstatus=" + recordstatus +
-                ", solutionID=" + solutionID +
-                ", userID=" + userID +
-                ", username='" + username + '\'' +
-                ", title='" + title + '\'' +
-                ", context='" + context + '\'' +
-                ", deviceID=" + deviceID +
-                ", devicenum='" + devicenum + '\'' +
-                ", deviceaddress='" + deviceaddress + '\'' +
-                ", regionID='" + regionID + '\'' +
-                ", defposID='" + defposID + '\'' +
-                ", devicelat=" + devicelat +
-                ", devicelng=" + devicelng +
-                ", devicetype='" + devicetype + '\'' +
-                ", devicestatus='" + devicestatus + '\'' +
-                ", deltime=" + deltime +
-                '}';
+    public String getRecordID() {
+        return recordID;
     }
 
-    public int getRecordID() {
-        return recordID;
+    public void setRecordID(String recordID) {
+        this.recordID = recordID;
     }
 
     public String getRecordnum() {
@@ -86,11 +66,11 @@ public class Record implements Serializable {
         this.recordnum = recordnum;
     }
 
-    public Date getRecordtime() {
+    public String getRecordtime() {
         return recordtime;
     }
 
-    public void setRecordtime(Date recordtime) {
+    public void setRecordtime(String recordtime) {
         this.recordtime = recordtime;
     }
 
@@ -102,19 +82,19 @@ public class Record implements Serializable {
         this.recordstatus = recordstatus;
     }
 
-    public int getSolutionID() {
+    public String getSolutionID() {
         return solutionID;
     }
 
-    public void setSolutionID(int solutionID) {
+    public void setSolutionID(String solutionID) {
         this.solutionID = solutionID;
     }
 
-    public int getUserID() {
+    public String getUserID() {
         return userID;
     }
 
-    public void setUserID(int userID) {
+    public void setUserID(String userID) {
         this.userID = userID;
     }
 
@@ -142,11 +122,11 @@ public class Record implements Serializable {
         this.context = context;
     }
 
-    public int getDeviceID() {
+    public String getDeviceID() {
         return deviceID;
     }
 
-    public void setDeviceID(int deviceID) {
+    public void setDeviceID(String deviceID) {
         this.deviceID = deviceID;
     }
 
@@ -182,19 +162,19 @@ public class Record implements Serializable {
         this.defposID = defposID;
     }
 
-    public Double getDevicelat() {
+    public String getDevicelat() {
         return devicelat;
     }
 
-    public void setDevicelat(Double devicelat) {
+    public void setDevicelat(String devicelat) {
         this.devicelat = devicelat;
     }
 
-    public Double getDevicelng() {
+    public String getDevicelng() {
         return devicelng;
     }
 
-    public void setDevicelng(Double devicelng) {
+    public void setDevicelng(String devicelng) {
         this.devicelng = devicelng;
     }
 
@@ -214,11 +194,36 @@ public class Record implements Serializable {
         this.devicestatus = devicestatus;
     }
 
-    public Date getDeltime() {
+    public String getDeltime() {
         return deltime;
     }
 
-    public void setDeltime(Date deltime) {
+    public void setDeltime(String deltime) {
         this.deltime = deltime;
+    }
+
+    @Override
+    public String toString() {
+        return "Record{" +
+                "recordID='" + recordID + '\'' +
+                ", recordnum='" + recordnum + '\'' +
+                ", recordtime='" + recordtime + '\'' +
+                ", recordstatus='" + recordstatus + '\'' +
+                ", solutionID='" + solutionID + '\'' +
+                ", userID='" + userID + '\'' +
+                ", username='" + username + '\'' +
+                ", title='" + title + '\'' +
+                ", context='" + context + '\'' +
+                ", deviceID='" + deviceID + '\'' +
+                ", devicenum='" + devicenum + '\'' +
+                ", deviceaddress='" + deviceaddress + '\'' +
+                ", regionID='" + regionID + '\'' +
+                ", defposID='" + defposID + '\'' +
+                ", devicelat='" + devicelat + '\'' +
+                ", devicelng='" + devicelng + '\'' +
+                ", devicetype='" + devicetype + '\'' +
+                ", devicestatus='" + devicestatus + '\'' +
+                ", deltime='" + deltime + '\'' +
+                '}';
     }
 }

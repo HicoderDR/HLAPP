@@ -6,17 +6,15 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.jsrgjhl.hlapp.Activity.LoginActivity;
-import com.example.jsrgjhl.hlapp.Activity.RecordActivity;
-import com.example.jsrgjhl.hlapp.Adapter.RecordsAdapter;
-import com.example.jsrgjhl.hlapp.Adapter.Solutions;
+import com.example.jsrgjhl.hlapp.Adapter.Solution;
 import com.example.jsrgjhl.hlapp.Adapter.SolutionsAdapter;
 import com.example.jsrgjhl.hlapp.R;
 import com.example.jsrgjhl.hlapp.Utils.jsonstr2map;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,7 +27,7 @@ import okhttp3.Response;
 public class OperateRecord extends AppCompatActivity {
 
     private LoginActivity login=new LoginActivity();
-    private List<Solutions> msolutionList=new ArrayList<>();
+    private List<Solution> msolutionList=new ArrayList<>();
     private String getsolutionpath="http://47.100.107.158:8080/api/solution/getsolutionlist";
     private int flag;
     private final static String Tag= OperateRecord.class.getSimpleName();
@@ -80,9 +78,13 @@ public class OperateRecord extends AppCompatActivity {
                      */
 
                     String temp = map.get("data").toString();
+                    if(temp.equals("null")){
+                        flag=1;
+                        return;
+                    }
                     Log.i(Tag, temp);
                     temp = temp.substring(1, temp.length() - 1).replace(" ", "").replace("{", "").replace("}", "").replace("\"","").replace("\"","");
-                    ;
+                    DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
                     String[] strs = temp.split(",");
                     Map<String, String> map2 = new HashMap<String, String>();
                     for (String s : strs) {
@@ -94,8 +96,8 @@ public class OperateRecord extends AppCompatActivity {
                         }
                         map2.put(ms[0], ms[1]);
 
-                        if (ms[0].equals("context")) {
-                            Solutions solution = new Solutions(map2.get("recordnum"),map2.get("title"),map2.get("context"),map2.get("deltime"));
+                        if (ms[0].equals("devicenum")) {
+                            Solution solution = new Solution(map2.get("deltime"),map2.get("title"),map2.get("context"),map2.get("devicenum"));
                             msolutionList.add(solution);
                         }
                     }
