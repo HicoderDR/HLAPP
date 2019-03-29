@@ -202,7 +202,7 @@ public class DeviceListActivity extends AppCompatActivity {
                     Map<String, Object> map= jsonstr2map.jsonstr2map(result);
                     List<Map<String, Object>> map2=jsonstr2map.jsonstr2list(map.get("data").toString());
                     for (int i=0;i<map2.size();i++){
-                        Device device1=new Device((int)map2.get(i).get("deviceID"),(String) map2.get(i).get("devicenum"), (double) map2.get(i).get("devicelat"), (double) map2.get(i).get("devicelng"), (String) map2.get(i).get("deviceaddress"), (String) map2.get(i).get("devicestatus"),(String)map2.get(i).get("devicetype"), (String) map2.get(i).get("regionID"), (String) map2.get(i).get("defposID"),(String) map2.get(i).get("IP"));
+                        Device device1=new Device(Integer.parseInt((String) map2.get(i).get("deviceID")),(String) map2.get(i).get("devicenum"), Double.parseDouble((String) map2.get(i).get("devicelat")) , Double.parseDouble((String) map2.get(i).get("devicelng")) , (String) map2.get(i).get("deviceaddress"), (String) map2.get(i).get("devicestatus"),(String)map2.get(i).get("devicetype"), (String) map2.get(i).get("regionID"), (String) map2.get(i).get("defposID"),(String) map2.get(i).get("IP"));
                         mdeviceList.add(device1);
                     }
                     if(mdeviceList.size()!=0){
