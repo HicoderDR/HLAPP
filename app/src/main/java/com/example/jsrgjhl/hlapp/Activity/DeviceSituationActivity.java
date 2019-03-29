@@ -266,7 +266,7 @@ public class DeviceSituationActivity extends AppCompatActivity implements OnGeoc
                      */
                     try {
                         if(createormodify){
-                            newdevicerequestBody = new FormBody.Builder().add("devicenum", getDevicenum()).add("devicetype",getDeviceType()).add("devicestatus","").add("devicelat", String.valueOf(getDevicelat())).add("devicelng", String.valueOf(getDevicelng())).add("regionID",getDeviceRegion()).add("defposID",getDeviceDefend()).add("deviceaddress",getDeviceAddress()).add("IP",getDeviceIp()).build();
+                            newdevicerequestBody = new FormBody.Builder().add("devicenum", getDevicenum()).add("devicetype",getDeviceType()).add("devicestatus","停机状态").add("devicelat", String.valueOf(getDevicelat())).add("devicelng", String.valueOf(getDevicelng())).add("regionID",getDeviceRegion()).add("defposID",getDeviceDefend()).add("deviceaddress",getDeviceAddress()).add("IP",getDeviceIp()).build();
                             newdevicerequest = new Request.Builder().url(createDevicepath).post(newdevicerequestBody).build();
                             Response response = clients.newCall(newdevicerequest).execute();//发送请求
                             String result = response.body().string();
@@ -281,7 +281,7 @@ public class DeviceSituationActivity extends AppCompatActivity implements OnGeoc
                             }
                         }else{
                             modifydevicerequestBody = new FormBody.Builder().add("deviceID", String.valueOf(getDevice.getDeviceID())).add("devicenum",getDevice.getDevicenum()).add("devicetype",getDevice.getDevicetype()).add("devicestatus", String.valueOf(getDevice.getDevicestatus())).add("devicelat", String.valueOf(getDevice.getDevicelat())).add("devicelng", String.valueOf(getDevice.getDevicelng())).add("deviceaddress",getDevice.getDeviceaddress()).add("regionID",getDevice.getRegionID()).add("defposID",getDevice.getDefposID()).add("IP",getDevice.getIP()).build();
-                            modifydevicerequest = new Request.Builder().url(createDevicepath).post(modifydevicerequestBody).build();
+                            modifydevicerequest = new Request.Builder().url(modifyDevicepath).post(modifydevicerequestBody).build();
                             Response response = clients.newCall(modifydevicerequest).execute();//发送请求
                             String result = response.body().string();
                             Map<String, Object> map = jsonstr2map.jsonstr2map(result);

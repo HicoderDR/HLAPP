@@ -126,27 +126,16 @@ public class RecordActivity extends AppCompatActivity implements Serializable{
                         if (ms[1].equals("null")) {
                             ms[1] = "";
                         }
-                        temp = temp.substring(1, temp.length() - 1).replace(" ", "").replace("{", "").replace("}", "").replace("\"","").replace("\"","");
-                        Log.i(Tag,temp);
-                        String[] strs = temp.split(",");
-                        Map<String, String> map2 = new HashMap<String, String>();
-                        for (String s : strs) {
-                            String sss=s.replace(" ","");
-                            String[] ms = sss.split("=");
-
-                            if (ms[1].equals("null")) {
-                                ms[1] = "";
-                            }
-                            if (map2.containsKey(ms[0])) {
-                                Record record1 = new Record(map2.get("recordID"),(String) map2.get("recordnum"),map2.get("recordtime"), map2.get("recordstatus"), map2.get("solutionID"),map2.get("userID"), (String) map2.get("title"), (String) map2.get("context"), map2.get("deviceID"),(String)map2.get("devicenum"),(String)map2.get("deviceaddress"),map2.get("regionID"),map2.get("defposID"),map2.get("devicelat"),map2.get("devicelng"),map2.get("devicetype"),map2.get("devicestatus"),map2.get("deltime"));
-                                mrecordsList.add(record1);
-                                map2.clear();
-                                map2.put(ms[0],ms[1]);
-                            }
-                            else{
-                                map2.put(ms[0], ms[1]);
-                            }
+                        if (map2.containsKey(ms[0])) {
+                            Record record1 = new Record(map2.get("recordID"),(String) map2.get("recordnum"),map2.get("recordtime"), map2.get("recordstatus"), map2.get("solutionID"),map2.get("userID"), (String) map2.get("title"), (String) map2.get("context"), map2.get("deviceID"),(String)map2.get("devicenum"),(String)map2.get("deviceaddress"),map2.get("regionID"),map2.get("defposID"),map2.get("devicelat"),map2.get("devicelng"),map2.get("devicetype"),map2.get("devicestatus"),map2.get("deltime"));
+                            mrecordsList.add(record1);
+                            map2.clear();
+                            map2.put(ms[0],ms[1]);
                         }
+                        else{
+                            map2.put(ms[0], ms[1]);
+                        }
+                    }
                     Record record1 = new Record(map2.get("recordID"),(String) map2.get("recordnum"),map2.get("recordtime"), map2.get("recordstatus"), map2.get("solutionID"),map2.get("userID"), (String) map2.get("title"), (String) map2.get("context"), map2.get("deviceID"),(String)map2.get("devicenum"),(String)map2.get("deviceaddress"),map2.get("regionID"),map2.get("defposID"),map2.get("devicelat"),map2.get("devicelng"),map2.get("devicetype"),map2.get("devicestatus"),map2.get("deltime"));
                     mrecordsList.add(record1);
                     if(mrecordsList.size()!=0){
