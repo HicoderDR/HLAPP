@@ -38,7 +38,6 @@ public class DeviceAdapter extends ArrayAdapter<Device> {
             viewHolder.situationTextview=(TextView)view.findViewById(R.id.situation_tv);
             viewHolder.addressTextview=(TextView)view.findViewById(R.id.address_tv);
             viewHolder.sortTextview=(TextView)view.findViewById(R.id.sort_tv);
-            viewHolder.otherTextview=(TextView)view.findViewById(R.id.device_setting_tv);
             view.setTag(viewHolder);
         }else{
             view=convertView;
@@ -48,8 +47,6 @@ public class DeviceAdapter extends ArrayAdapter<Device> {
         viewHolder.situationTextview.setText(device.getDevicestatus());
         viewHolder.addressTextview.setText(device.getDeviceaddress());
         viewHolder.sortTextview.setText(device.getDevicetype());
-        viewHolder.otherTextview.setText(device.getIP());
-
         return view;
     }
     class ViewHolder{
@@ -57,7 +54,6 @@ public class DeviceAdapter extends ArrayAdapter<Device> {
         TextView sortTextview;
         TextView situationTextview;
         TextView addressTextview;
-        TextView otherTextview;
     }
 
 }

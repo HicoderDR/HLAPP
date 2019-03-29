@@ -37,7 +37,7 @@ public class ChangePassword extends AppCompatActivity {
     private String changePassword="http://47.100.107.158:8080/api/user/changepassword";
 
     SharedPreferences sp;
-
+    SharedPreferences.Editor editor=sp.edit();
     private static int flag;
     private final static String Tag=ChangePassword.class.getSimpleName();
     @Override
@@ -72,7 +72,16 @@ public class ChangePassword extends AppCompatActivity {
             public void onClick(View view) {
                 if(confirmOldPassword())
                 {
-                   showToast("密码修改成功");
+                    SharedPreferences.Editor editor=sp.edit();
+                    editor.putString("password","");
+                    editor.putBoolean("first",true);
+                    editor.putBoolean("rememberpassword",false);
+                    editor.putBoolean("autologin",false);
+                    editor.commit();
+                    Intent intent=new Intent(ChangePassword.this,LoginActivity.class);
+                    Toast.makeText(ChangePassword.this,"退出登录成功",Toast.LENGTH_SHORT).show();
+                    startActivity(intent);
+                    ChangePassword.this.finish();
                 }else{
                     showToast("请检查输入");
                 }

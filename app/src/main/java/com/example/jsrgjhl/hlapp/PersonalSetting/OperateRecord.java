@@ -6,6 +6,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.jsrgjhl.hlapp.Activity.LoginActivity;
 import com.example.jsrgjhl.hlapp.Adapter.Solution;
@@ -63,6 +64,7 @@ public class OperateRecord extends AppCompatActivity {
     }
 
     private void initSolutions() {
+        msolutionList.clear();
         flag=0;
         new Thread(new Runnable() {
             @Override
@@ -80,6 +82,9 @@ public class OperateRecord extends AppCompatActivity {
                     String temp = map.get("data").toString();
                     if(temp.equals("null")){
                         flag=1;
+                       // Toast.makeText(OperateRecord.this,"查不到信息",Toast.LENGTH_SHORT).show();
+                        Log.i(Tag,login.userName);
+                        Log.i(Tag,"查不到记录");
                         return;
                     }
                     Log.i(Tag, temp);
@@ -94,15 +99,20 @@ public class OperateRecord extends AppCompatActivity {
                         if (ms[1].equals("null")) {
                             ms[1] = "";
                         }
-                        map2.put(ms[0], ms[1]);
-
-                        if (ms[0].equals("devicenum")) {
+                        if (map2.containsKey(ms[0])) {
                             Solution solution = new Solution(map2.get("deltime"),map2.get("title"),map2.get("context"),map2.get("devicenum"));
                             msolutionList.add(solution);
+                            map2.clear();
+                            map2.put(ms[0],ms[1]);
+                        }else{
+                            map2.put(ms[0], ms[1]);
                         }
                     }
-
+                    Solution solution = new Solution(map2.get("deltime"),map2.get("title"),map2.get("context"),map2.get("devicenum"));
+                    msolutionList.add(solution);
+                        Log.i(Tag, String.valueOf(msolutionList));
                     if(msolutionList.size()!=0){
+                        Log.i(Tag, String.valueOf(msolutionList.size()));
                         flag=1;
                     }else flag=2;
                 } catch (Exception e) {

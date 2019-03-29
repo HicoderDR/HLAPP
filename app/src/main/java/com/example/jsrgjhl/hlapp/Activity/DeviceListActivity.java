@@ -13,14 +13,18 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.example.jsrgjhl.hlapp.Adapter.Device;
 import com.example.jsrgjhl.hlapp.Adapter.DeviceAdapter;
+import com.example.jsrgjhl.hlapp.PersonalSetting.ChangePassword;
 import com.example.jsrgjhl.hlapp.R;
+import com.example.jsrgjhl.hlapp.Sample.DeviceList;
 import com.example.jsrgjhl.hlapp.Utils.jsonstr2map;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -178,9 +182,10 @@ public class DeviceListActivity extends AppCompatActivity {
         addDevice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Toast.makeText(DeviceListActivity.this,"点击了添加按钮", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent();
                 intent.setClass(DeviceListActivity.this, DeviceSituationActivity.class);
-                Device device=new Device(null,null,null,null,null,"振动传感","防区一","区域一",null);
+                Device device=new Device(null,"振动传感","区域一","防区一");
                 intent.putExtra("device", (Serializable) device);
                 startActivity(intent);
             }
@@ -200,12 +205,43 @@ public class DeviceListActivity extends AppCompatActivity {
                     Response response = client.newCall(request).execute();//发送请求
                     String result = response.body().string();
                     Map<String, Object> map= jsonstr2map.jsonstr2map(result);
-                    List<Map<String, Object>> map2=jsonstr2map.jsonstr2list(map.get("data").toString());
-                    for (int i=0;i<map2.size();i++){
-                        Device device1=new Device(Integer.parseInt((String) map2.get(i).get("deviceID")),(String) map2.get(i).get("devicenum"), Double.parseDouble((String) map2.get(i).get("devicelat")) , Double.parseDouble((String) map2.get(i).get("devicelng")) , (String) map2.get(i).get("deviceaddress"), (String) map2.get(i).get("devicestatus"),(String)map2.get(i).get("devicetype"), (String) map2.get(i).get("regionID"), (String) map2.get(i).get("defposID"),(String) map2.get(i).get("IP"));
-                        mdeviceList.add(device1);
+                    //List<Map<String, Object>> map2=jsonstr2map.jsonstr2list(map.get("data").toString());
+                    /**
+                     * 将 string 转为json格式
+                     */
+                    String temp = map.get("data").toString();
+                    if(temp.equals("null")){
+                        flag=1;
+                        return;
                     }
+                    temp = temp.substring(1, temp.length() - 1).replace(" ", "").replace("{", "").replace("}", "").replace("\"","").replace("\"","");
+                    Log.i(Tag,temp);
+                    String[] strs = temp.split(",");
+                    Map<String, String> map2 = new HashMap<String, String>();
+                    for (String s : strs) {
+                        String sss=s.replace(" ","");
+                        String[] ms = sss.split("=");
+
+                        if (ms.length==1) {
+                           continue;
+                        }
+                        if (ms.length==2&&ms[1].equals("null")){
+                            ms[1]="";
+                        }
+                        if (map2.containsKey(ms[0])) {
+                            Device device1 = new Device(Integer.parseInt((String) map2.get("deviceID")), (String) map2.get("devicenum"), Double.parseDouble((String) map2.get("devicelat")), Double.parseDouble((String) map2.get("devicelng")), (String) map2.get("deviceaddress"), (String) map2.get("devicestatus"), (String) map2.get("devicetype"), (String) map2.get("regionID"), (String) map2.get("defposID"), (String) map2.get("ip"));
+                            mdeviceList.add(device1);
+                            map2.clear();
+                            map2.put(ms[0], ms[1]);
+                        }
+                        else{
+                            map2.put(ms[0], ms[1]);
+                        }
+                    }
+                    Device device1 = new Device(Integer.parseInt((String) map2.get("deviceID")), (String) map2.get("devicenum"), Double.parseDouble((String) map2.get("devicelat")), Double.parseDouble((String) map2.get("devicelng")), (String) map2.get("deviceaddress"), (String) map2.get("devicestatus"), (String) map2.get("devicetype"), (String) map2.get("regionID"), (String) map2.get("defposID"), (String) map2.get("ip"));
+                    mdeviceList.add(device1);
                     if(mdeviceList.size()!=0){
+                        deletzero();
                         flag=1;
                     }
                 } catch (Exception e) {
@@ -271,6 +307,15 @@ public class DeviceListActivity extends AppCompatActivity {
             }else{
                 mnowdeviceList.remove(k);
                 k--;
+            }
+        }
+    }
+    //删除0
+    public void deletzero(){
+        for (int i=0;i<mdeviceList.size();i++){
+            if(mdeviceList.get(i).getDevicenum().equals("0")){
+                mdeviceList.remove(i);
+                i--;
             }
         }
     }
