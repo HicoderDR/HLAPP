@@ -1,7 +1,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="210dp"
     android:background="@color/list_record"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_marginRight="5dp">
 
     <ImageView
         android:id="@+id/timeimg"
@@ -22,7 +23,6 @@
         android:layout_toEndOf="@+id/timeimg"
         android:layout_toRightOf="@+id/timeimg"
         android:height="25dp"
-        android:text="121313213"
         android:textColor="@color/black"
         android:textSize="15sp" />
 
@@ -43,8 +43,8 @@
         android:layout_alignLeft="@+id/timetv"
         android:layout_alignStart="@+id/timetv"
         android:layout_below="@+id/timetv"
-        android:text="113132"
         android:textColor="@color/black"
+        android:maxLines="1"
         android:textSize="15sp" />
 
     <ImageView
@@ -66,7 +66,6 @@
         android:layout_alignLeft="@+id/addresstv"
         android:layout_alignStart="@+id/addresstv"
         android:layout_alignTop="@+id/idimg"
-        android:text="121313132"
         android:textColor="@color/black"
         android:textSize="15sp" />
 

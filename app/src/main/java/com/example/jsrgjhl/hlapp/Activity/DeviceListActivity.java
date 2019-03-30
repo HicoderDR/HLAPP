@@ -88,7 +88,7 @@ public class DeviceListActivity extends AppCompatActivity {
 
         //
         //初始化设备列表
-        mnowdeviceList=mdeviceList;
+        mnowdeviceList.addAll(mdeviceList);
         adapter = new DeviceAdapter(DeviceListActivity.this, R.layout.device_list,mnowdeviceList);
         devicelistView=(ListView)findViewById(R.id.device_listview);
         devicelistView.setAdapter(adapter);
@@ -216,6 +216,7 @@ public class DeviceListActivity extends AppCompatActivity {
             public void handleMessage(Message msg) {
                 switch (msg.what) {
                     case UPDATE_LIST:
+                            mnowdeviceList.clear();
                             mnowdeviceList.addAll(mdeviceList);
                             //initNowDeviceList(sorttype[sortSpinner.getSelectedItemPosition()],defendtype[defendSpinner.getSelectedItemPosition()],regiontype[regionSpinner.getSelectedItemPosition()]);
                             String sort=sorttype[sortSpinner.getSelectedItemPosition()];
@@ -324,6 +325,7 @@ public class DeviceListActivity extends AppCompatActivity {
                                 mdeviceList.remove(i);
                                 i--;
                             }
+                            Log.i(Tag,"xj"+mdeviceList.size());
                         }
                     } flag=1;
                 } catch (Exception e) {
