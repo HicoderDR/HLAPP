@@ -5,68 +5,69 @@
 
     <ImageView
         android:id="@+id/timeimg"
-        android:layout_width="15dp"
-        android:layout_height="15dp"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="5dp"
         android:layout_marginTop="10dp"
         android:scaleType="fitXY"
         android:src="@mipmap/clock" />
+
     <TextView
         android:id="@+id/timetv"
+        android:layout_alignBaseline="@+id/timeimg"
         android:layout_width="wrap_content"
         android:layout_height="25dp"
+        android:layout_alignTop="@+id/timeimg"
+        android:layout_toEndOf="@+id/timeimg"
+        android:layout_toRightOf="@+id/timeimg"
         android:height="25dp"
-        android:layout_toRightOf="@id/timeimg"
-        android:layout_alignBaseline="@+id/timeimg"
-        android:layout_margin="5dp"
-        android:textSize="15sp"
-        android:textColor="@color/black" />
+        android:text="121313213"
+        android:textColor="@color/black"
+        android:textSize="15sp" />
 
     <ImageView
         android:id="@+id/addressimg"
-        android:layout_width="15dp"
-        android:layout_height="15dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="5dp"
-        android:layout_marginTop="10dp"
-        android:layout_below="@id/timeimg"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_alignLeft="@+id/timeimg"
+        android:layout_alignStart="@+id/timeimg"
+        android:layout_below="@+id/timetv"
         android:scaleType="fitXY"
         android:src="@mipmap/location" />
 
     <TextView
         android:id="@+id/addresstv"
         android:layout_width="wrap_content"
-        android:layout_alignTop="@id/addressimg"
-        android:layout_toRightOf="@id/addressimg"
-        android:layout_below="@id/timetv"
-        android:layout_margin="5dp"
-        android:textSize="15sp"
-        android:layout_alignBaseline="@+id/addressimg"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/timetv"
+        android:layout_alignStart="@+id/timetv"
+        android:layout_below="@+id/timetv"
+        android:text="113132"
         android:textColor="@color/black"
-        android:layout_height="wrap_content" />
+        android:textSize="15sp" />
 
     <ImageView
         android:id="@+id/idimg"
-        android:layout_width="15dp"
-        android:layout_height="15dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="5dp"
-        android:layout_marginTop="10dp"
+        android:layout_width="14dp"
+        android:layout_height="14dp"
+        android:layout_alignEnd="@+id/addressimg"
+        android:layout_alignRight="@+id/addressimg"
         android:layout_below="@id/addressimg"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
         android:scaleType="fitXY"
         android:src="@mipmap/devicenum" />
+
     <TextView
         android:id="@+id/idtv"
         android:layout_width="wrap_content"
-        android:layout_alignTop="@id/idimg"
-        android:layout_toRightOf="@id/idimg"
-        android:layout_below="@id/addresstv"
-        android:layout_margin="5dp"
-        android:layout_alignBaseline="@+id/idimg"
-        android:layout_marginBottom="10dp"
-        android:textSize="15sp"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/addresstv"
+        android:layout_alignStart="@+id/addresstv"
+        android:layout_alignTop="@+id/idimg"
+        android:text="121313132"
         android:textColor="@color/black"
-        android:layout_height="wrap_content" />
+        android:textSize="15sp" />
 
 </RelativeLayout>
