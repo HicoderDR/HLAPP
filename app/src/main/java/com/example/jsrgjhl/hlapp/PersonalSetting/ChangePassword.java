@@ -2,8 +2,8 @@ package com.example.jsrgjhl.hlapp.PersonalSetting;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
@@ -11,14 +11,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.jsrgjhl.hlapp.Activity.DeviceSituationActivity;
 import com.example.jsrgjhl.hlapp.Activity.LoginActivity;
-import com.example.jsrgjhl.hlapp.Activity.PersonActivity;
 import com.example.jsrgjhl.hlapp.R;
 import com.example.jsrgjhl.hlapp.Utils.jsonstr2map;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import okhttp3.FormBody;
@@ -37,12 +34,14 @@ public class ChangePassword extends AppCompatActivity {
     private String changePassword="http://47.100.107.158:8080/api/user/changepassword";
 
     SharedPreferences sp;
-    SharedPreferences.Editor editor=sp.edit();
+    SharedPreferences.Editor editor;
     private static int flag;
     private final static String Tag=ChangePassword.class.getSimpleName();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        sp=getSharedPreferences("userinfo", MODE_PRIVATE);
+        editor=sp.edit();
         setContentView(R.layout.activity_change_password);
         Toolbar toolbar = (Toolbar) findViewById(R.id.changePasswordBar);
         toolbar.setTitle("");
@@ -74,7 +73,7 @@ public class ChangePassword extends AppCompatActivity {
                 {
                     SharedPreferences.Editor editor=sp.edit();
                     editor.putString("password","");
-                    editor.putBoolean("first",true);
+                    editor.putBoolean("first",false);
                     editor.putBoolean("rememberpassword",false);
                     editor.putBoolean("autologin",false);
                     editor.commit();
