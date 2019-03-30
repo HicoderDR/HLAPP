@@ -13,10 +13,10 @@ import java.util.ArrayList;
 public class Gifmarker {
     public ArrayList<BitmapDescriptor> iconList = new ArrayList<>();
     public Gifmarker(String type, Context mcontext){
-        View gif1 = LayoutInflater.from(mcontext).inflate(R.layout.marker_camera_r,null);
-        View gif2 = LayoutInflater.from(mcontext).inflate(R.layout.marker_camera_r,null);
-        View gif3= LayoutInflater.from(mcontext).inflate(R.layout.marker_radar_r,null);
-        View gif4 = LayoutInflater.from(mcontext).inflate(R.layout.marker_radar_r,null);
+        View gif1 = LayoutInflater.from(mcontext).inflate(R.layout.marker_camera_r1,null);
+        View gif2 = LayoutInflater.from(mcontext).inflate(R.layout.marker_camera_r2,null);
+        View gif3= LayoutInflater.from(mcontext).inflate(R.layout.marker_radar_r1,null);
+        View gif4 = LayoutInflater.from(mcontext).inflate(R.layout.marker_radar_r2,null);
         //View gif5 = LayoutInflater.from(mcontext).inflate(R.layout.marker_radar_r1,null);
         //View gif6 = LayoutInflater.from(mcontext).inflate(R.layout.marker_radar_r2,null);
         if(type.equals("camera")){

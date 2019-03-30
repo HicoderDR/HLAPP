@@ -182,6 +182,7 @@ public class DeviceListActivity extends AppCompatActivity {
         addDevice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Toast.makeText(DeviceListActivity.this,"点击了添加按钮", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent();
                 intent.setClass(DeviceListActivity.this, DeviceSituationActivity.class);
                 Device device=new Device(null,"振动传感","区域一","防区一");
@@ -191,9 +192,9 @@ public class DeviceListActivity extends AppCompatActivity {
         });
     }
 
-    //向服务器请求列表
+        //向服务器请求列表
     private void initDeviceList() {
-        flag=0;
+       flag=0;
         showLoading();//显示加载框
         new Thread(new Runnable() {
             @Override
@@ -276,7 +277,7 @@ public class DeviceListActivity extends AppCompatActivity {
             if (sort.equals("类型")){
                 break;
             }
-            else if(mnowdeviceList.get(i).getDevicetype().equals(sort)){
+           else if(mnowdeviceList.get(i).getDevicetype().equals(sort)){
                 continue;
             }
             else {
@@ -284,7 +285,7 @@ public class DeviceListActivity extends AppCompatActivity {
                 i--;
             }
         }
-        //完成防区的选择
+       //完成防区的选择
         for (int j=0;j<mnowdeviceList.size();j++){
             if(defend.equals("防区")){
                 break;

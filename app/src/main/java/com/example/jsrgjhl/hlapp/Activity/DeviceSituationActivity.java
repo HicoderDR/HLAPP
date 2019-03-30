@@ -76,8 +76,6 @@ public class DeviceSituationActivity extends AppCompatActivity implements OnGeoc
         //得到设备列表的数据，并填充
         Intent intent = getIntent();
         getDevice = (Device) intent.getSerializableExtra("device");
-        lat=getDevice.getDevicelat();
-        lng=getDevice.getDevicelng();
         setContentView(R.layout.activity_device_situation);
         Toolbar toolbar = (Toolbar) findViewById(R.id.devicesituationbar);
         toolbar.setTitle("");
@@ -113,7 +111,6 @@ public class DeviceSituationActivity extends AppCompatActivity implements OnGeoc
             createormodify=false;
         }
         else{
-            getDevice.setDevicestatus("停机状态");
             ipEditText.setText("");
         }
         addressEditText.setText(getDevice.getDeviceaddress());
@@ -214,11 +211,20 @@ public class DeviceSituationActivity extends AppCompatActivity implements OnGeoc
         return ipEditText.getText().toString().trim();
     }
 
-
+    /**
+     * 得到设备的Lat
+     * 但是还没有连接上
+     * @return
+     */
     public Double getDevicelat(){
         return lat;
     }
 
+    /**
+     * 得到设备的lng
+     * 但是还没有连接上
+     * @return
+     */
     public Double getDevicelng(){
         return lng;
     }
@@ -260,7 +266,7 @@ public class DeviceSituationActivity extends AppCompatActivity implements OnGeoc
                      */
                     try {
                         if(createormodify){
-                            newdevicerequestBody = new FormBody.Builder().add("devicenum", getDevicenum()).add("devicetype",getDeviceType()).add("devicestatus","停机状态").add("devicelat", String.valueOf(getDevicelat())).add("devicelng", String.valueOf(getDevicelng())).add("regionID",getDeviceRegion()).add("defposID",getDeviceDefend()).add("deviceaddress",getDeviceAddress()).add("IP",getDeviceIp()).build();
+                            newdevicerequestBody = new FormBody.Builder().add("devicenum", getDevicenum()).add("devicetype",getDeviceType()).add("devicestatus","").add("devicelat", String.valueOf(getDevicelat())).add("devicelng", String.valueOf(getDevicelng())).add("regionID",getDeviceRegion()).add("defposID",getDeviceDefend()).add("deviceaddress",getDeviceAddress()).add("IP",getDeviceIp()).build();
                             newdevicerequest = new Request.Builder().url(createDevicepath).post(newdevicerequestBody).build();
                             Response response = clients.newCall(newdevicerequest).execute();//发送请求
                             String result = response.body().string();
@@ -275,7 +281,7 @@ public class DeviceSituationActivity extends AppCompatActivity implements OnGeoc
                             }
                         }else{
                             modifydevicerequestBody = new FormBody.Builder().add("deviceID", String.valueOf(getDevice.getDeviceID())).add("devicenum",getDevice.getDevicenum()).add("devicetype",getDevice.getDevicetype()).add("devicestatus", String.valueOf(getDevice.getDevicestatus())).add("devicelat", String.valueOf(getDevice.getDevicelat())).add("devicelng", String.valueOf(getDevice.getDevicelng())).add("deviceaddress",getDevice.getDeviceaddress()).add("regionID",getDevice.getRegionID()).add("defposID",getDevice.getDefposID()).add("IP",getDevice.getIP()).build();
-                            modifydevicerequest = new Request.Builder().url(modifyDevicepath).post(modifydevicerequestBody).build();
+                            modifydevicerequest = new Request.Builder().url(createDevicepath).post(modifydevicerequestBody).build();
                             Response response = clients.newCall(modifydevicerequest).execute();//发送请求
                             String result = response.body().string();
                             Map<String, Object> map = jsonstr2map.jsonstr2map(result);
@@ -301,7 +307,6 @@ public class DeviceSituationActivity extends AppCompatActivity implements OnGeoc
                 }
             };
             setLoaded(flag);
-            DeviceSituationActivity.this.finish();
         Log.i(Tag,"flag"+flag);
     }
 

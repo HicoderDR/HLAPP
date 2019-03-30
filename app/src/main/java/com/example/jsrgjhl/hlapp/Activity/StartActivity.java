@@ -14,7 +14,7 @@ import com.example.jsrgjhl.hlapp.R;
 public class StartActivity extends AppCompatActivity {
 
     private  final int SPLASH_DISPLAY_LENGHT = 3000;//3秒后进入系统，时间可自行调整
-    private  int flag;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
