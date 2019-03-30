@@ -18,12 +18,7 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="29cfe3de-23d1-4cb3-8bb3-95b2c111b100" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/jsrgjhl/hlapp/Activity/DeviceListActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/jsrgjhl/hlapp/Activity/DeviceListActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/jsrgjhl/hlapp/Activity/MainActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/jsrgjhl/hlapp/Activity/MainActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/jsrgjhl/hlapp/Activity/SolveActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/jsrgjhl/hlapp/Activity/SolveActivity.java" afterDir="false" />
-    </list>
+    <list default="true" id="29cfe3de-23d1-4cb3-8bb3-95b2c111b100" name="Default" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -129,8 +124,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/example/jsrgjhl/hlapp/Activity/MainActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="92">
-              <caret line="1259" column="65" lean-forward="true" selection-start-line="1259" selection-start-column="65" selection-end-line="1259" selection-end-column="65" />
+            <state relative-caret-position="162">
+              <caret line="1213" column="37" lean-forward="true" selection-start-line="1213" selection-start-column="37" selection-end-line="1213" selection-end-column="37" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#7661#8116#0" expanded="true" />
@@ -169,8 +164,8 @@
                 <element signature="e#45608#45818#0" />
                 <element signature="e#45823#46003#0" />
                 <element signature="e#46009#47148#0" />
-                <element signature="e#47153#48741#0" />
                 <element signature="e#48746#49081#0" />
+                <element signature="e#49389#50531#0" />
                 <element signature="e#57694#59147#0" />
                 <element signature="e#56017#56415#0" />
                 <element signature="e#59555#60099#0" />
@@ -3270,8 +3265,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/example/jsrgjhl/hlapp/Activity/MainActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="92">
-          <caret line="1259" column="65" lean-forward="true" selection-start-line="1259" selection-start-column="65" selection-end-line="1259" selection-end-column="65" />
+        <state relative-caret-position="162">
+          <caret line="1213" column="37" lean-forward="true" selection-start-line="1213" selection-start-column="37" selection-end-line="1213" selection-end-column="37" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#7661#8116#0" expanded="true" />
@@ -3310,8 +3305,8 @@
             <element signature="e#45608#45818#0" />
             <element signature="e#45823#46003#0" />
             <element signature="e#46009#47148#0" />
-            <element signature="e#47153#48741#0" />
             <element signature="e#48746#49081#0" />
+            <element signature="e#49389#50531#0" />
             <element signature="e#57694#59147#0" />
             <element signature="e#56017#56415#0" />
             <element signature="e#59555#60099#0" />
