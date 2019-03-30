@@ -114,6 +114,7 @@ public class DeviceSituationActivity extends AppCompatActivity implements OnGeoc
         }
         else{
             getDevice.setDevicestatus("停机状态");
+            ipEditText.setText("");
         }
         addressEditText.setText(getDevice.getDeviceaddress());
         for(int i=0;i<4;i++) {
@@ -170,8 +171,6 @@ public class DeviceSituationActivity extends AppCompatActivity implements OnGeoc
                 LatLonPoint latLonPoint=new LatLonPoint(lat,lng);
                 RegeocodeQuery query = new RegeocodeQuery(latLonPoint, 30,GeocodeSearch.AMAP);
                 geocodeSearch.getFromLocationAsyn(query);
-
-                Toast.makeText(DeviceSituationActivity.this,str,Toast.LENGTH_LONG).show();
             }
         }
 
