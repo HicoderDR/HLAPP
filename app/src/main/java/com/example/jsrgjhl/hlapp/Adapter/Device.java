@@ -56,6 +56,8 @@ public class Device implements Serializable {
         this.devicetype = devicetype;
         this.regionID = regionID;
         this.defposID = defposID;
+        this.devicelat= new Double(300);
+        this.devicelng= new Double(300);
     }
 
     public int getDeviceID() {

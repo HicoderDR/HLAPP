@@ -58,7 +58,7 @@
             android:layout_centerVertical="true"
             android:layout_marginRight="@dimen/dp_7"
             android:scaleType="fitXY"
-            android:src="@mipmap/btn_menu" />
+            android:src="@mipmap/warning" />
 
     </RelativeLayout>
 
