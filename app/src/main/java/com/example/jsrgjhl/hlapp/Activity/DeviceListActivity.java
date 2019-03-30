@@ -3,6 +3,8 @@ package com.example.jsrgjhl.hlapp.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -17,9 +19,7 @@ import android.widget.Toast;
 
 import com.example.jsrgjhl.hlapp.Adapter.Device;
 import com.example.jsrgjhl.hlapp.Adapter.DeviceAdapter;
-import com.example.jsrgjhl.hlapp.PersonalSetting.ChangePassword;
 import com.example.jsrgjhl.hlapp.R;
-import com.example.jsrgjhl.hlapp.Sample.DeviceList;
 import com.example.jsrgjhl.hlapp.Utils.jsonstr2map;
 
 import java.io.Serializable;
@@ -27,6 +27,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -36,7 +40,9 @@ public class DeviceListActivity extends AppCompatActivity {
 
     private List<Device> mdeviceList=new ArrayList<>();
     private List<Device> mnowdeviceList=new ArrayList<>();
+    private List<Device> delList=new ArrayList<>();
     private ImageView addDevice;
+    private ListView devicelistView;
     private Spinner sortSpinner;
     private Spinner regionSpinner;
     private Spinner defendSpinner;
@@ -45,10 +51,19 @@ public class DeviceListActivity extends AppCompatActivity {
     private String[] defendtype={"防区","防区一","防区二","防区三"};
     private DeviceAdapter adapter;
 
+    private Handler mHandler;
+    private Timer mTimer = null;
+    private TimerTask mTimerTask = null;
+    private boolean isPause = false;
+    private boolean isStop = true;
+    private static int delay = 2; //1s
+    private static int period = 2;  //1s
+    private static int count = 0;
+    private final int UPDATE_LIST=0;
     private final static String Tag = MainActivity.class.getSimpleName();
     private String getdevicepath="http://47.100.107.158:8080/api/device/getdevicelist";
     private static int flag;
-
+    private Lock lock;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
@@ -75,7 +90,7 @@ public class DeviceListActivity extends AppCompatActivity {
         //初始化设备列表
         mnowdeviceList=mdeviceList;
         adapter = new DeviceAdapter(DeviceListActivity.this, R.layout.device_list,mnowdeviceList);
-        final ListView devicelistView=(ListView)findViewById(R.id.device_listview);
+        devicelistView=(ListView)findViewById(R.id.device_listview);
         devicelistView.setAdapter(adapter);
         //下拉框控制及其样式
         sortSpinner=findViewById(R.id.sort_sp);
@@ -104,14 +119,16 @@ public class DeviceListActivity extends AppCompatActivity {
 
                 if (sortSpinner.getSelectedItemPosition()==0&&defendSpinner.getSelectedItemPosition()==0&&regionSpinner.getSelectedItemPosition()==0){
                     mdeviceList.clear();
+                    mnowdeviceList.clear();
                     initDeviceList();
-                    mnowdeviceList=mdeviceList;
+                    mnowdeviceList.addAll(mdeviceList);
                     adapter.notifyDataSetChanged();
                 }
                 else {
                     mdeviceList.clear();
+                    mnowdeviceList.clear();
                     initDeviceList();
-                    mnowdeviceList=mdeviceList;
+                    mnowdeviceList.addAll(mdeviceList);
                     initNowDeviceList(sorttype[sortSpinner.getSelectedItemPosition()],defendtype[defendSpinner.getSelectedItemPosition()],regiontype[regionSpinner.getSelectedItemPosition()]);
                     adapter.notifyDataSetChanged();}
             }
@@ -126,14 +143,16 @@ public class DeviceListActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 if (sortSpinner.getSelectedItemPosition()==0&&defendSpinner.getSelectedItemPosition()==0&&regionSpinner.getSelectedItemPosition()==0){
                     mdeviceList.clear();
+                    mnowdeviceList.clear();
                     initDeviceList();
-                    mnowdeviceList=mdeviceList;
+                    mnowdeviceList.addAll(mdeviceList);
                     adapter.notifyDataSetChanged();
                 }
                 else {
                     mdeviceList.clear();
+                    mnowdeviceList.clear();
                     initDeviceList();
-                    mnowdeviceList=mdeviceList;
+                    mnowdeviceList.addAll(mdeviceList);
                     initNowDeviceList(sorttype[sortSpinner.getSelectedItemPosition()],defendtype[defendSpinner.getSelectedItemPosition()],regiontype[regionSpinner.getSelectedItemPosition()]);
                     adapter.notifyDataSetChanged();}
             }
@@ -147,14 +166,16 @@ public class DeviceListActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 if (sortSpinner.getSelectedItemPosition()==0&&defendSpinner.getSelectedItemPosition()==0&&regionSpinner.getSelectedItemPosition()==0){
                     mdeviceList.clear();
+                    mnowdeviceList.clear();
                     initDeviceList();
-                    mnowdeviceList=mdeviceList;
+                    mnowdeviceList.addAll(mdeviceList);
                     adapter.notifyDataSetChanged();
                 }
                 else {
                     mdeviceList.clear();
+                    mnowdeviceList.clear();
                     initDeviceList();
-                    mnowdeviceList=mdeviceList;
+                    mnowdeviceList.addAll(mdeviceList);
                     initNowDeviceList(sorttype[sortSpinner.getSelectedItemPosition()],defendtype[defendSpinner.getSelectedItemPosition()],regiontype[regionSpinner.getSelectedItemPosition()]);
                     adapter.notifyDataSetChanged();}
             }
@@ -170,7 +191,7 @@ public class DeviceListActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent intent = new Intent();
                 intent.setClass(DeviceListActivity.this, DeviceSituationActivity.class);
-                Device device=mdeviceList.get(i);
+                Device device=mnowdeviceList.get(i);
                 intent.putExtra("device", (Serializable) device);
                 startActivity(intent);
             }
@@ -190,6 +211,63 @@ public class DeviceListActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        lock = new ReentrantLock();
+        mHandler = new Handler(){
+            @Override
+            public void handleMessage(Message msg) {
+                switch (msg.what) {
+                    case UPDATE_LIST:
+                            mnowdeviceList.addAll(mdeviceList);
+                            //initNowDeviceList(sorttype[sortSpinner.getSelectedItemPosition()],defendtype[defendSpinner.getSelectedItemPosition()],regiontype[regionSpinner.getSelectedItemPosition()]);
+                            String sort=sorttype[sortSpinner.getSelectedItemPosition()];
+                            String defend=defendtype[defendSpinner.getSelectedItemPosition()];
+                            String region=regiontype[regionSpinner.getSelectedItemPosition()];
+                            delList.clear();
+                            for(int i=0;i<mnowdeviceList.size();i++){
+                                if (sort.equals("类型")){
+                                    break;
+                                }
+                                else if(mnowdeviceList.get(i).getDevicetype().equals(sort)){
+                                    continue;
+                                }
+                                else {
+                                    delList.add(mnowdeviceList.get(i));
+                                }
+                            }
+                            mnowdeviceList.removeAll(delList);
+                            delList.clear();
+                            for (int j=0;j<mnowdeviceList.size();j++){
+                                if(defend.equals("防区")){
+                                    break;
+                                }
+                                else if(mnowdeviceList.get(j).getDefposID().equals(defend)){
+                                    continue;
+                                }else{
+                                    delList.add(mnowdeviceList.get(j));
+                                }
+                            }
+                            mnowdeviceList.removeAll(delList);
+                            delList.clear();
+                            //完成区域的选择
+                            for (int k=0;k<mnowdeviceList.size();k++){
+                                if(region.equals("区域")){
+                                    break;
+                                }
+                                else if(mnowdeviceList.get(k).getRegionID().equals(region)){
+                                    continue;
+                                }else{
+                                    delList.add(mnowdeviceList.get(k));
+                                }
+                            }
+                            mnowdeviceList.removeAll(delList);
+                            adapter.notifyDataSetChanged();
+                        break;
+                    default:
+                        break;
+                }
+            }
+        };
+        startTimer();
     }
 
     //向服务器请求列表
@@ -202,6 +280,7 @@ public class DeviceListActivity extends AppCompatActivity {
                 OkHttpClient client = new OkHttpClient();
                 Request request = new Request.Builder().url(getdevicepath).build();
                 try {
+                    mdeviceList.clear();
                     Response response = client.newCall(request).execute();//发送请求
                     String result = response.body().string();
                     Map<String, Object> map= jsonstr2map.jsonstr2map(result);
@@ -241,9 +320,13 @@ public class DeviceListActivity extends AppCompatActivity {
                     Device device1 = new Device(Integer.parseInt((String) map2.get("deviceID")), (String) map2.get("devicenum"), Double.parseDouble((String) map2.get("devicelat")), Double.parseDouble((String) map2.get("devicelng")), (String) map2.get("deviceaddress"), (String) map2.get("devicestatus"), (String) map2.get("devicetype"), (String) map2.get("regionID"), (String) map2.get("defposID"), (String) map2.get("ip"));
                     mdeviceList.add(device1);
                     if(mdeviceList.size()!=0){
-                        deletzero();
-                        flag=1;
-                    }
+                        for (int i=0;i<mdeviceList.size();i++){
+                            if(mdeviceList.get(i).getDevicenum().equals("0")){
+                                mdeviceList.remove(i);
+                                i--;
+                            }
+                        }
+                    } flag=1;
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -263,9 +346,16 @@ public class DeviceListActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        mdeviceList.clear();
-        initDeviceList();
-        adapter.notifyDataSetChanged();
+
+    }
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+        stopTimer();
     }
 
     private void showLoading() {
@@ -273,6 +363,7 @@ public class DeviceListActivity extends AppCompatActivity {
 
     private void initNowDeviceList(String sort,String defend,String region){
         //完成设备类型的选择
+        delList.clear();
         for(int i=0;i<mnowdeviceList.size();i++){
             if (sort.equals("类型")){
                 break;
@@ -281,11 +372,11 @@ public class DeviceListActivity extends AppCompatActivity {
                 continue;
             }
             else {
-                mnowdeviceList.remove(i);
-                i--;
+                delList.add(mnowdeviceList.get(i));
             }
         }
-        //完成防区的选择
+        mnowdeviceList.removeAll(delList);
+        delList.clear();
         for (int j=0;j<mnowdeviceList.size();j++){
             if(defend.equals("防区")){
                 break;
@@ -293,10 +384,11 @@ public class DeviceListActivity extends AppCompatActivity {
             else if(mnowdeviceList.get(j).getDefposID().equals(defend)){
                 continue;
             }else{
-                mnowdeviceList.remove(j);
-                j--;
+                delList.add(mnowdeviceList.get(j));
             }
         }
+        mnowdeviceList.removeAll(delList);
+        delList.clear();
         //完成区域的选择
         for (int k=0;k<mnowdeviceList.size();k++){
             if(region.equals("区域")){
@@ -305,18 +397,119 @@ public class DeviceListActivity extends AppCompatActivity {
             else if(mnowdeviceList.get(k).getRegionID().equals(region)){
                 continue;
             }else{
-                mnowdeviceList.remove(k);
-                k--;
+                delList.add(mnowdeviceList.get(k));
             }
         }
+        mnowdeviceList.removeAll(delList);
     }
-    //删除0
-    public void deletzero(){
-        for (int i=0;i<mdeviceList.size();i++){
-            if(mdeviceList.get(i).getDevicenum().equals("0")){
-                mdeviceList.remove(i);
-                i--;
-            }
+
+
+    private void startTimer(){
+        if (mTimer == null) {
+            mTimer = new Timer();
+        }
+        if (mTimerTask == null) {
+            mTimerTask = new TimerTask() {
+                @Override
+                public void run(){
+                    flag=0;
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            OkHttpClient client = new OkHttpClient();
+                            Request request = new Request.Builder().url(getdevicepath).build();
+                            try {
+                                mdeviceList.clear();
+                                Response response = client.newCall(request).execute();//发送请求
+                                String result = response.body().string();
+                                Map<String, Object> map= jsonstr2map.jsonstr2map(result);
+                                //List<Map<String, Object>> map2=jsonstr2map.jsonstr2list(map.get("data").toString());
+                                /**
+                                 * 将 string 转为json格式
+                                 */
+                                String temp = map.get("data").toString();
+                                if(temp.equals("null")){
+                                    flag=1;
+                                    return;
+                                }
+                                temp = temp.substring(1, temp.length() - 1).replace(" ", "").replace("{", "").replace("}", "").replace("\"","").replace("\"","");
+                                Log.i(Tag,temp);
+                                String[] strs = temp.split(",");
+                                Map<String, String> map2 = new HashMap<String, String>();
+                                for (String s : strs) {
+                                    String sss=s.replace(" ","");
+                                    String[] ms = sss.split("=");
+
+                                    if (ms.length==1) {
+                                        continue;
+                                    }
+                                    if (ms.length==2&&ms[1].equals("null")){
+                                        ms[1]="";
+                                    }
+                                    if (map2.containsKey(ms[0])) {
+                                        Device device1 = new Device(Integer.parseInt((String) map2.get("deviceID")), (String) map2.get("devicenum"), Double.parseDouble((String) map2.get("devicelat")), Double.parseDouble((String) map2.get("devicelng")), (String) map2.get("deviceaddress"), (String) map2.get("devicestatus"), (String) map2.get("devicetype"), (String) map2.get("regionID"), (String) map2.get("defposID"), (String) map2.get("ip"));
+                                        mdeviceList.add(device1);
+                                        map2.clear();
+                                        map2.put(ms[0], ms[1]);
+                                    }
+                                    else{
+                                        map2.put(ms[0], ms[1]);
+                                    }
+                                }
+                                Device device1 = new Device(Integer.parseInt((String) map2.get("deviceID")), (String) map2.get("devicenum"), Double.parseDouble((String) map2.get("devicelat")), Double.parseDouble((String) map2.get("devicelng")), (String) map2.get("deviceaddress"), (String) map2.get("devicestatus"), (String) map2.get("devicetype"), (String) map2.get("regionID"), (String) map2.get("defposID"), (String) map2.get("ip"));
+                                mdeviceList.add(device1);
+                                if(mdeviceList.size()!=0){
+                                    for (int i=0;i<mdeviceList.size();i++){
+                                        if(mdeviceList.get(i).getDevicenum().equals("0")){
+                                            mdeviceList.remove(i);
+                                            i--;
+                                        }
+                                    }flag=1;
+                                } flag=2;
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }).start();
+                    while (flag==0){
+                        try{
+                            Thread.sleep(1);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    };
+                    sendMessage(UPDATE_LIST);
+                    do {
+                        try {
+                            Log.i(Tag, "sleep(4000)...");
+                            Thread.sleep(4000);
+                        } catch (InterruptedException e) {
+                        }
+                    } while (isPause);
+                }
+            };
+        }
+        if(mTimer != null && mTimerTask != null )
+            mTimer.schedule(mTimerTask,delay, period);
+    }
+
+    private void stopTimer(){
+        if (mTimer != null) {
+            mTimer.cancel();
+            mTimer = null;
+        }
+        if (mTimerTask != null) {
+            mTimerTask.cancel();
+            mTimerTask = null;
+        }
+        count = 0;
+    }
+
+    public void sendMessage(int id){
+        if (mHandler != null) {
+            Message message = Message.obtain(mHandler, id);
+            mHandler.sendMessage(message);
         }
     }
+
 }

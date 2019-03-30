@@ -119,6 +119,7 @@ public class MainActivity extends AppCompatActivity implements AMap.OnMapClickLi
     private List<Record> nowList=new ArrayList<>();
     private HashMap<String,Device> DeviceHashMap=new HashMap<>();
     private HashMap<String,Marker> MarkerHashMap=new HashMap<>();
+    private HashMap<String,Record> RecordHashMap=new HashMap<>();
 
     private int flag;
     private final static String Tag= OperateRecord.class.getSimpleName();
@@ -277,8 +278,11 @@ public class MainActivity extends AppCompatActivity implements AMap.OnMapClickLi
                                     i--;
                                 }
                             }
+                            for(int i=0;i<frecordsList.size();i++){
+                                RecordHashMap.put(frecordsList.get(i).getRecordID(),frecordsList.get(i));
+                            }
                             for(int i=0;i<mrecordsList.size();i++){
-                                if(!frecordsList.contains(mrecordsList.get(i))){
+                                if(!RecordHashMap.containsKey(mrecordsList.get(i).getRecordID())){
                                     nowList.add(mrecordsList.get(i));
                                 }
                             }
@@ -446,8 +450,8 @@ public class MainActivity extends AppCompatActivity implements AMap.OnMapClickLi
 
     private Marker drawMarkerOnMap(Device info) {
         LatLng latLng = new LatLng(info.getDevicelat(),info.getDevicelng());
-        String devicetype= info.getDevicetype().trim();
-        String devicestatus= info.getDevicestatus().trim();
+        String devicetype= info.getDevicetype();
+        String devicestatus= info.getDevicestatus();
         MarkerOptions options = new MarkerOptions()
                 .position(latLng)
                 .title(info.getDevicenum())
