@@ -15,7 +15,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import com.example.jsrgjhl.hlapp.Adapter.Device;
 import com.example.jsrgjhl.hlapp.Adapter.DeviceAdapter;
@@ -88,7 +87,8 @@ public class DeviceListActivity extends AppCompatActivity {
 
         //
         //初始化设备列表
-        mnowdeviceList=mdeviceList;
+        mnowdeviceList.clear();
+        mnowdeviceList.addAll(mdeviceList);
         adapter = new DeviceAdapter(DeviceListActivity.this, R.layout.device_list,mnowdeviceList);
         devicelistView=(ListView)findViewById(R.id.device_listview);
         devicelistView.setAdapter(adapter);
@@ -216,6 +216,7 @@ public class DeviceListActivity extends AppCompatActivity {
             public void handleMessage(Message msg) {
                 switch (msg.what) {
                     case UPDATE_LIST:
+                            mnowdeviceList.clear();
                             mnowdeviceList.addAll(mdeviceList);
                             //initNowDeviceList(sorttype[sortSpinner.getSelectedItemPosition()],defendtype[defendSpinner.getSelectedItemPosition()],regiontype[regionSpinner.getSelectedItemPosition()]);
                             String sort=sorttype[sortSpinner.getSelectedItemPosition()];

@@ -972,6 +972,7 @@ public class MainActivity extends AppCompatActivity implements AMap.OnMapClickLi
                     }
                     Device device1 = new Device(Integer.parseInt((String) map2.get("deviceID")), (String) map2.get("devicenum"), Double.parseDouble((String) map2.get("devicelat")), Double.parseDouble((String) map2.get("devicelng")), (String) map2.get("deviceaddress"), (String) map2.get("devicestatus").trim(), (String) map2.get("devicetype").trim(), (String) map2.get("regionID"), (String) map2.get("defposID"), (String) map2.get("ip"));
                     mdevicelist.add(device1);
+                    map2.clear();
                     Log.i(Tag,"init"+device1.getDevicenum()+device1.getDevicestatus()+device1.getDevicetype());
                     if(mdevicelist.size()!=0){
                         for (int i=0;i<mdevicelist.size();i++){
@@ -1263,10 +1264,10 @@ public class MainActivity extends AppCompatActivity implements AMap.OnMapClickLi
         bitmapDescriptor_marker_radar_y=BitmapDescriptorFactory.fromBitmap(convertViewToBitmap(marker_radar_y));
         bitmapDescriptor_marker_radar_r=BitmapDescriptorFactory.fromBitmap(convertViewToBitmap(marker_radar_r));
         bitmapDescriptor_marker_radar_gray=BitmapDescriptorFactory.fromBitmap(convertViewToBitmap(marker_radar_gray));
-        bitmapDescriptor_marker_sensor_gray=BitmapDescriptorFactory.fromBitmap(convertViewToBitmap(marker_sensor_r));
-        bitmapDescriptor_marker_sensor_r=BitmapDescriptorFactory.fromBitmap(convertViewToBitmap(marker_sensor_y));
-        bitmapDescriptor_marker_sensor_y=BitmapDescriptorFactory.fromBitmap(convertViewToBitmap(marker_sensor_g));
-        bitmapDescriptor_marker_sensor_g=BitmapDescriptorFactory.fromBitmap(convertViewToBitmap(marker_sensor_gray));
+        bitmapDescriptor_marker_sensor_gray=BitmapDescriptorFactory.fromBitmap(convertViewToBitmap(marker_sensor_gray));
+        bitmapDescriptor_marker_sensor_r=BitmapDescriptorFactory.fromBitmap(convertViewToBitmap(marker_sensor_r));
+        bitmapDescriptor_marker_sensor_g=BitmapDescriptorFactory.fromBitmap(convertViewToBitmap(marker_sensor_g));
+        bitmapDescriptor_marker_sensor_gray=BitmapDescriptorFactory.fromBitmap(convertViewToBitmap(marker_sensor_gray));
     }
 
     public void showbuilder(String devicenum,String devicestatus,String text,int id){

@@ -7,27 +7,20 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.example.jsrgjhl.hlapp.Adapter.Device;
 import com.example.jsrgjhl.hlapp.Adapter.Record;
-import com.example.jsrgjhl.hlapp.Adapter.RecordsAdapter;
 import com.example.jsrgjhl.hlapp.R;
 import com.example.jsrgjhl.hlapp.Utils.jsonstr2map;
 import com.xiasuhuei321.loadingdialog.view.LoadingDialog;
 
-import org.w3c.dom.Text;
-
 import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 import okhttp3.FormBody;
@@ -86,7 +79,16 @@ public class SolveActivity extends AppCompatActivity implements Serializable {
 
         Warn_status.setText(record.getDevicestatus());
         Slove_status.setText(record.getRecordstatus());
-        Timetv.setText((CharSequence) record.getRecordtime());
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try{
+            Date dt=df.parse(String.valueOf(record.getRecordtime()));
+            String date=format.format(dt);
+            Timetv.setText(date);
+        }catch (ParseException e) {
+            e.printStackTrace();
+        }
+
         Idtv.setText(record.getDevicenum());
         Addresstv.setText(record.getDeviceaddress());
         tabletitle.setText(record.getTitle());
