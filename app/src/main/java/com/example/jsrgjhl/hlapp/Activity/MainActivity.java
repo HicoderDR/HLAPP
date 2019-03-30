@@ -1,13 +1,19 @@
 package com.example.jsrgjhl.hlapp.Activity;
 
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
@@ -47,6 +53,7 @@ import com.example.jsrgjhl.hlapp.Adapter.Record;
 import com.example.jsrgjhl.hlapp.Adapter.WarningRecordsAdapter;
 import com.example.jsrgjhl.hlapp.PersonalSetting.OperateRecord;
 import com.example.jsrgjhl.hlapp.R;
+import com.example.jsrgjhl.hlapp.Utils.OkManager;
 import com.example.jsrgjhl.hlapp.Utils.ScreenUtils;
 import com.example.jsrgjhl.hlapp.Utils.jsonstr2map;
 import com.example.jsrgjhl.hlapp.View.SegmentView;
@@ -62,6 +69,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -103,8 +112,11 @@ public class MainActivity extends AppCompatActivity implements AMap.OnMapClickLi
 
     private String getdevicepath="http://47.100.107.158:8080/api/device/getdevicelist";
     private String getunsolvedpath="http://47.100.107.158:8080/api/record/searchRecordbyrecordstatus?status="+"未处理";
-    private String getrecordpath="http://47.100.107.158:8080/api/record/getrecordlist";
+    private String devicecheckpath="http://47.100.107.158:8080/api/device/check";
+    private String recordcheckpath="http://47.100.107.158:8080/api/device/check";
     private List<Record> mrecordsList=new ArrayList<>();
+    private List<Record> frecordsList=new ArrayList<>();
+    private List<Record> nowList=new ArrayList<>();
     private HashMap<String,Device> DeviceHashMap=new HashMap<>();
     private HashMap<String,Marker> MarkerHashMap=new HashMap<>();
 
@@ -123,6 +135,24 @@ public class MainActivity extends AppCompatActivity implements AMap.OnMapClickLi
     private View marker_sensor_r;
     private View marker_sensor_y;
     private View marker_sensor_g;
+
+    private Handler mHandler;
+    private Timer mTimer = null;
+    private TimerTask mTimerTask = null;
+    private boolean isPause = false;
+    private boolean isStop = true;
+    private static int delay = 1; //1s
+    private static int period = 1;  //1s
+    private static int count = 0;
+    private static final int UPDATE_DEVICELIST = 0;
+    private static final int UPDATE_FALSE=1;
+    private static final int NOTIFICATION=2;
+
+    private OkManager manager;
+    private OkHttpClient clients;
+    NotificationManager notificationManager;
+    NotificationCompat.Builder mBuilder;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.i(TAG, "onCreate()");
@@ -137,13 +167,16 @@ public class MainActivity extends AppCompatActivity implements AMap.OnMapClickLi
             window.setNavigationBarColor(Color.TRANSPARENT);
         }
         setContentView(R.layout.activity_main);
+        notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        mBuilder = new NotificationCompat.Builder(this);
         init();
         initDeviceList();
         initmarkers();
+        initRecords();
         initsegment();
         // 创建地图
         mapView.onCreate(savedInstanceState);
-
+        startTimer();
         //部分高德UI样式改动
         aMap.getUiSettings().setLogoPosition(AMapOptions.LOGO_POSITION_BOTTOM_RIGHT);//高德logo位置的移动
         MyLocationStyle myLocationStyle = new MyLocationStyle();
@@ -151,6 +184,148 @@ public class MainActivity extends AppCompatActivity implements AMap.OnMapClickLi
         myLocationStyle.strokeColor(Color.argb(0, 0, 0, 0));// 设置圆形的边框颜色
         myLocationStyle.radiusFillColor(Color.argb(0, 0, 0, 0));// 设置圆形的填充颜色
         aMap.setMyLocationStyle(myLocationStyle);//设置定位蓝点的Style
+
+        mHandler = new Handler(){
+            @Override
+            public void handleMessage(Message msg) {
+                switch (msg.what) {
+                    case UPDATE_DEVICELIST:
+                        initDeviceListNo();
+                        aMap.clear();
+                        initmarkers();
+                        break;
+                    case UPDATE_FALSE:
+                        break;
+                    case NOTIFICATION:
+                        for(int i=0;i<nowList.size();i++){
+                            showbuilder(nowList.get(i).getDevicenum()+nowList.get(i).getDevicestatus(),nowList.get(i).getRecordtime(),count);
+                        }
+                        nowList.clear();
+                        break;
+                    default:
+                        break;
+                }
+            }
+        };
+    }
+
+    private void startTimer(){
+        if (mTimer == null) {
+            mTimer = new Timer();
+        }
+        if (mTimerTask == null) {
+            mTimerTask = new TimerTask() {
+                @Override
+                public void run() {
+                    OkHttpClient client = new OkHttpClient();
+                    Request request = new Request.Builder().url(devicecheckpath).build();
+                    try {
+                        Response response = client.newCall(request).execute();//发送请求
+                        String result = response.body().string();
+
+                        Map<String, Object> map=jsonstr2map.jsonstr2map(result);
+                        String x=map.get("data").toString();
+                        if(x=="true"){
+                            flag=1;
+                        }else{
+                            flag=2;
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    if(flag==1)  sendMessage(UPDATE_DEVICELIST);
+                    else          sendMessage(UPDATE_FALSE);
+                    request = new Request.Builder().url(getunsolvedpath).build();
+                    try {
+                        mrecordsList.clear();
+                        nowList.clear();
+                        Response response = client.newCall(request).execute();//发送请求
+                        String result = response.body().string();
+                        Map<String, Object> map= jsonstr2map.jsonstr2map(result);
+                        /*将 string 转为json格式*/
+                        String temp = map.get("data").toString();
+                        if(temp.equals("null")){
+                            return;
+                        }
+                        temp = temp.substring(1, temp.length() - 1).replace(" ", "").replace("{", "").replace("}", "").replace("\"","").replace("\"","");
+                        Log.i(Tag,temp);
+                        String[] strs = temp.split(",");
+                        Map<String, String> map2 = new HashMap<String, String>();
+                        for (String s : strs) {
+                            String sss=s.replace(" ","");
+                            String[] ms = sss.split("=");
+
+                            if (ms[1].equals("null")) {
+                                ms[1] = "";
+                            }
+                            if (map2.containsKey(ms[0])) {
+                                Record record1 = new Record(map2.get("recordID"),(String) map2.get("recordnum"),map2.get("recordtime"), map2.get("recordstatus"), map2.get("solutionID"),map2.get("userID"), (String) map2.get("title"), (String) map2.get("context"), map2.get("deviceID"),(String)map2.get("devicenum"),(String)map2.get("deviceaddress"),map2.get("regionID"),map2.get("defposID"),map2.get("devicelat"),map2.get("devicelng"),map2.get("devicetype"),map2.get("devicestatus"),map2.get("deltime"));
+                                mrecordsList.add(record1);
+                                map2.clear();
+                                map2.put(ms[0],ms[1]);
+                            }
+                            else{
+                                map2.put(ms[0], ms[1]);
+                            }
+                        }
+                        Record record1 = new Record(map2.get("recordID"),(String) map2.get("recordnum"),map2.get("recordtime"), map2.get("recordstatus"), map2.get("solutionID"),map2.get("userID"), (String) map2.get("title"), (String) map2.get("context"), map2.get("deviceID"),(String)map2.get("devicenum"),(String)map2.get("deviceaddress"),map2.get("regionID"),map2.get("defposID"),map2.get("devicelat"),map2.get("devicelng"),map2.get("devicetype"),map2.get("devicestatus"),map2.get("deltime"));
+                        mrecordsList.add(record1);
+                        if(mrecordsList.size()!=0){
+                            for (int i=0;i<mrecordsList.size();i++){
+                                if(mrecordsList.get(i).getDevicenum().equals("0")){
+                                    mrecordsList.remove(i);
+                                    i--;
+                                }
+                            }
+                            for(int i=0;i<mrecordsList.size();i++){
+                                if(!frecordsList.contains(mrecordsList.get(i))){
+                                    nowList.add(mrecordsList.get(i));
+                                }
+                            }
+                        }
+                        Log.i(Tag,"frecordlist"+" "+frecordsList.toString());
+                        frecordsList.clear();
+                        frecordsList.addAll(mrecordsList);
+                        Log.i(Tag,"frecordlist"+" "+frecordsList.toString());
+                        Log.i(Tag,"nowlist"+" "+nowList.toString());
+                        if(nowList.size()>0){
+                            sendMessage(NOTIFICATION);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    do {
+                        try {
+                            Log.i(TAG, "sleep(4000)...");
+                            Thread.sleep(4000);
+                        } catch (InterruptedException e) {
+                        }
+                    } while (isPause);
+                    count ++;
+                }
+            };
+        }
+        if(mTimer != null && mTimerTask != null )
+            mTimer.schedule(mTimerTask,delay, period);
+    }
+
+    private void stopTimer(){
+        if (mTimer != null) {
+            mTimer.cancel();
+            mTimer = null;
+        }
+        if (mTimerTask != null) {
+            mTimerTask.cancel();
+            mTimerTask = null;
+        }
+        count = 0;
+    }
+
+    public void sendMessage(int id){
+        if (mHandler != null) {
+            Message message = Message.obtain(mHandler, id);
+            mHandler.sendMessage(message);
+        }
     }
 
     private void init() {
@@ -186,7 +361,7 @@ public class MainActivity extends AppCompatActivity implements AMap.OnMapClickLi
         aMap.setLocationSource(this);
         // 设置默认定位按钮是否显示
         aMap.getUiSettings().setMyLocationButtonEnabled(true);
-        // 设置为true表示显示定位层并可触发定位，false表示隐藏定位层并不可触发定位，默认是false
+        // 设置为true表示显示定位层并可触发定位，false 表示隐藏定位层并不可触发定位，默认是false
         aMap.setMyLocationEnabled(true);
         aMap.setMyLocationType(AMap.LOCATION_TYPE_LOCATE);
         aMap.setInfoWindowAdapter(this);
@@ -239,13 +414,12 @@ public class MainActivity extends AppCompatActivity implements AMap.OnMapClickLi
                 //aMap.moveCamera(mCameraUpdate);
                 currentMarker=marker;
                 aMap.animateCamera(CameraUpdateFactory.changeLatLng(marker.getPosition()));
-                marker.showInfoWindow();
+                currentMarker.showInfoWindow();
                 return true;
                 /*String type=marker.getTitle();
                 Gifmarker cameragif=new Gifmarker(type,mContext);
                 marker.setIcons(cameragif.iconList);
                 */
-
             }
         });
     }
@@ -272,8 +446,8 @@ public class MainActivity extends AppCompatActivity implements AMap.OnMapClickLi
 
     private Marker drawMarkerOnMap(Device info) {
         LatLng latLng = new LatLng(info.getDevicelat(),info.getDevicelng());
-        String devicetype= info.getDevicetype();
-        String devicestatus= info.getDevicestatus();
+        String devicetype= info.getDevicetype().trim();
+        String devicestatus= info.getDevicestatus().trim();
         MarkerOptions options = new MarkerOptions()
                 .position(latLng)
                 .title(info.getDevicenum())
@@ -448,12 +622,11 @@ public class MainActivity extends AppCompatActivity implements AMap.OnMapClickLi
         ColorDrawable dw = new ColorDrawable(0xb0000000);
         popWindow.setBackgroundDrawable(dw);
         // 设置好参数之后再show
-        initRecords();
         if(mrecordsList.isEmpty()) {
             Toast.makeText(MainActivity.this,"目前没有未处理的警报哦",Toast.LENGTH_SHORT).show();
             return;
         }
-        WarningRecordsAdapter adapter=new WarningRecordsAdapter(this, R.layout.record_warninglist,mrecordsList);
+        WarningRecordsAdapter adapter=new WarningRecordsAdapter(this, R.layout.record_warninglist,frecordsList);
         recordlistView=(ListView)contentView.findViewById(R.id.warninglist);
         recordlistView.setAdapter(adapter);
         recordlistView.setOnItemClickListener(new OnItemClickListener() {
@@ -461,10 +634,12 @@ public class MainActivity extends AppCompatActivity implements AMap.OnMapClickLi
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Record x=(Record)recordlistView.getItemAtPosition(position);
                 String title=x.getDevicenum();
-                Marker now=MarkerHashMap.get(title);
-                popWindow.dismiss();
-                aMap.animateCamera(CameraUpdateFactory.changeLatLng(now.getPosition()));
-                now.showInfoWindow();
+                if(MarkerHashMap.containsKey(title)){
+                    Marker now=MarkerHashMap.get(title);
+                    popWindow.dismiss();
+                    aMap.animateCamera(CameraUpdateFactory.changeLatLng(now.getPosition()));
+                    now.showInfoWindow();
+                }
             }
         });
         //获取listvie
@@ -547,13 +722,13 @@ public class MainActivity extends AppCompatActivity implements AMap.OnMapClickLi
                 OkHttpClient client = new OkHttpClient();
                 Request request = new Request.Builder().url(getunsolvedpath).build();
                 try {
+                    frecordsList.clear();
+                    frecordsList.addAll(mrecordsList);
+                    mrecordsList.clear();
                     Response response = client.newCall(request).execute();//发送请求
                     String result = response.body().string();
                     Map<String, Object> map= jsonstr2map.jsonstr2map(result);
-                    mrecordsList.clear();
-                    /**
-                     * 将 string 转为json格式
-                     */
+                    /*将 string 转为json格式*/
                     String temp = map.get("data").toString();
                     if(temp.equals("null")){
                         flag=1;
@@ -570,14 +745,25 @@ public class MainActivity extends AppCompatActivity implements AMap.OnMapClickLi
                         if (ms[1].equals("null")) {
                             ms[1] = "";
                         }
-                        map2.put(ms[0], ms[1]);
-
-                        if (ms[0].equals("deltime")) {
-                            Record record1 = new Record((String) map2.get("recordnum"),map2.get("recordtime"), map2.get("recordstatus"), map2.get("solutionID"),map2.get("userID"), (String) map2.get("username"), (String) map2.get("title"), (String) map2.get("context"), map2.get("deviceID"),(String)map2.get("devicenum"),(String)map2.get("deviceaddress"),map2.get("regionID"),map2.get("defposID"),map2.get("devicelat"),map2.get("devicelng"),map2.get("devicetype"),map2.get("devicestatus"),map2.get("deltime"));
+                        if (map2.containsKey(ms[0])) {
+                            Record record1 = new Record(map2.get("recordID"),(String) map2.get("recordnum"),map2.get("recordtime"), map2.get("recordstatus"), map2.get("solutionID"),map2.get("userID"), (String) map2.get("title"), (String) map2.get("context"), map2.get("deviceID"),(String)map2.get("devicenum"),(String)map2.get("deviceaddress"),map2.get("regionID"),map2.get("defposID"),map2.get("devicelat"),map2.get("devicelng"),map2.get("devicetype"),map2.get("devicestatus"),map2.get("deltime"));
                             mrecordsList.add(record1);
+                            map2.clear();
+                            map2.put(ms[0],ms[1]);
+                        }
+                        else{
+                            map2.put(ms[0], ms[1]);
                         }
                     }
+                    Record record1 = new Record(map2.get("recordID"),(String) map2.get("recordnum"),map2.get("recordtime"), map2.get("recordstatus"), map2.get("solutionID"),map2.get("userID"), (String) map2.get("title"), (String) map2.get("context"), map2.get("deviceID"),(String)map2.get("devicenum"),(String)map2.get("deviceaddress"),map2.get("regionID"),map2.get("defposID"),map2.get("devicelat"),map2.get("devicelng"),map2.get("devicetype"),map2.get("devicestatus"),map2.get("deltime"));
+                    mrecordsList.add(record1);
                     if(mrecordsList.size()!=0){
+                        for (int i=0;i<mrecordsList.size();i++){
+                            if(mrecordsList.get(i).getDevicenum().equals("0")){
+                                mrecordsList.remove(i);
+                                i--;
+                            }
+                        }
                         flag=1;
                     }else flag=2;
                 } catch (Exception e) {
@@ -595,6 +781,7 @@ public class MainActivity extends AppCompatActivity implements AMap.OnMapClickLi
         if(flag==1){
             Log.i(Tag,"设备记录请求成功");
         }
+
     }
 
     private void initDeviceList() {
@@ -637,7 +824,7 @@ public class MainActivity extends AppCompatActivity implements AMap.OnMapClickLi
                             ms[1]="";
                         }
                         if (map2.containsKey(ms[0])) {
-                            Device device1 = new Device(Integer.parseInt((String) map2.get("deviceID")), (String) map2.get("devicenum"), Double.parseDouble((String) map2.get("devicelat")), Double.parseDouble((String) map2.get("devicelng")), (String) map2.get("deviceaddress"), (String) map2.get("devicestatus"), (String) map2.get("devicetype"), (String) map2.get("regionID"), (String) map2.get("defposID"), (String) map2.get("ip"));
+                            Device device1 = new Device(Integer.parseInt((String) map2.get("deviceID")), (String) map2.get("devicenum"), Double.parseDouble((String) map2.get("devicelat")), Double.parseDouble((String) map2.get("devicelng")), (String) map2.get("deviceaddress"), (String) map2.get("devicestatus").trim(), (String) map2.get("devicetype").trim(), (String) map2.get("regionID"), (String) map2.get("defposID"), (String) map2.get("ip"));
                             mdevicelist.add(device1);
                             map2.clear();
                             map2.put(ms[0], ms[1]);
@@ -646,15 +833,15 @@ public class MainActivity extends AppCompatActivity implements AMap.OnMapClickLi
                             map2.put(ms[0], ms[1]);
                         }
                     }
-                    Device device1 = new Device(Integer.parseInt((String) map2.get("deviceID")), (String) map2.get("devicenum"), Double.parseDouble((String) map2.get("devicelat")), Double.parseDouble((String) map2.get("devicelng")), (String) map2.get("deviceaddress"), (String) map2.get("devicestatus"), (String) map2.get("devicetype"), (String) map2.get("regionID"), (String) map2.get("defposID"), (String) map2.get("ip"));
+                    Device device1 = new Device(Integer.parseInt((String) map2.get("deviceID")), (String) map2.get("devicenum"), Double.parseDouble((String) map2.get("devicelat")), Double.parseDouble((String) map2.get("devicelng")), (String) map2.get("deviceaddress"), (String) map2.get("devicestatus").trim(), (String) map2.get("devicetype").trim(), (String) map2.get("regionID"), (String) map2.get("defposID"), (String) map2.get("ip"));
                     mdevicelist.add(device1);
+                    Log.i(Tag,"init"+device1.getDevicenum()+device1.getDevicestatus()+device1.getDevicetype());
                     if(mdevicelist.size()!=0){
                         for (int i=0;i<mdevicelist.size();i++){
-                            if(mdevicelist.get(i).getDevicenum().equals("0")){
+                            if(mdevicelist.get(i).getDevicenum().equals("0")) {
                                 mdevicelist.remove(i);
                                 i--;
                             }
-
                         }
                         for(int i=0;i<mdevicelist.size();i++){
                             device1=mdevicelist.get(i);
@@ -686,7 +873,96 @@ public class MainActivity extends AppCompatActivity implements AMap.OnMapClickLi
             }
         };
         setLoaded(flag);
-        Log.i(TAG,mdevicelist.toString());
+        Log.i(TAG,"init"+mdevicelist.toString());
+    }
+    private void initDeviceListNo() {
+        flag=0;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                OkHttpClient client = new OkHttpClient();
+                Request request = new Request.Builder().url(getdevicepath).build();
+                try {
+                    mdevicelist.clear();
+                    cameraList.clear();
+                    radarList.clear();
+                    sensorList.clear();
+                    Response response = client.newCall(request).execute();//发送请求
+                    String result = response.body().string();
+                    Map<String, Object> map= jsonstr2map.jsonstr2map(result);
+                    //List<Map<String, Object>> map2=jsonstr2map.jsonstr2list(map.get("data").toString());
+                    /**
+                     * 将 string 转为json格式
+                     */
+                    String temp = map.get("data").toString();
+                    if(temp.equals("null")){
+                        flag=1;
+                        return;
+                    }
+                    temp = temp.substring(1, temp.length() - 1).replace(" ", "").replace("{", "").replace("}", "").replace("\"","").replace("\"","");
+                    Log.i(Tag,temp);
+                    String[] strs = temp.split(",");
+                    Map<String, String> map2 = new HashMap<String, String>();
+                    for (String s : strs) {
+                        String sss=s.replace(" ","");
+                        String[] ms = sss.split("=");
+
+                        if (ms.length==1) {
+                            continue;
+                        }
+                        if (ms.length==2&&ms[1].equals("null")){
+                            ms[1]="";
+                        }
+                        if (map2.containsKey(ms[0])) {
+                            Device device1 = new Device(Integer.parseInt((String) map2.get("deviceID")), (String) map2.get("devicenum"), Double.parseDouble((String) map2.get("devicelat")), Double.parseDouble((String) map2.get("devicelng")), (String) map2.get("deviceaddress"), (String) map2.get("devicestatus").trim(), (String) map2.get("devicetype").trim(), (String) map2.get("regionID"), (String) map2.get("defposID"), (String) map2.get("ip"));
+                            mdevicelist.add(device1);
+                            map2.clear();
+                            map2.put(ms[0], ms[1]);
+                        }
+                        else{
+                            map2.put(ms[0], ms[1]);
+                        }
+                    }
+                    Device device1 = new Device(Integer.parseInt((String) map2.get("deviceID")), (String) map2.get("devicenum"), Double.parseDouble((String) map2.get("devicelat")), Double.parseDouble((String) map2.get("devicelng")), (String) map2.get("deviceaddress"), (String) map2.get("devicestatus").trim(), (String) map2.get("devicetype").trim(), (String) map2.get("regionID"), (String) map2.get("defposID"), (String) map2.get("ip"));
+                    mdevicelist.add(device1);
+                    Log.i(Tag,"init"+device1.getDevicenum()+device1.getDevicestatus()+device1.getDevicetype());
+                    if(mdevicelist.size()!=0){
+                        for (int i=0;i<mdevicelist.size();i++){
+                            if(mdevicelist.get(i).getDevicenum().equals("0")) {
+                                mdevicelist.remove(i);
+                                i--;
+                            }
+                        }
+                        for(int i=0;i<mdevicelist.size();i++){
+                            device1=mdevicelist.get(i);
+                            switch (device1.getDevicetype()){
+                                case "监控":
+                                    cameraList.add(device1);
+                                    break;
+                                case "雷达":
+                                    radarList.add(device1);
+                                    break;
+                                case "振动传感":
+                                    sensorList.add(device1);
+                                    break;
+                            }
+                        }
+                        flag=1;
+                    }
+                    else flag=2;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+        while (flag==0){
+            try{
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        };
+        Log.i(TAG,"init"+mdevicelist.toString());
     }
     //segmental
     private void initsegment(){
@@ -831,6 +1107,7 @@ public class MainActivity extends AppCompatActivity implements AMap.OnMapClickLi
     @Override
     protected void onDestroy() {
         Log.i(TAG, "onDestroy()");
+        stopTimer();
         super.onDestroy();
         // 销毁地图
         mapView.onDestroy();
@@ -944,5 +1221,23 @@ public class MainActivity extends AppCompatActivity implements AMap.OnMapClickLi
         marker_sensor_y = LayoutInflater.from(this).inflate(R.layout.marker_senser_y,null);
         marker_sensor_g = LayoutInflater.from(this).inflate(R.layout.marker_senser_g,null);
         marker_sensor_gray = LayoutInflater.from(this).inflate(R.layout.marker_senser_gray,null);
+    }
+
+    public void showbuilder(String title,String text,int id){
+        mBuilder.setContentTitle(title)
+            //设置内容
+            .setContentText(text)
+            //设置大图标
+            .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
+            //设置小图标
+            .setSmallIcon(R.mipmap.ic_launcher_round)
+            //设置通知时间
+            .setWhen(System.currentTimeMillis())
+            //首次进入时显示效果
+            .setTicker(" ")
+            //设置通知方式，声音，震动，呼吸灯等效果，这里通知方式为声音
+            .setDefaults(Notification.DEFAULT_ALL);
+             //发送通知请求
+        notificationManager.notify(id, mBuilder.build());
     }
 }

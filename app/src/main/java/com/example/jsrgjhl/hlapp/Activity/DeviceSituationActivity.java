@@ -76,6 +76,8 @@ public class DeviceSituationActivity extends AppCompatActivity implements OnGeoc
         //得到设备列表的数据，并填充
         Intent intent = getIntent();
         getDevice = (Device) intent.getSerializableExtra("device");
+        lat=getDevice.getDevicelat();
+        lng=getDevice.getDevicelng();
         setContentView(R.layout.activity_device_situation);
         Toolbar toolbar = (Toolbar) findViewById(R.id.devicesituationbar);
         toolbar.setTitle("");
@@ -211,20 +213,11 @@ public class DeviceSituationActivity extends AppCompatActivity implements OnGeoc
         return ipEditText.getText().toString().trim();
     }
 
-    /**
-     * 得到设备的Lat
-     * 但是还没有连接上
-     * @return
-     */
+
     public Double getDevicelat(){
         return lat;
     }
 
-    /**
-     * 得到设备的lng
-     * 但是还没有连接上
-     * @return
-     */
     public Double getDevicelng(){
         return lng;
     }
@@ -307,6 +300,7 @@ public class DeviceSituationActivity extends AppCompatActivity implements OnGeoc
                 }
             };
             setLoaded(flag);
+            DeviceSituationActivity.this.finish();
         Log.i(Tag,"flag"+flag);
     }
 

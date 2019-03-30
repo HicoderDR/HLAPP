@@ -67,8 +67,9 @@
 
     <ImageView
         android:id="@+id/info_back"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_marginLeft="26dp"
         android:layout_toRightOf="@id/devicenum"
         android:scaleType="fitXY"
         android:src="@mipmap/wrong" />

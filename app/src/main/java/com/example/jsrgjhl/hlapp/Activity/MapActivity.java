@@ -252,6 +252,7 @@ public class MapActivity extends AppCompatActivity implements AMap.OnMapClickLis
     @Override
     protected void onResume() {
         super.onResume();
+
         //在activity执行onResume时执行mMapView.onResume ()，重新绘制加载地图
         mMapView.onResume();
     }
