@@ -503,7 +503,7 @@ public class MainActivity extends AppCompatActivity implements AMap.OnMapClickLi
                         options.icon(BitmapDescriptorFactory.fromView(marker_radar_gray));
                         break;
                     case "振动传感":
-                        options.icon(BitmapDescriptorFactory.fromView(marker_sensor_gray));
+                        options.icon(BitmapDescriptorFactory.fromResource(R.mipmap.marker_senser_gray));
                         break;
                 }break;
         }

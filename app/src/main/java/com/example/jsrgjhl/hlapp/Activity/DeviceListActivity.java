@@ -203,7 +203,6 @@ public class DeviceListActivity extends AppCompatActivity {
         addDevice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(DeviceListActivity.this,"点击了添加按钮", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent();
                 intent.setClass(DeviceListActivity.this, DeviceSituationActivity.class);
                 Device device=new Device(null,"振动传感","区域一","防区一");

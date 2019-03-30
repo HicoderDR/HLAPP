@@ -19,7 +19,7 @@
     <string name="confirmpoint">确认选点</string>
     <string name="allrecord">所有记录</string>
     <string name="devicelist">设备列表</string>
-    <string name="ipaddress">ip地址：</string>
+    <string name="ipaddress">IP地址：</string>
     <string name="devicedata">设备参数</string>
     <string name="deviceidl">设备号：</string>
     <string name="area">所在区域：</string>

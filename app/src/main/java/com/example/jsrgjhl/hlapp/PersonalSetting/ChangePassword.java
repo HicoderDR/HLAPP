@@ -75,7 +75,16 @@ public class ChangePassword extends AppCompatActivity {
             public void onClick(View view) {
                 if(confirmOldPassword())
                 {
-                    showToast("下次请重新登录");
+                    SharedPreferences.Editor editor=sp.edit();
+                    editor.putString("password","");
+                    editor.putBoolean("first",true);
+                    editor.putBoolean("rememberpassword",false);
+                    editor.putBoolean("autologin",false);
+                    editor.commit();
+                    Intent intent=new Intent(ChangePassword.this,LoginActivity.class);
+                    Toast.makeText(ChangePassword.this,"退出登录成功",Toast.LENGTH_SHORT).show();
+                    startActivity(intent);
+                    ChangePassword.this.finish();
                 }else{
                     showToast("请检查输入");
                 }
