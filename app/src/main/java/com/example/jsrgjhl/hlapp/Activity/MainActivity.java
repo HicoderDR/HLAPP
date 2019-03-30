@@ -2,11 +2,12 @@ package com.example.jsrgjhl.hlapp.Activity;
 
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.graphics.BitmapFactory;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
@@ -43,6 +44,7 @@ import com.amap.api.maps.AMapOptions;
 import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.LocationSource;
 import com.amap.api.maps.MapView;
+import com.amap.api.maps.model.BitmapDescriptor;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
@@ -53,6 +55,7 @@ import com.example.jsrgjhl.hlapp.Adapter.Record;
 import com.example.jsrgjhl.hlapp.Adapter.WarningRecordsAdapter;
 import com.example.jsrgjhl.hlapp.PersonalSetting.OperateRecord;
 import com.example.jsrgjhl.hlapp.R;
+import com.example.jsrgjhl.hlapp.Utils.NotificationClickReceiver;
 import com.example.jsrgjhl.hlapp.Utils.OkManager;
 import com.example.jsrgjhl.hlapp.Utils.ScreenUtils;
 import com.example.jsrgjhl.hlapp.Utils.jsonstr2map;
@@ -62,6 +65,8 @@ import com.xiasuhuei321.loadingdialog.view.LoadingDialog;
 import java.io.Serializable;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -76,6 +81,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 import static com.xiasuhuei321.loadingdialog.view.LoadingDialog.Speed.SPEED_TWO;
 
 
@@ -137,6 +143,19 @@ public class MainActivity extends AppCompatActivity implements AMap.OnMapClickLi
     private View marker_sensor_y;
     private View marker_sensor_g;
 
+    BitmapDescriptor bitmapDescriptor_marker_camera_g;
+    BitmapDescriptor bitmapDescriptor_marker_camera_y;
+    BitmapDescriptor bitmapDescriptor_marker_camera_r;
+    BitmapDescriptor bitmapDescriptor_marker_camera_gray;
+    BitmapDescriptor bitmapDescriptor_marker_radar_g;
+    BitmapDescriptor bitmapDescriptor_marker_radar_y;
+    BitmapDescriptor bitmapDescriptor_marker_radar_r;
+    BitmapDescriptor bitmapDescriptor_marker_radar_gray;
+    BitmapDescriptor bitmapDescriptor_marker_sensor_gray;
+    BitmapDescriptor bitmapDescriptor_marker_sensor_r;
+    BitmapDescriptor bitmapDescriptor_marker_sensor_y;
+    BitmapDescriptor bitmapDescriptor_marker_sensor_g;
+
     private Handler mHandler;
     private Timer mTimer = null;
     private TimerTask mTimerTask = null;
@@ -145,6 +164,7 @@ public class MainActivity extends AppCompatActivity implements AMap.OnMapClickLi
     private static int delay = 1; //1s
     private static int period = 1;  //1s
     private static int count = 0;
+    private static int rflag=0;
     private static final int UPDATE_DEVICELIST = 0;
     private static final int UPDATE_FALSE=1;
     private static final int NOTIFICATION=2;
@@ -171,13 +191,23 @@ public class MainActivity extends AppCompatActivity implements AMap.OnMapClickLi
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         mBuilder = new NotificationCompat.Builder(this);
         init();
-        initDeviceList();
+        Intent intent=getIntent();
+        int x=intent.getFlags();
+        if(x==FLAG_ACTIVITY_NEW_TASK){
+            initDeviceListNo();
+            aMap.clear();
+            initmarkers();
+        }else{
+            initDeviceList();
+        }
+        startTimer();
         initmarkers();
         initRecords();
         initsegment();
         // 创建地图
+
         mapView.onCreate(savedInstanceState);
-        startTimer();
+
         //部分高德UI样式改动
         aMap.getUiSettings().setLogoPosition(AMapOptions.LOGO_POSITION_BOTTOM_RIGHT);//高德logo位置的移动
         MyLocationStyle myLocationStyle = new MyLocationStyle();
@@ -198,16 +228,28 @@ public class MainActivity extends AppCompatActivity implements AMap.OnMapClickLi
                     case UPDATE_FALSE:
                         break;
                     case NOTIFICATION:
-                        for(int i=0;i<nowList.size();i++){
-                            showbuilder(nowList.get(i).getDevicenum()+nowList.get(i).getDevicestatus(),nowList.get(i).getRecordtime(),count);
+                        if(rflag!=0){
+                            for(int i=0;i<nowList.size();i++){
+                                showbuilder(nowList.get(i).getDevicenum(),nowList.get(i).getDevicestatus(),nowList.get(i).getRecordtime(),count);
+                            }
+                            nowList.clear();
                         }
-                        nowList.clear();
                         break;
                     default:
                         break;
                 }
             }
         };
+        if(x==FLAG_ACTIVITY_NEW_TASK){Bundle y=intent.getExtras();
+            String title=y.getString("devicenum");
+            Log.i(Tag,"drresult--devicenum:"+title);
+            rflag=0;
+            if(MarkerHashMap.containsKey(title)){
+                Marker now=MarkerHashMap.get(title);
+                currentMarker=now;
+                aMap.animateCamera(CameraUpdateFactory.changeLatLng(now.getPosition()));
+                now.showInfoWindow();
+            }}
     }
 
     private void startTimer(){
@@ -294,6 +336,7 @@ public class MainActivity extends AppCompatActivity implements AMap.OnMapClickLi
                         Log.i(Tag,"nowlist"+" "+nowList.toString());
                         if(nowList.size()>0){
                             sendMessage(NOTIFICATION);
+                            rflag=1;
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -461,55 +504,54 @@ public class MainActivity extends AppCompatActivity implements AMap.OnMapClickLi
             case "正常运转":
                 switch(devicetype){
                     case "监控":
-                        options.icon(BitmapDescriptorFactory.fromView(marker_camera_g));
+                        options.icon(bitmapDescriptor_marker_camera_g);
                         break;
                     case "雷达":
-                        options.icon(BitmapDescriptorFactory.fromView(marker_radar_g));
+                        options.icon(bitmapDescriptor_marker_radar_g);
                         break;
                     case "振动传感":
-                        options.icon(BitmapDescriptorFactory.fromView(marker_sensor_g));
+                        options.icon(bitmapDescriptor_marker_sensor_g);
                         break;
                 }break;
             case "预警状态":
                 switch(devicetype){
                     case "监控":
-                        options.icon(BitmapDescriptorFactory.fromView(marker_camera_y));
+                        options.icon(bitmapDescriptor_marker_camera_y);
                         break;
                     case "雷达":
-                        options.icon(BitmapDescriptorFactory.fromView(marker_radar_y));
+                        options.icon(bitmapDescriptor_marker_radar_y);
                         break;
                     case "振动传感":
-                        options.icon(BitmapDescriptorFactory.fromView(marker_sensor_y));
+                        options.icon(bitmapDescriptor_marker_sensor_y);
                         break;
                 }break;
             case "报警状态":
                 switch(devicetype){
                     case "监控":
-                        options.icon(BitmapDescriptorFactory.fromView(marker_camera_r));
+                        options.icon(bitmapDescriptor_marker_camera_r);
                         break;
                     case "雷达":
-                        options.icon(BitmapDescriptorFactory.fromView(marker_radar_r));
+                        options.icon(bitmapDescriptor_marker_radar_r);
                         break;
                     case "振动传感":
-                        options.icon(BitmapDescriptorFactory.fromView(marker_sensor_r));
+                        options.icon(bitmapDescriptor_marker_sensor_r);
                         break;
                 }break;
             case "停机状态":
                 switch(devicetype){
                     case "监控":
-                        options.icon(BitmapDescriptorFactory.fromView(marker_camera_gray));
+                        options.icon(bitmapDescriptor_marker_camera_gray);
                         break;
                     case "雷达":
-                        options.icon(BitmapDescriptorFactory.fromView(marker_radar_gray));
+                        options.icon(bitmapDescriptor_marker_radar_gray);
                         break;
                     case "振动传感":
-                        options.icon(BitmapDescriptorFactory.fromView(marker_sensor_gray));
+                        options.icon(bitmapDescriptor_marker_sensor_gray);
                         break;
                 }break;
         }
         Marker marker = aMap.addMarker(options);
         marker.setObject(info);//传入数据bean
-
         //hashmap双向关联
         DeviceHashMap.put(info.getDevicenum(),info);
         return marker;
@@ -641,6 +683,7 @@ public class MainActivity extends AppCompatActivity implements AMap.OnMapClickLi
                 if(MarkerHashMap.containsKey(title)){
                     Marker now=MarkerHashMap.get(title);
                     popWindow.dismiss();
+                    currentMarker=now;
                     aMap.animateCamera(CameraUpdateFactory.changeLatLng(now.getPosition()));
                     now.showInfoWindow();
                 }
@@ -1095,6 +1138,7 @@ public class MainActivity extends AppCompatActivity implements AMap.OnMapClickLi
     @Override
     protected void onResume() {
         Log.i(TAG, "onResume()");
+        rflag=0;
         super.onResume();
         // 重新绘制加载地图
         mapView.onResume();
@@ -1198,20 +1242,6 @@ public class MainActivity extends AppCompatActivity implements AMap.OnMapClickLi
                 .show();
     }
 
-    /**
-     * 隐藏加载的进度框
-     */
-    public void hideLoading() {
-        if (mLoadingDialog != null) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    mLoadingDialog.close();
-                }
-            });
-        }
-    }
-
     public void initpic(){
         marker_camera_g = LayoutInflater.from(this).inflate(R.layout.marker_camera_g,null);
         marker_camera_y = LayoutInflater.from(this).inflate(R.layout.marker_camera_y,null);
@@ -1225,23 +1255,66 @@ public class MainActivity extends AppCompatActivity implements AMap.OnMapClickLi
         marker_sensor_y = LayoutInflater.from(this).inflate(R.layout.marker_senser_y,null);
         marker_sensor_g = LayoutInflater.from(this).inflate(R.layout.marker_senser_g,null);
         marker_sensor_gray = LayoutInflater.from(this).inflate(R.layout.marker_senser_gray,null);
+        bitmapDescriptor_marker_camera_g=BitmapDescriptorFactory.fromBitmap(convertViewToBitmap(marker_camera_g));
+        bitmapDescriptor_marker_camera_y=BitmapDescriptorFactory.fromBitmap(convertViewToBitmap(marker_camera_y));
+        bitmapDescriptor_marker_camera_r=BitmapDescriptorFactory.fromBitmap(convertViewToBitmap(marker_camera_r));
+        bitmapDescriptor_marker_camera_gray=BitmapDescriptorFactory.fromBitmap(convertViewToBitmap(marker_camera_gray));
+        bitmapDescriptor_marker_radar_g=BitmapDescriptorFactory.fromBitmap(convertViewToBitmap(marker_radar_g));
+        bitmapDescriptor_marker_radar_y=BitmapDescriptorFactory.fromBitmap(convertViewToBitmap(marker_radar_y));
+        bitmapDescriptor_marker_radar_r=BitmapDescriptorFactory.fromBitmap(convertViewToBitmap(marker_radar_r));
+        bitmapDescriptor_marker_radar_gray=BitmapDescriptorFactory.fromBitmap(convertViewToBitmap(marker_radar_gray));
+        bitmapDescriptor_marker_sensor_gray=BitmapDescriptorFactory.fromBitmap(convertViewToBitmap(marker_sensor_r));
+        bitmapDescriptor_marker_sensor_r=BitmapDescriptorFactory.fromBitmap(convertViewToBitmap(marker_sensor_y));
+        bitmapDescriptor_marker_sensor_y=BitmapDescriptorFactory.fromBitmap(convertViewToBitmap(marker_sensor_g));
+        bitmapDescriptor_marker_sensor_g=BitmapDescriptorFactory.fromBitmap(convertViewToBitmap(marker_sensor_gray));
     }
 
-    public void showbuilder(String title,String text,int id){
-        mBuilder.setContentTitle(title)
-            //设置内容
-            .setContentText(text)
-            //设置大图标
-            .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
-            //设置小图标
-            .setSmallIcon(R.mipmap.ic_launcher_round)
-            //设置通知时间
-            .setWhen(System.currentTimeMillis())
-            //首次进入时显示效果
-            .setTicker(" ")
-            //设置通知方式，声音，震动，呼吸灯等效果，这里通知方式为声音
-            .setDefaults(Notification.DEFAULT_ALL);
-             //发送通知请求
-        notificationManager.notify(id, mBuilder.build());
+    public void showbuilder(String devicenum,String devicestatus,String text,int id){
+        notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
+        Notification.Builder builder1 = new Notification.Builder(MainActivity.this);
+        builder1.setSmallIcon(R.mipmap.launchernew); //设置图标
+        builder1.setTicker("");
+        String title=devicenum+" "+devicestatus;
+        builder1.setContentTitle(title); //设置标题
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try{
+            Date dt=df.parse(String.valueOf(text));
+            String date=format.format(dt);
+            builder1.setContentText(date); //消息内容
+        }catch (ParseException e) {
+            e.printStackTrace();
+        }
+        builder1.setWhen(System.currentTimeMillis()); //发送时间
+        builder1.setDefaults(Notification.DEFAULT_ALL); //设置默认的提示音，振动方式，灯光
+        builder1.setAutoCancel(true);//打开程序后图标消失
+        Intent intent =new Intent (MainActivity.this, NotificationClickReceiver.class);
+        intent.putExtra("devicenum",devicenum);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 0, intent, 0);
+        builder1.setContentIntent(pendingIntent);
+        Notification notification1 = builder1.build();
+        notificationManager.notify(id, notification1); // 通过通知管理器发送通知
+    }
+    public static Bitmap convertViewToBitmap(View view) {
+        view.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
+        view.buildDrawingCache();
+        Bitmap bitmap = view.getDrawingCache();
+        return bitmap;
+    }
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        int x=intent.getFlags();
+        if(x==FLAG_ACTIVITY_NEW_TASK) {
+            Bundle y=intent.getExtras();
+            String title=y.getString("devicenum");
+            if(MarkerHashMap.containsKey(title)){
+                Marker now=MarkerHashMap.get(title);
+                aMap.animateCamera(CameraUpdateFactory.changeLatLng(now.getPosition()));
+                now.showInfoWindow();
+            }
+        }
     }
 }

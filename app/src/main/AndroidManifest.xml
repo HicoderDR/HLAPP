@@ -71,6 +71,9 @@
         <activity android:name=".PersonalSetting.AboutVersion" />
         <activity android:name=".PersonalSetting.AboutUs" />
         <activity android:name=".PersonalSetting.ChangePassword" />
+        <receiver
+            android:name=".Utils.NotificationClickReceiver">
+        </receiver>
     </application>
 
 </manifest>
