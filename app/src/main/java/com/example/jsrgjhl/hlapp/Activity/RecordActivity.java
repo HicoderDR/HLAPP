@@ -2,6 +2,8 @@ package com.example.jsrgjhl.hlapp.Activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -23,6 +25,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -30,8 +34,19 @@ import okhttp3.Response;
 
 public class RecordActivity extends AppCompatActivity implements Serializable{
 
+    private Handler mHandler;
+    private Timer mTimer = null;
+    private TimerTask mTimerTask = null;
+    private boolean isPause = false;
+    private boolean isStop = true;
+    private static int delay = 2; //1s
+    private static int period = 2;  //1s
+    private static int count = 0;
+    private final int UPDATE_LIST=0;
+
     private TextView mstatictv;
     private List<Record> mrecordsList=new ArrayList<>();
+    private List<Record> mnowrecordsList=new ArrayList<>();
     private String getrecordpath="http://47.100.107.158:8080/api/record/getrecordlist";
     private int flag;
     private RecordsAdapter adapter;
@@ -67,7 +82,9 @@ public class RecordActivity extends AppCompatActivity implements Serializable{
 
         //初始化Records列表
         initRecords();
-        adapter=new RecordsAdapter(RecordActivity.this, R.layout.record_list,mrecordsList);
+        mnowrecordsList.clear();
+        mnowrecordsList.addAll(mrecordsList);
+        adapter=new RecordsAdapter(RecordActivity.this, R.layout.record_list,mnowrecordsList);
         ListView recordlistView=(ListView)findViewById(R.id.record_listview);
         recordlistView.setAdapter(adapter);
 
@@ -82,18 +99,24 @@ public class RecordActivity extends AppCompatActivity implements Serializable{
                 startActivity(intent);
             }
         });
+        mHandler = new Handler(){
+            @Override
+            public void handleMessage(Message msg) {
+                switch (msg.what) {
+                    case UPDATE_LIST:
+                        mnowrecordsList.clear();
+                        mnowrecordsList.addAll(mrecordsList);
+                        adapter.notifyDataSetChanged();
+                    default:
+                        break;
+                }
+            }
+        };
+        startTimer();
 
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        mrecordsList.clear();
-        initRecords();
-        adapter.notifyDataSetChanged();
-    }
-
-    /**
+    /*
      * 向服务器请求记录列表
      */
     private void initRecords() {
@@ -170,6 +193,120 @@ public class RecordActivity extends AppCompatActivity implements Serializable{
                 i--;
             }
         }
+    }
+
+    private void startTimer(){
+        if (mTimer == null) {
+            mTimer = new Timer();
+        }
+        if (mTimerTask == null) {
+            mTimerTask = new TimerTask() {
+                @Override
+                public void run(){
+                    flag=0;
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mrecordsList.clear();
+                            OkHttpClient client = new OkHttpClient();
+                            Request request = new Request.Builder().url(getrecordpath).build();
+                            try {
+                                Response response = client.newCall(request).execute();//发送请求
+                                String result = response.body().string();
+                                Map<String, Object> map= jsonstr2map.jsonstr2map(result);
+                                /**
+                                 * 将 string 转为json格式
+                                 */
+                                String temp = map.get("data").toString();
+                                if(temp.equals("null")){
+                                    flag=1;
+                                    return;
+                                }
+                                temp = temp.substring(1, temp.length() - 1).replace(" ", "").replace("{", "").replace("}", "").replace("\"","").replace("\"","");
+                                Log.i(Tag,temp);
+                                String[] strs = temp.split(",");
+                                Map<String, String> map2 = new HashMap<String, String>();
+                                for (String s : strs) {
+                                    String sss=s.replace(" ","");
+                                    String[] ms = sss.split("=");
+
+                                    if (ms[1].equals("null")) {
+                                        ms[1] = "";
+                                    }
+                                    if (map2.containsKey(ms[0])) {
+                                        Record record1 = new Record(map2.get("recordID"),(String) map2.get("recordnum"),map2.get("recordtime"), map2.get("recordstatus"), map2.get("solutionID"),map2.get("userID"), (String) map2.get("title"), (String) map2.get("context"), map2.get("deviceID"),(String)map2.get("devicenum"),(String)map2.get("deviceaddress"),map2.get("regionID"),map2.get("defposID"),map2.get("devicelat"),map2.get("devicelng"),map2.get("devicetype"),map2.get("devicestatus"),map2.get("deltime"));
+                                        mrecordsList.add(record1);
+                                        map2.clear();
+                                        map2.put(ms[0],ms[1]);
+                                    }
+                                    else{
+                                        map2.put(ms[0], ms[1]);
+                                    }
+                                }
+                                Record record1 = new Record(map2.get("recordID"),(String) map2.get("recordnum"),map2.get("recordtime"), map2.get("recordstatus"), map2.get("solutionID"),map2.get("userID"), (String) map2.get("title"), (String) map2.get("context"), map2.get("deviceID"),(String)map2.get("devicenum"),(String)map2.get("deviceaddress"),map2.get("regionID"),map2.get("defposID"),map2.get("devicelat"),map2.get("devicelng"),map2.get("devicetype"),map2.get("devicestatus"),map2.get("deltime"));
+                                mrecordsList.add(record1);
+                                if(mrecordsList.size()!=0){
+                                    deletzero();
+                                    flag=1;
+                                }else flag=2;
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }).start();
+                    while (flag==0){
+                        try{
+                            Thread.sleep(1);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    };
+                    sendMessage(UPDATE_LIST);
+                    do {
+                        try {
+                            Log.i(Tag, "sleep(4000)...");
+                            Thread.sleep(4000);
+                        } catch (InterruptedException e) {
+                        }
+                    } while (isPause);
+                }
+            };
+        }
+        if(mTimer != null && mTimerTask != null )
+            mTimer.schedule(mTimerTask,delay, period);
+    }
+
+    private void stopTimer(){
+        if (mTimer != null) {
+            mTimer.cancel();
+            mTimer = null;
+        }
+        if (mTimerTask != null) {
+            mTimerTask.cancel();
+            mTimerTask = null;
+        }
+        count = 0;
+    }
+
+    public void sendMessage(int id){
+        if (mHandler != null) {
+            Message message = Message.obtain(mHandler, id);
+            mHandler.sendMessage(message);
+        }
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+    }
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+        stopTimer();
     }
 
 }
