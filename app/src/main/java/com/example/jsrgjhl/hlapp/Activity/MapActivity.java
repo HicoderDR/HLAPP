@@ -91,6 +91,9 @@ public class MapActivity extends AppCompatActivity implements AMap.OnMapClickLis
         if (aMap == null) {
             aMap = mMapView.getMap();
             setUpMap();
+            latlng0=new LatLng(mLocationClient.getLastKnownLocation().getLatitude(),mLocationClient.getLastKnownLocation().getLongitude());
+            this.latitude=latlng0.latitude;
+            this.longtitude=latlng0.longitude;
         }
     }
 
@@ -102,7 +105,7 @@ public class MapActivity extends AppCompatActivity implements AMap.OnMapClickLis
             MessageDigest md = MessageDigest.getInstance("SHA1");
             byte[] publicKey = md.digest(cert);
             StringBuffer hexString = new StringBuffer();
-            for (int i = 0; i < publicKey.length; i++) {
+            for(int i = 0; i < publicKey.length; i++) {
                 String appendString = Integer.toHexString(0xFF & publicKey[i])
                         .toUpperCase(Locale.US);
                 if (appendString.length() == 1)
@@ -121,6 +124,7 @@ public class MapActivity extends AppCompatActivity implements AMap.OnMapClickLis
     }
 
     private void setUpMap() {
+        aMap.moveCamera(CameraUpdateFactory.zoomTo(17));
         aMap.showIndoorMap(true);
         aMap.getUiSettings().setZoomControlsEnabled(false);
         // 设置地图默认的指南针是否显示
@@ -175,9 +179,7 @@ public class MapActivity extends AppCompatActivity implements AMap.OnMapClickLis
         // 启动高德地图定位
         mLocationClient.startLocation();
         aMap.setOnMapClickListener(this);
-        latlng0=new LatLng(mLocationClient.getLastKnownLocation().getLatitude(),mLocationClient.getLastKnownLocation().getLongitude());
-        this.latitude=latlng0.latitude;
-        this.longtitude=latlng0.longitude;
+
     }
 
     @Override
@@ -230,12 +232,6 @@ public class MapActivity extends AppCompatActivity implements AMap.OnMapClickLis
                         + "--floor:" + floor + "\n"
                         + "--gpsAccuracyStatus:" + gpsAccuracyStatus + "\n"
                         + "--date:" + date);
-
-                // 设置缩放级别
-                aMap.moveCamera(CameraUpdateFactory.zoomTo(17));
-                // 将地图移动到定位点
-                aMap.moveCamera(CameraUpdateFactory.changeLatLng(
-                        new LatLng(aMapLocation.getLatitude(), aMapLocation.getLongitude())));
                 // 点击定位按钮 能够将地图的中心移动到定位点
                 mListener.onLocationChanged(aMapLocation);
 
@@ -256,6 +252,7 @@ public class MapActivity extends AppCompatActivity implements AMap.OnMapClickLis
     @Override
     protected void onResume() {
         super.onResume();
+
         //在activity执行onResume时执行mMapView.onResume ()，重新绘制加载地图
         mMapView.onResume();
     }

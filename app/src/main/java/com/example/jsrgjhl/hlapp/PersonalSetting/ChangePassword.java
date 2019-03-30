@@ -16,7 +16,6 @@ import com.example.jsrgjhl.hlapp.Activity.LoginActivity;
 import com.example.jsrgjhl.hlapp.Activity.PersonActivity;
 import com.example.jsrgjhl.hlapp.R;
 import com.example.jsrgjhl.hlapp.Utils.jsonstr2map;
-import com.xiasuhuei321.loadingdialog.view.LoadingDialog;
 
 import java.util.HashMap;
 import java.util.List;
@@ -28,8 +27,6 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-import static com.xiasuhuei321.loadingdialog.view.LoadingDialog.Speed.SPEED_TWO;
-
 public class ChangePassword extends AppCompatActivity {
 
     private LoginActivity login=new LoginActivity();
@@ -38,9 +35,9 @@ public class ChangePassword extends AppCompatActivity {
     private EditText confirmpassword;
     private String getuserInfo="http://47.100.107.158:8080/api/user/getuserInfo";
     private String changePassword="http://47.100.107.158:8080/api/user/changepassword";
-    private LoadingDialog mLoadingDialog;
 
     SharedPreferences sp;
+    SharedPreferences.Editor editor=sp.edit();
     private static int flag;
     private final static String Tag=ChangePassword.class.getSimpleName();
     @Override
@@ -75,7 +72,16 @@ public class ChangePassword extends AppCompatActivity {
             public void onClick(View view) {
                 if(confirmOldPassword())
                 {
-                    showToast("下次请重新登录");
+                    SharedPreferences.Editor editor=sp.edit();
+                    editor.putString("password","");
+                    editor.putBoolean("first",true);
+                    editor.putBoolean("rememberpassword",false);
+                    editor.putBoolean("autologin",false);
+                    editor.commit();
+                    Intent intent=new Intent(ChangePassword.this,LoginActivity.class);
+                    Toast.makeText(ChangePassword.this,"退出登录成功",Toast.LENGTH_SHORT).show();
+                    startActivity(intent);
+                    ChangePassword.this.finish();
                 }else{
                     showToast("请检查输入");
                 }
@@ -88,6 +94,7 @@ public class ChangePassword extends AppCompatActivity {
         if(newpassword.getText().toString().equals(confirmpassword.getText().toString())){
             return true;
         }else {
+            showToast("请确认新密码是否一致");
             newpassword.setText("");
             confirmpassword.setText("");
             return false;
@@ -95,7 +102,6 @@ public class ChangePassword extends AppCompatActivity {
     }
 
     private boolean confirmOldPassword() {
-        showLoading();//显示加载框
         flag=0;
         try{
             new Thread(new Runnable() {
@@ -154,7 +160,6 @@ public class ChangePassword extends AppCompatActivity {
                     e.printStackTrace();
                 }
             };
-            setLoaded(flag);
             if(flag==1){
                 Log.i(Tag,"password"+"成功");
                 return true;
@@ -170,49 +175,6 @@ public class ChangePassword extends AppCompatActivity {
         }
         return false;
     }
-
-    private void setLoaded(int result) {
-        if (result==1) mLoadingDialog.loadSuccess(); else if(result==2) mLoadingDialog.loadFailed();
-    }
-
-    /**
-     * 显示加载的进度款
-     */
-    public void showLoading() {
-        mLoadingDialog = new LoadingDialog(this);
-        mLoadingDialog.setLoadingText("加载中")
-                .setSuccessText("修改成功")//显示加载成功时的文字
-                .setFailedText("修改失败")
-                .setInterceptBack(false)
-                .setLoadSpeed(SPEED_TWO)
-                .show();
-    }
-
-    /**
-     * 隐藏加载的进度框
-     */
-    public void hideLoading() {
-        if (mLoadingDialog != null) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    mLoadingDialog.close();
-                }
-            });
-        }
-    }
-
-    @Override
-    public void onBackPressed(){
-        if (mLoadingDialog != null) {
-            hideLoading();
-            finish();
-        } else {
-            finish();
-        }
-
-    }
-
     //showToast提示窗
     public void showToast(final String msg) {
         runOnUiThread(new Runnable() {

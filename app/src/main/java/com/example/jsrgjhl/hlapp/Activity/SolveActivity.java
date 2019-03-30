@@ -39,7 +39,6 @@ import okhttp3.Response;
 import static com.xiasuhuei321.loadingdialog.view.LoadingDialog.Speed.SPEED_TWO;
 
 public class SolveActivity extends AppCompatActivity implements Serializable {
-    private LoginActivity login=new LoginActivity();
     private EditText tabletitle,tablecontent;
     private TextView Warn_status;
     private TextView Slove_status,Timetv,Addresstv,Idtv;
@@ -167,7 +166,7 @@ public class SolveActivity extends AppCompatActivity implements Serializable {
                 @Override
                 public void run() {
                     OkHttpClient client=new OkHttpClient();
-                    RequestBody requestBody = new FormBody.Builder().add("recordnum",String.valueOf(record.getRecordnum())).add("recordID", String.valueOf(record.getRecordID())).add("deltime",ddate).add("userID",String.valueOf(record.getUserID())).add("username",login.userName).add("title",tabletitle.getText().toString()).add("context",tablecontent.getText().toString()).add("devicenum",String.valueOf(record.getDevicenum())).build();
+                    RequestBody requestBody = new FormBody.Builder().add("recordnum",record.getRecordnum()).add("recordID", String.valueOf(record.getRecordID())).add("deltime",ddate).add("userID", record.getUserID()).add("username",record.getUsername()).add("title",tabletitle.getText().toString()).add("context",tablecontent.getText().toString()).add("devicenum",record.getDevicenum()).build();
                     Request request = new Request.Builder().url(addsolutionpath).post(requestBody).build();
                     try{
                         Response response=client.newCall(request).execute();
@@ -176,7 +175,7 @@ public class SolveActivity extends AppCompatActivity implements Serializable {
 
                         String x=map.get("data").toString();
                         if(x=="true"){
-                            RequestBody requestBody2=new FormBody.Builder().add("recordID", String.valueOf(record.getRecordID())).add("userID", String.valueOf(record.getUserID())).add("username",login.userName).add("title",tabletitle.getText().toString()).add("context",tablecontent.getText().toString()).add("status","已处理").build();
+                            RequestBody requestBody2=new FormBody.Builder().add("recordID", String.valueOf(record.getRecordID())).add("userID", record.getUserID()).add("username",record.getUsername()).add("title",tabletitle.getText().toString()).add("context",tablecontent.getText().toString()).add("status","已处理").build();
                             Request request2 = new Request.Builder().url(updaterecordpath).post(requestBody2).build();
                             try {
                                 Response response2=client.newCall(request2).execute();
@@ -185,7 +184,7 @@ public class SolveActivity extends AppCompatActivity implements Serializable {
 
                                 String x2=map2.get("data").toString();
                                 if(x2=="true"){
-                                    RequestBody requestBody3=new FormBody.Builder().add("devicenum",String.valueOf(record.getDevicenum())).add("newstatus","正常运转").build();
+                                    RequestBody requestBody3=new FormBody.Builder().add("devicenum",record.getDevicenum()).add("newstatus","正常运转").build();
                                     Request request3=new Request.Builder().url(updatedevicestatuspath).post(requestBody3).build();
                                     try{
                                         Response response3=client.newCall(request3).execute();

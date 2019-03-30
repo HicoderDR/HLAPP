@@ -137,6 +137,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginTop="10dp"
                 android:layout_marginRight="42dp"
+                android:maxLines="1"
                 android:hint="@string/chooseaddress" />
             <ImageView
                 android:id="@+id/choose_img"

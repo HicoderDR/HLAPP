@@ -1,11 +1,15 @@
 package com.example.jsrgjhl.hlapp.Activity;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.util.Log;
@@ -67,6 +71,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             window.setNavigationBarColor(Color.TRANSPARENT);
         }
         setContentView(R.layout.activity_login);
+        if(ContextCompat.checkSelfPermission(LoginActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED||ContextCompat.checkSelfPermission(LoginActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED){//未开启定位权限
+            //开启定位权限,200是标识码
+            ActivityCompat.requestPermissions(LoginActivity.this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.READ_EXTERNAL_STORAGE},200);
+        }
         sp=getSharedPreferences("userinfo", MODE_PRIVATE);
         manager = OkManager.getInstance();
         clients = new OkHttpClient();
