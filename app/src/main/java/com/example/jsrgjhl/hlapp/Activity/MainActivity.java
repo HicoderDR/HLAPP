@@ -697,6 +697,7 @@ public class MainActivity extends AppCompatActivity implements AMap.OnMapClickLi
         itemView.measure(0,0);
         int itemHeight = itemView.getMeasuredHeight(); //一项的高度
         int itemWidth=itemView.getMeasuredWidth();
+        Log.i(TAG,"xj"+itemWidth);
         int itemCount = adapter.getCount();//得到总的项数
         LinearLayout.LayoutParams layoutParams = null; //进行布局参数的设置
         if(itemCount <= 3){
@@ -1283,7 +1284,7 @@ public class MainActivity extends AppCompatActivity implements AMap.OnMapClickLi
         bitmapDescriptor_marker_radar_y=BitmapDescriptorFactory.fromBitmap(convertViewToBitmap(marker_radar_y));
         bitmapDescriptor_marker_radar_r=BitmapDescriptorFactory.fromBitmap(convertViewToBitmap(marker_radar_r));
         bitmapDescriptor_marker_radar_gray=BitmapDescriptorFactory.fromBitmap(convertViewToBitmap(marker_radar_gray));
-        bitmapDescriptor_marker_sensor_gray=BitmapDescriptorFactory.fromBitmap(convertViewToBitmap(marker_sensor_gray));
+        bitmapDescriptor_marker_sensor_y=BitmapDescriptorFactory.fromBitmap(convertViewToBitmap(marker_sensor_y));
         bitmapDescriptor_marker_sensor_r=BitmapDescriptorFactory.fromBitmap(convertViewToBitmap(marker_sensor_r));
         bitmapDescriptor_marker_sensor_g=BitmapDescriptorFactory.fromBitmap(convertViewToBitmap(marker_sensor_g));
         bitmapDescriptor_marker_sensor_gray=BitmapDescriptorFactory.fromBitmap(convertViewToBitmap(marker_sensor_gray));

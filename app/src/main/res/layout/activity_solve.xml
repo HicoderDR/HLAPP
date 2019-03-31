@@ -124,6 +124,9 @@
                 android:layout_below="@id/timetv"
                 android:layout_margin="5dp"
                 android:textSize="15sp"
+                android:maxEms="10"
+                android:maxLines="1"
+                android:ellipsize="end"
                 android:layout_alignBaseline="@+id/addressimg"
                 android:textColor="@color/black"
                 android:layout_height="wrap_content" />

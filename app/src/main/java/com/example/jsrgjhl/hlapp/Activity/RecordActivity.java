@@ -1,6 +1,7 @@
 package com.example.jsrgjhl.hlapp.Activity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -53,6 +54,9 @@ public class RecordActivity extends AppCompatActivity implements Serializable{
     private final static String Tag= OperateRecord.class.getSimpleName();
     private Date recordtime;
     private Date deltime;
+    SharedPreferences sp;
+    SharedPreferences.Editor editor;
+    private String userName;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,6 +84,9 @@ public class RecordActivity extends AppCompatActivity implements Serializable{
             }
         });
 
+        sp=getSharedPreferences("userinfo", MODE_PRIVATE);
+        editor=sp.edit();
+        userName = sp.getString("username","");
         //初始化Records列表
         initRecords();
         mnowrecordsList.clear();
@@ -146,16 +153,19 @@ public class RecordActivity extends AppCompatActivity implements Serializable{
                         String sss=s.replace(" ","");
                         String[] ms = sss.split("=");
 
-                        if (ms[1].equals("null")) {
-                            ms[1] = "";
+                        if(ms.length==2){
+                            if (ms[1].equals("null")) {
+                                ms[1] = "";
+                            }
                         }
-                        if (map2.containsKey(ms[0])) {
+                        if (map2.containsKey(ms[0])&&ms.length==2) {
                             Record record1 = new Record(map2.get("recordID"),(String) map2.get("recordnum"),map2.get("recordtime"), map2.get("recordstatus"), map2.get("solutionID"),map2.get("userID"), (String) map2.get("title"), (String) map2.get("context"), map2.get("deviceID"),(String)map2.get("devicenum"),(String)map2.get("deviceaddress"),map2.get("regionID"),map2.get("defposID"),map2.get("devicelat"),map2.get("devicelng"),map2.get("devicetype"),map2.get("devicestatus"),map2.get("deltime"));
                             mrecordsList.add(record1);
                             map2.clear();
                             map2.put(ms[0],ms[1]);
                         }
                         else{
+                            if(ms.length==2)
                             map2.put(ms[0], ms[1]);
                         }
                     }
@@ -230,16 +240,18 @@ public class RecordActivity extends AppCompatActivity implements Serializable{
                                     String sss=s.replace(" ","");
                                     String[] ms = sss.split("=");
 
-                                    if (ms[1].equals("null")) {
+                                    if (ms.length==2&&ms[1].equals("null")) {
                                         ms[1] = "";
                                     }
                                     if (map2.containsKey(ms[0])) {
                                         Record record1 = new Record(map2.get("recordID"),(String) map2.get("recordnum"),map2.get("recordtime"), map2.get("recordstatus"), map2.get("solutionID"),map2.get("userID"), (String) map2.get("title"), (String) map2.get("context"), map2.get("deviceID"),(String)map2.get("devicenum"),(String)map2.get("deviceaddress"),map2.get("regionID"),map2.get("defposID"),map2.get("devicelat"),map2.get("devicelng"),map2.get("devicetype"),map2.get("devicestatus"),map2.get("deltime"));
                                         mrecordsList.add(record1);
                                         map2.clear();
+                                        if(ms.length==2)
                                         map2.put(ms[0],ms[1]);
                                     }
                                     else{
+                                        if(ms.length==2)
                                         map2.put(ms[0], ms[1]);
                                     }
                                 }
