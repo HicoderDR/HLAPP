@@ -11,6 +11,10 @@ import android.widget.TextView;
 
 import com.example.jsrgjhl.hlapp.R;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -46,7 +50,15 @@ public class SolutionsAdapter extends ArrayAdapter<Solution> {
         viewHolder.recordnumTextview.setText(solution.getDevicenum());
         viewHolder.recordtitleTextview.setText(solution.getTitle());
         viewHolder.recordcontextTextview.setText(solution.getContext());
-        viewHolder.recordtimeTextview.setText((CharSequence) solution.getDeltime());
+        try {
+            DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+            Date dt=df.parse(String.valueOf(solution.getDeltime()));
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String date=format.format(dt);
+            viewHolder.recordtimeTextview.setText(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         return view;
     }
     class ViewHolder{

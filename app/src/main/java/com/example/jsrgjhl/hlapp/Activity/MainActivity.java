@@ -21,6 +21,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.view.WindowManager;
@@ -28,6 +29,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
@@ -52,6 +54,7 @@ import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
 import com.example.jsrgjhl.hlapp.Adapter.Device;
 import com.example.jsrgjhl.hlapp.Adapter.Record;
+import com.example.jsrgjhl.hlapp.Adapter.RecordsAdapter;
 import com.example.jsrgjhl.hlapp.Adapter.WarningRecordsAdapter;
 import com.example.jsrgjhl.hlapp.PersonalSetting.OperateRecord;
 import com.example.jsrgjhl.hlapp.R;
@@ -690,6 +693,22 @@ public class MainActivity extends AppCompatActivity implements AMap.OnMapClickLi
                 }
             }
         });
+        View itemView = adapter.getView(0, null, recordlistView); //获取其中的一项
+        //进行这一项的测量，为什么加这一步，具体分析可以参考 https://www.jianshu.com/p/dbd6afb2c890这篇文章
+        itemView.measure(0,0);
+        int itemHeight = itemView.getMeasuredHeight(); //一项的高度
+        int itemWidth=itemView.getMeasuredWidth();
+        int itemCount = adapter.getCount();//得到总的项数
+        LinearLayout.LayoutParams layoutParams = null; //进行布局参数的设置
+        if(itemCount <= 3){
+            layoutParams = new LinearLayout.LayoutParams(itemWidth,itemHeight*itemCount);
+        }else if(itemCount > 3){
+            layoutParams = new LinearLayout.LayoutParams(itemWidth,itemHeight*3);
+        }
+        if(itemCount==1){
+            windowPos[1]+=itemHeight;
+        }
+        recordlistView.setLayoutParams(layoutParams);
         //获取listvie
         popWindow.setAnimationStyle(R.style.pop_anim);
         popWindow.showAtLocation(v, Gravity.TOP | Gravity.START, windowPos[0], windowPos[1]);
