@@ -9,5 +9,5 @@
     <ListView
         android:id="@+id/warninglist"
         android:layout_width="180dp"
-        android:layout_height="220dp" />
+        android:layout_height="wrap_content" />
 </LinearLayout>
