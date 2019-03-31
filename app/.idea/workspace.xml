@@ -8,7 +8,7 @@
     </shared>
   </component>
   <component name="AndroidLogFilters">
-    <option name="TOOL_WINDOW_LOG_LEVEL" value="info" />
+    <option name="TOOL_WINDOW_LOG_LEVEL" value="debug" />
     <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="No Filters" />
     <option name="TOOL_WINDOW_REGEXP_FILTER" value="false" />
   </component>
@@ -20,6 +20,8 @@
   <component name="ChangeListManager">
     <list default="true" id="29cfe3de-23d1-4cb3-8bb3-95b2c111b100" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/app-release.apk" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/example/jsrgjhl/hlapp/Activity/MainActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/jsrgjhl/hlapp/Activity/MainActivity.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -63,7 +65,7 @@
           <entry key="project.open.time.16" value="3" />
           <entry key="project.open.time.17" value="4" />
           <entry key="project.open.time.18" value="3" />
-          <entry key="project.open.time.19" value="2" />
+          <entry key="project.open.time.19" value="3" />
           <entry key="project.open.time.20" value="3" />
           <entry key="project.open.time.21" value="2" />
           <entry key="project.open.time.22" value="2" />
@@ -77,14 +79,14 @@
           <entry key="project.open.time.36" value="1" />
           <entry key="project.open.time.37" value="2" />
           <entry key="project.open.time.6" value="1" />
-          <entry key="project.opened" value="41" />
+          <entry key="project.opened" value="42" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
           <entry key="class" value="2" />
           <entry key="gradle" value="8" />
-          <entry key="java" value="121" />
+          <entry key="java" value="122" />
           <entry key="jpg" value="2" />
           <entry key="png" value="31" />
           <entry key="properties" value="2" />
@@ -96,7 +98,7 @@
           <entry key="CLASS" value="2" />
           <entry key="Groovy" value="8" />
           <entry key="Image" value="33" />
-          <entry key="JAVA" value="121" />
+          <entry key="JAVA" value="122" />
           <entry key="Properties" value="2" />
           <entry key="XML" value="137" />
         </counts>
@@ -104,7 +106,7 @@
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="gradle" value="29" />
-          <entry key="java" value="8923" />
+          <entry key="java" value="8950" />
           <entry key="properties" value="14" />
           <entry key="xml" value="2207" />
         </counts>
@@ -112,7 +114,7 @@
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="Groovy" value="29" />
-          <entry key="JAVA" value="8923" />
+          <entry key="JAVA" value="8950" />
           <entry key="Properties" value="14" />
           <entry key="XML" value="2207" />
         </counts>
@@ -127,18 +129,18 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/example/jsrgjhl/hlapp/Activity/MainActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-434">
-              <caret line="476" column="30" lean-forward="true" selection-start-line="476" selection-start-column="30" selection-end-line="476" selection-end-column="30" />
+            <state relative-caret-position="305">
+              <caret line="1169" column="18" lean-forward="true" selection-start-line="1169" selection-start-column="18" selection-end-line="1169" selection-end-column="18" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#7075#10464#0" />
-                <element signature="e#10470#16287#0" />
-                <element signature="e#16293#16547#0" />
-                <element signature="e#16553#16736#0" />
-                <element signature="e#30872#31207#0" />
-                <element signature="e#31213#32732#0" />
-                <element signature="e#45845#47201#0" />
-                <element signature="e#47206#47348#0" />
+                <element signature="e#31720#32055#0" />
+                <element signature="e#32061#33580#0" />
+                <element signature="e#33586#37266#0" />
+                <element signature="e#37272#41987#0" />
+                <element signature="e#41992#46688#0" />
+                <element signature="e#46693#48049#0" />
+                <element signature="e#48054#48196#0" />
+                <element signature="e#48201#51973#0" />
               </folding>
             </state>
           </provider>
@@ -147,8 +149,17 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/example/jsrgjhl/hlapp/Activity/LoginActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="950">
-              <caret line="87" column="50" selection-start-line="87" selection-start-column="50" selection-end-line="87" selection-end-column="50" />
+            <state relative-caret-position="5985">
+              <caret line="360" column="48" selection-start-line="360" selection-start-column="48" selection-end-line="360" selection-end-column="48" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/com/example/jsrgjhl/hlapp/PersonalSetting/PersonalAccount.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="76">
+              <caret line="35" column="13" selection-start-line="35" selection-start-column="13" selection-end-line="35" selection-end-column="13" />
             </state>
           </provider>
         </entry>
@@ -164,12 +175,12 @@
       </file>
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/AndroidManifest.xml">
-          <provider editor-type-id="android-manifest" />
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="1349">
               <caret line="71" column="63" selection-start-line="71" selection-start-column="63" selection-end-line="71" selection-end-column="63" />
             </state>
           </provider>
+          <provider editor-type-id="android-manifest" />
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
@@ -190,8 +201,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/example/jsrgjhl/hlapp/Activity/RecordActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1102">
-              <caret line="90" column="18" selection-start-line="90" selection-start-column="18" selection-end-line="90" selection-end-column="18" />
+            <state relative-caret-position="1254">
+              <caret line="98" column="38" selection-start-line="98" selection-start-column="38" selection-end-line="98" selection-end-column="38" />
               <folding>
                 <element signature="method#initRecords#0;class#RecordActivity#0" />
                 <element signature="method#deletzero#0;class#RecordActivity#0" />
@@ -205,8 +216,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/example/jsrgjhl/hlapp/Activity/SolveActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1045">
-              <caret line="86" column="33" selection-start-line="86" selection-start-column="33" selection-end-line="86" selection-end-column="33" />
+            <state relative-caret-position="-43">
+              <caret line="93" column="41" selection-start-line="93" selection-start-column="41" selection-end-line="93" selection-end-column="41" />
             </state>
           </provider>
         </entry>
@@ -2527,7 +2538,6 @@
         <option value="$PROJECT_DIR$/src/main/java/com/example/jsrgjhl/hlapp/Sample/Gifmarker.java" />
         <option value="$PROJECT_DIR$/src/main/res/layout/warninglist.xml" />
         <option value="$PROJECT_DIR$/src/main/java/com/example/jsrgjhl/hlapp/Activity/StartActivity.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/example/jsrgjhl/hlapp/Activity/LoginActivity.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/example/jsrgjhl/hlapp/Adapter/RecordsAdapter.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/example/jsrgjhl/hlapp/Adapter/WarningRecordsAdapter.java" />
         <option value="$PROJECT_DIR$/src/main/res/layout/activity_main.xml" />
@@ -2548,6 +2558,7 @@
         <option value="$PROJECT_DIR$/src/main/java/com/example/jsrgjhl/hlapp/PersonalSetting/ChangePassword.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/example/jsrgjhl/hlapp/Activity/DeviceListActivity.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/example/jsrgjhl/hlapp/Activity/SolveActivity.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/example/jsrgjhl/hlapp/Activity/LoginActivity.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/example/jsrgjhl/hlapp/Activity/MainActivity.java" />
       </list>
     </option>
@@ -2569,29 +2580,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
-      <pane id="AndroidView">
-        <subPane>
-          <expand>
-            <path>
-              <item name="HLAPP" type="1abcf292:AndroidViewProjectNode" />
-              <item name="Gradle Scripts" type="ae0cef3a:AndroidBuildScriptsGroupNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
-      <pane id="Scope">
-        <subPane subId="Scope 'Project Files'; set:Project Files; class com.intellij.psi.search.scope.ProjectFilesScope">
-          <expand>
-            <path>
-              <item name="HLAPP" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
-              <item name="C:\Users\jsrgjhl\Documents\GitHub\HLAPP" type="442cc68d:ScopeViewTreeModel$RootNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -2609,6 +2597,51 @@
               <item name="HLAPP" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
               <item name="app" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="PackagesPane" />
+      <pane id="Scope">
+        <subPane subId="Scope 'Project Files'; set:Project Files; class com.intellij.psi.search.scope.ProjectFilesScope">
+          <expand>
+            <path>
+              <item name="HLAPP" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
+              <item name="C:\Users\jsrgjhl\Documents\GitHub\HLAPP" type="442cc68d:ScopeViewTreeModel$RootNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="AndroidView">
+        <subPane>
+          <expand>
+            <path>
+              <item name="HLAPP" type="1abcf292:AndroidViewProjectNode" />
+              <item name="app" type="feadf853:AndroidModuleNode" />
+            </path>
+            <path>
+              <item name="HLAPP" type="1abcf292:AndroidViewProjectNode" />
+              <item name="app" type="feadf853:AndroidModuleNode" />
+              <item name="java" type="edd41e36:AndroidSourceTypeNode" />
+            </path>
+            <path>
+              <item name="HLAPP" type="1abcf292:AndroidViewProjectNode" />
+              <item name="app" type="feadf853:AndroidModuleNode" />
+              <item name="java" type="edd41e36:AndroidSourceTypeNode" />
+              <item name="hlapp" type="cbb59c9e:AndroidPsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="HLAPP" type="1abcf292:AndroidViewProjectNode" />
+              <item name="app" type="feadf853:AndroidModuleNode" />
+              <item name="java" type="edd41e36:AndroidSourceTypeNode" />
+              <item name="hlapp" type="cbb59c9e:AndroidPsiDirectoryNode" />
+              <item name="Activity" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="HLAPP" type="1abcf292:AndroidViewProjectNode" />
+              <item name="Gradle Scripts" type="ae0cef3a:AndroidBuildScriptsGroupNode" />
             </path>
           </expand>
           <select />
@@ -2759,7 +2792,7 @@
     <frame x="-7" y="-7" width="1295" height="695" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.48423004" visible="true" weight="0.24737267" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.48423004" visible="true" weight="0.24737267" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Designer" order="2" />
       <window_info id="Build Variants" order="3" sideWeight="0.51576996" side_tool="true" weight="0.24737267" />
@@ -2774,10 +2807,10 @@
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.3291815" />
-      <window_info anchor="bottom" id="Build" order="7" sideWeight="0.7105901" visible="true" weight="0.044483986" />
-      <window_info anchor="bottom" id="Android Profiler" order="8" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.26677445" side_tool="true" weight="0.8594306" />
-      <window_info anchor="bottom" id="Logcat" order="10" sideWeight="0.7332255" weight="0.20426288" />
+      <window_info anchor="bottom" id="Build" order="7" sideWeight="0.7259499" weight="0.044483986" />
+      <window_info anchor="bottom" id="Android Profiler" order="8" />
+      <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.26758286" side_tool="true" weight="0.9483986" />
+      <window_info active="true" anchor="bottom" id="Logcat" order="10" sideWeight="0.73241717" visible="true" weight="0.20284697" />
       <window_info anchor="bottom" id="Version Control" order="11" show_stripe_button="false" />
       <window_info anchor="bottom" id="Terminal" order="12" weight="0.3291815" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -2829,14 +2862,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/main/res/layout/marker_camera_gray.xml">
-      <provider editor-type-id="android-designer2" />
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="209">
-          <caret line="11" column="22" selection-start-line="11" selection-start-column="22" selection-end-line="11" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/example/jsrgjhl/hlapp/Sample/Gifmarker.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="323">
@@ -2878,38 +2903,38 @@
       <provider selected="true" editor-type-id="images" />
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/res/layout/warninglist.xml">
-      <provider editor-type-id="android-designer2" />
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="190">
           <caret line="10" column="35" selection-start-line="10" selection-start-column="35" selection-end-line="10" selection-end-column="35" />
         </state>
       </provider>
+      <provider editor-type-id="android-designer2" />
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/res/layout/pop_menu.xml">
-      <provider editor-type-id="android-designer2" />
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="209">
           <caret line="11" column="47" selection-start-line="11" selection-start-column="47" selection-end-line="11" selection-end-column="47" />
         </state>
       </provider>
+      <provider editor-type-id="android-designer2" />
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/res/layout/record_list.xml">
-      <provider editor-type-id="android-designer2" />
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="228">
           <caret line="90" column="49" selection-start-line="90" selection-start-column="49" selection-end-line="90" selection-end-column="49" />
         </state>
       </provider>
+      <provider editor-type-id="android-designer2" />
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/res/layout/activity_device_list.xml">
-      <provider editor-type-id="android-designer2" />
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-684" />
       </provider>
+      <provider editor-type-id="android-designer2" />
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/res/layout/activity_map.xml">
-      <provider editor-type-id="android-designer2" />
       <provider selected="true" editor-type-id="text-editor" />
+      <provider editor-type-id="android-designer2" />
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/example/jsrgjhl/hlapp/Adapter/Record.java">
       <provider selected="true" editor-type-id="text-editor">
@@ -2926,20 +2951,20 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/res/layout/menu_unit.xml">
-      <provider editor-type-id="android-designer2" />
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="171">
           <caret line="9" column="39" selection-start-line="9" selection-start-column="39" selection-end-line="9" selection-end-column="39" />
         </state>
       </provider>
+      <provider editor-type-id="android-designer2" />
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/res/layout/activity_main.xml">
-      <provider editor-type-id="android-designer2" />
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1121">
           <caret line="59" column="37" selection-start-line="59" selection-start-column="37" selection-end-line="59" selection-end-column="37" />
         </state>
       </provider>
+      <provider editor-type-id="android-designer2" />
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/res/mipmap-hdpi/back7.png">
       <provider selected="true" editor-type-id="images" />
@@ -2951,12 +2976,12 @@
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/res/layout/device_list.xml">
-      <provider editor-type-id="android-designer2" />
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="369">
           <caret line="77" column="17" selection-start-line="77" selection-start-column="17" selection-end-line="77" selection-end-column="17" />
         </state>
       </provider>
+      <provider editor-type-id="android-designer2" />
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/example/jsrgjhl/hlapp/Activity/PersonActivity.java">
       <provider selected="true" editor-type-id="text-editor">
@@ -2980,10 +3005,10 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/res/layout/activity_device_situation.xml">
-      <provider editor-type-id="android-designer2" />
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-1026" />
       </provider>
+      <provider editor-type-id="android-designer2" />
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/example/jsrgjhl/hlapp/Adapter/LoopService.java" />
     <entry file="file://$PROJECT_DIR$/src/main/java/com/example/jsrgjhl/hlapp/Activity/MapActivity.java">
@@ -3007,20 +3032,20 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/res/layout/record_warninglist.xml">
-      <provider editor-type-id="android-designer2" />
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="76">
           <caret line="4" selection-start-line="4" selection-end-line="4" />
         </state>
       </provider>
+      <provider editor-type-id="android-designer2" />
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/res/layout/info_window.xml">
-      <provider editor-type-id="android-designer2" />
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="76">
           <caret line="4" lean-forward="true" selection-start-line="4" selection-end-line="4" />
         </state>
       </provider>
+      <provider editor-type-id="android-designer2" />
     </entry>
     <entry file="file://$USER_HOME$/AppData/Local/Android/Sdk/sources/android-28/android/widget/ArrayAdapter.java">
       <provider selected="true" editor-type-id="text-editor">
@@ -3094,28 +3119,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/example/jsrgjhl/hlapp/Activity/MainActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-434">
-          <caret line="476" column="30" lean-forward="true" selection-start-line="476" selection-start-column="30" selection-end-line="476" selection-end-column="30" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#7075#10464#0" />
-            <element signature="e#10470#16287#0" />
-            <element signature="e#16293#16547#0" />
-            <element signature="e#16553#16736#0" />
-            <element signature="e#30872#31207#0" />
-            <element signature="e#31213#32732#0" />
-            <element signature="e#45845#47201#0" />
-            <element signature="e#47206#47348#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/example/jsrgjhl/hlapp/Activity/LoginActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="950">
-          <caret line="87" column="50" selection-start-line="87" selection-start-column="50" selection-end-line="87" selection-end-column="50" />
+        <state relative-caret-position="5985">
+          <caret line="360" column="48" selection-start-line="360" selection-start-column="48" selection-end-line="360" selection-end-column="48" />
         </state>
       </provider>
     </entry>
@@ -3127,12 +3134,12 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/AndroidManifest.xml">
-      <provider editor-type-id="android-manifest" />
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1349">
           <caret line="71" column="63" selection-start-line="71" selection-start-column="63" selection-end-line="71" selection-end-column="63" />
         </state>
       </provider>
+      <provider editor-type-id="android-manifest" />
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/example/jsrgjhl/hlapp/Activity/DeviceListActivity.java">
       <provider selected="true" editor-type-id="text-editor">
@@ -3149,8 +3156,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/example/jsrgjhl/hlapp/Activity/RecordActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1102">
-          <caret line="90" column="18" selection-start-line="90" selection-start-column="18" selection-end-line="90" selection-end-column="18" />
+        <state relative-caret-position="1254">
+          <caret line="98" column="38" selection-start-line="98" selection-start-column="38" selection-end-line="98" selection-end-column="38" />
           <folding>
             <element signature="method#initRecords#0;class#RecordActivity#0" />
             <element signature="method#deletzero#0;class#RecordActivity#0" />
@@ -3162,8 +3169,33 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/example/jsrgjhl/hlapp/Activity/SolveActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1045">
-          <caret line="86" column="33" selection-start-line="86" selection-start-column="33" selection-end-line="86" selection-end-column="33" />
+        <state relative-caret-position="-43">
+          <caret line="93" column="41" selection-start-line="93" selection-start-column="41" selection-end-line="93" selection-end-column="41" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/example/jsrgjhl/hlapp/PersonalSetting/PersonalAccount.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="76">
+          <caret line="35" column="13" selection-start-line="35" selection-start-column="13" selection-end-line="35" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/example/jsrgjhl/hlapp/Activity/MainActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="305">
+          <caret line="1169" column="18" lean-forward="true" selection-start-line="1169" selection-start-column="18" selection-end-line="1169" selection-end-column="18" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#31720#32055#0" />
+            <element signature="e#32061#33580#0" />
+            <element signature="e#33586#37266#0" />
+            <element signature="e#37272#41987#0" />
+            <element signature="e#41992#46688#0" />
+            <element signature="e#46693#48049#0" />
+            <element signature="e#48054#48196#0" />
+            <element signature="e#48201#51973#0" />
+          </folding>
         </state>
       </provider>
     </entry>

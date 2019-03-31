@@ -21,7 +21,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.view.WindowManager;
@@ -54,7 +53,6 @@ import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
 import com.example.jsrgjhl.hlapp.Adapter.Device;
 import com.example.jsrgjhl.hlapp.Adapter.Record;
-import com.example.jsrgjhl.hlapp.Adapter.RecordsAdapter;
 import com.example.jsrgjhl.hlapp.Adapter.WarningRecordsAdapter;
 import com.example.jsrgjhl.hlapp.PersonalSetting.OperateRecord;
 import com.example.jsrgjhl.hlapp.R;
@@ -697,7 +695,7 @@ public class MainActivity extends AppCompatActivity implements AMap.OnMapClickLi
         //进行这一项的测量，为什么加这一步，具体分析可以参考 https://www.jianshu.com/p/dbd6afb2c890这篇文章
         itemView.measure(0,0);
         int itemHeight = itemView.getMeasuredHeight(); //一项的高度
-        int itemWidth=itemView.getMeasuredWidth();
+        int itemWidth = itemView.getMeasuredWidth();
         int itemCount = adapter.getCount();//得到总的项数
         LinearLayout.LayoutParams layoutParams = null; //进行布局参数的设置
         if(itemCount <= 3){
@@ -1284,7 +1282,7 @@ public class MainActivity extends AppCompatActivity implements AMap.OnMapClickLi
         bitmapDescriptor_marker_radar_y=BitmapDescriptorFactory.fromBitmap(convertViewToBitmap(marker_radar_y));
         bitmapDescriptor_marker_radar_r=BitmapDescriptorFactory.fromBitmap(convertViewToBitmap(marker_radar_r));
         bitmapDescriptor_marker_radar_gray=BitmapDescriptorFactory.fromBitmap(convertViewToBitmap(marker_radar_gray));
-        bitmapDescriptor_marker_sensor_gray=BitmapDescriptorFactory.fromBitmap(convertViewToBitmap(marker_sensor_gray));
+        bitmapDescriptor_marker_sensor_y=BitmapDescriptorFactory.fromBitmap(convertViewToBitmap(marker_sensor_y));
         bitmapDescriptor_marker_sensor_r=BitmapDescriptorFactory.fromBitmap(convertViewToBitmap(marker_sensor_r));
         bitmapDescriptor_marker_sensor_g=BitmapDescriptorFactory.fromBitmap(convertViewToBitmap(marker_sensor_g));
         bitmapDescriptor_marker_sensor_gray=BitmapDescriptorFactory.fromBitmap(convertViewToBitmap(marker_sensor_gray));
