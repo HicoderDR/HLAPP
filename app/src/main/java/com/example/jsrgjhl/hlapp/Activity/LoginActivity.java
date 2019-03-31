@@ -1,15 +1,20 @@
 package com.example.jsrgjhl.hlapp.Activity;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.util.Log;
@@ -29,6 +34,7 @@ import com.example.jsrgjhl.hlapp.Utils.OkManager;
 import com.example.jsrgjhl.hlapp.Utils.jsonstr2map;
 import com.xiasuhuei321.loadingdialog.view.LoadingDialog;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import okhttp3.FormBody;
@@ -54,8 +60,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private final static String Tag = MainActivity.class.getSimpleName();
     private OkManager manager;
     private OkHttpClient clients;
-    private String loginpath="http://47.100.107.158:8080/api/user/login";
+    private String getuserinfo="http://47.100.107.158:8080/api/user/getuserInfo";
     public static String userName;
+    private String regionID;
+    private String defposID;
 
     private static int flag;
     @Override
@@ -71,6 +79,49 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             window.setNavigationBarColor(Color.TRANSPARENT);
         }
         setContentView(R.layout.activity_login);
+        NotificationManagerCompat notification = NotificationManagerCompat.from(this);
+        boolean isEnabled = notification.areNotificationsEnabled();
+        if (!isEnabled) {
+            //未打开通知
+            AlertDialog alertDialog = new AlertDialog.Builder(this)
+                    .setTitle("提示")
+                    .setMessage("请在“通知”中打开通知权限")
+                    .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    })
+                    .setPositiveButton("去设置", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                            Intent intent = new Intent();
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
+                                intent.putExtra("android.provider.extra.APP_PACKAGE", LoginActivity.this.getPackageName());
+                            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {  //5.0
+                                intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
+                                intent.putExtra("app_package", LoginActivity.this.getPackageName());
+                                intent.putExtra("app_uid", LoginActivity.this.getApplicationInfo().uid);
+                            } else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {  //4.4
+                                intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                intent.addCategory(Intent.CATEGORY_DEFAULT);
+                                intent.setData(Uri.parse("package:" + LoginActivity.this.getPackageName()));
+                            } else if (Build.VERSION.SDK_INT >= 15) {
+                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                intent.setAction("android.settings.APPLICATION_DETAILS_SETTINGS");
+                                intent.setData(Uri.fromParts("package", LoginActivity.this.getPackageName(), null));
+                            }
+                            startActivity(intent);
+
+                        }
+                    })
+                    .create();
+            alertDialog.show();
+            alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(Color.BLACK);
+            alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.BLACK);
+        }
         if(ContextCompat.checkSelfPermission(LoginActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED||ContextCompat.checkSelfPermission(LoginActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED){//未开启定位权限
@@ -251,21 +302,34 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void run() {
                 Log.i(Tag,"drresult3 "+flag);
-                RequestBody requestBody = new FormBody.Builder().add("username", getAccount()).add("password", getPassword()).build();
-                Request request = new Request.Builder().url(loginpath).post(requestBody).build();
+                OkHttpClient client = new OkHttpClient();
+                Request request = new Request.Builder().url(getuserinfo+"?username="+getAccount()).build();
                 try {
-                    Response response = clients.newCall(request).execute();//发送请求
+                    Response response = client.newCall(request).execute();//发送请求
                     String result = response.body().string();
+                    Map<String, Object> map= jsonstr2map.jsonstr2map(result);
+                    /**
+                     * 将 string 转为json格式
+                     */
+                    String temp=map.get("data").toString();
+                    temp=temp.substring(1,temp.length()-1).replace(" ", "");;
+                    String[] strs=temp.split(",");
 
-                    Map<String, Object> map=jsonstr2map.jsonstr2map(result);
-                    String x=map.get("data").toString();
-                    if(x=="true"){
-                        flag=1;
-                        loadCheckBoxState();//记录下当前用户记住密码和自动登录的状态;
-                    }else{
-                        flag=2;
+                    Map<String,String> m=new HashMap<String,String>();
+                    for(String s:strs){
+                        String[] ms=s.split("=");
+                        if(ms.length==2)
+                        m.put(ms[0],ms[1]);
                     }
-                    Log.i(Tag,"drresult4 "+flag);
+                    if(map.get("message").equals("SUCCESS")){
+                        if(getPassword().equals(m.get("password"))) {
+                            regionID=m.get("regionID");
+                            defposID=m.get("defposID");
+                            flag = 1;
+                        }
+                    }
+                    else flag=2;
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -282,6 +346,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         Log.i(Tag,"drresult6 "+flag);
         setLoaded(flag);
         if(flag==1){
+            SharedPreferences.Editor editor = sp.edit();
+            editor.putString("regionID",regionID);
+            editor.putString("defposID",defposID);
+            editor.commit();
             Intent mainintent = new Intent(LoginActivity.this, MainActivity.class);
             LoginActivity.this.startActivity(mainintent);
             LoginActivity.this.finish();

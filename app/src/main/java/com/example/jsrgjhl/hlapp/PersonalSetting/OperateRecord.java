@@ -1,5 +1,6 @@
 package com.example.jsrgjhl.hlapp.PersonalSetting;
 
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -26,12 +27,14 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class OperateRecord extends AppCompatActivity {
-
-    private LoginActivity login=new LoginActivity();
     private List<Solution> msolutionList=new ArrayList<>();
     private String getsolutionpath="http://47.100.107.158:8080/api/solution/getsolutionlist";
     private int flag;
     private final static String Tag= OperateRecord.class.getSimpleName();
+    SharedPreferences sp;
+    SharedPreferences.Editor editor;
+    private String userName;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,6 +55,9 @@ public class OperateRecord extends AppCompatActivity {
             }
         });
 
+        sp=getSharedPreferences("userinfo", MODE_PRIVATE);
+        editor=sp.edit();
+        userName = sp.getString("username","");
         /**
          * 初始化用户操作列表
          */
@@ -70,7 +76,7 @@ public class OperateRecord extends AppCompatActivity {
             @Override
             public void run() {
                 OkHttpClient client = new OkHttpClient();
-                Request request = new Request.Builder().url(getsolutionpath+"?username="+login.userName).build();
+                Request request = new Request.Builder().url(getsolutionpath+"?username="+userName).build();
                 try {
                     Response response = client.newCall(request).execute();//发送请求
                     String result = response.body().string();
@@ -83,7 +89,6 @@ public class OperateRecord extends AppCompatActivity {
                     if(temp.equals("null")){
                         flag=1;
                        // Toast.makeText(OperateRecord.this,"查不到信息",Toast.LENGTH_SHORT).show();
-                        Log.i(Tag,login.userName);
                         Log.i(Tag,"查不到记录");
                         return;
                     }
@@ -96,15 +101,17 @@ public class OperateRecord extends AppCompatActivity {
                         String sss=s.replace(" ","");
                         String[] ms = sss.split("=");
 
-                        if (ms[1].equals("null")) {
+                        if (ms[1].equals("null")&&ms.length==2) {
                             ms[1] = "";
                         }
                         if (map2.containsKey(ms[0])) {
                             Solution solution = new Solution(map2.get("deltime"),map2.get("title"),map2.get("context"),map2.get("devicenum"));
                             msolutionList.add(solution);
                             map2.clear();
+                            if (ms.length==2)
                             map2.put(ms[0],ms[1]);
                         }else{
+                            if (ms.length==2)
                             map2.put(ms[0], ms[1]);
                         }
                     }

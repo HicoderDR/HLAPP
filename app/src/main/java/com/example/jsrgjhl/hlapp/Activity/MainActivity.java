@@ -695,7 +695,8 @@ public class MainActivity extends AppCompatActivity implements AMap.OnMapClickLi
         //进行这一项的测量，为什么加这一步，具体分析可以参考 https://www.jianshu.com/p/dbd6afb2c890这篇文章
         itemView.measure(0,0);
         int itemHeight = itemView.getMeasuredHeight(); //一项的高度
-        int itemWidth = itemView.getMeasuredWidth();
+        int itemWidth=itemView.getMeasuredWidth();
+        Log.i(TAG,"xj"+itemWidth);
         int itemCount = adapter.getCount();//得到总的项数
         LinearLayout.LayoutParams layoutParams = null; //进行布局参数的设置
         if(itemCount <= 3){

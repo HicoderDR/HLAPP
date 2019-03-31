@@ -32,34 +32,39 @@ public class WarningRecordsAdapter extends ArrayAdapter<Record>{
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        Record records=getItem(position);
-        View view;
-        ViewHolder viewHolder;
-        if (convertView==null){
-            view= LayoutInflater.from(getContext()).inflate(resourceId,parent,false);
-            viewHolder=new ViewHolder();
-            viewHolder.timeTextview=(TextView)view.findViewById(R.id.timetv);
-            viewHolder.addressTextview=(TextView)view.findViewById(R.id.addresstv);
-            viewHolder.idTextview=(TextView)view.findViewById(R.id.idtv);
-            view.setTag(viewHolder);
-        }else{
-            view=convertView;
-            viewHolder=(ViewHolder)view.getTag();
-        }
-        try {
-            DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-            Date dt=df.parse(records.getRecordtime());
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            String date=format.format(dt);
-            viewHolder.timeTextview.setText(date);
-        } catch (ParseException e) {
+        Record records=new Record();
+        try{
+            records=getItem(position);
+        }catch (Exception e){
             e.printStackTrace();
         }
+            View view;
+            ViewHolder viewHolder;
+            if (convertView==null){
+                view= LayoutInflater.from(getContext()).inflate(resourceId,parent,false);
+                viewHolder=new ViewHolder();
+                viewHolder.timeTextview=(TextView)view.findViewById(R.id.timetv);
+                viewHolder.addressTextview=(TextView)view.findViewById(R.id.addresstv);
+                viewHolder.idTextview=(TextView)view.findViewById(R.id.idtv);
+                view.setTag(viewHolder);
+            }else{
+                view=convertView;
+                viewHolder=(ViewHolder)view.getTag();
+            }
+            try {
+                DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+                Date dt=df.parse(records.getRecordtime());
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                String date=format.format(dt);
+                viewHolder.timeTextview.setText(date);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
-        viewHolder.idTextview.setText(records.getDevicenum());
-        viewHolder.addressTextview.setText(records.getDeviceaddress());
+            viewHolder.idTextview.setText(records.getDevicenum());
+            viewHolder.addressTextview.setText(records.getDeviceaddress());
 
-        return view;
+            return view;
     }
     class ViewHolder{
         TextView timeTextview;

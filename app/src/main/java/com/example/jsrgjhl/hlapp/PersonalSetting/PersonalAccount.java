@@ -2,6 +2,7 @@ package com.example.jsrgjhl.hlapp.PersonalSetting;
 
 import android.app.Person;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -42,12 +43,14 @@ public class PersonalAccount extends AppCompatActivity {
     private OptionsPickerView pvNoLinkOptions;
     private LoginActivity login=new LoginActivity();
     private final static String Tag=PersonalAccount.class.getSimpleName();
-    private String getuserInfo="http://47.100.107.158:8080/api/user/getuserInfo";
     private String updateuserInfo="http://47.100.107.158:8080/api/user/updateuserInfo";
     private static int flag;
     private LoadingDialog mLoadingDialog;
-
+    SharedPreferences sp;
+    SharedPreferences.Editor editor;
+    private String userName;
     private TextView personid;
+    private String region_Defpo;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,6 +78,10 @@ public class PersonalAccount extends AppCompatActivity {
                     pvNoLinkOptions.show();
             }
         });
+        sp=getSharedPreferences("userinfo", MODE_PRIVATE);
+        editor=sp.edit();
+        userName = sp.getString("username","");
+        region_Defpo=sp.getString("regionID","")+"/"+sp.getString("defposID","");
         personid=(TextView) findViewById(R.id.personId);
         getuserInfo();
 
@@ -92,57 +99,13 @@ public class PersonalAccount extends AppCompatActivity {
     }
 
     private void getuserInfo() {
-        flag=0;
-        try{
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    OkHttpClient client = new OkHttpClient();
-                    Request request = new Request.Builder().url(getuserInfo+"?username="+login.userName).build();
-                    try {
-                        Response response = client.newCall(request).execute();//发送请求
-                        String result = response.body().string();
-                        Map<String, Object> map= jsonstr2map.jsonstr2map(result);
-                        /**
-                         * 将 string 转为json格式
-                         */
-                        String temp=map.get("data").toString();
-                        temp=temp.substring(1,temp.length()-1).replace(" ", "");;
-                        String[] strs=temp.split(",");
-
-                        Map<String,String> m=new HashMap<String,String>();
-                        for(String s:strs){
-                            String[] ms=s.split("=");
-                            m.put(ms[0],ms[1]);
-                        }
-                        if(map.get("message").equals("SUCCESS")){
-                            personid.setText(login.userName);
-                            areaDefenseTv.setText(m.get("regionID")+"/"+m.get("defposID"));
-                            flag=1;
-                        }
-                        else flag=2;
-
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }).start();
-            while (flag==0){
-                try{
-                    Thread.sleep(1);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            };
-            if(flag==1){
-                Log.i(Tag,"获取成功");
-
-            }else {
-            }
-        }catch (Exception e) {
-            e.printStackTrace();
-        }
+        /**
+         * 这里需要在加一下区域跟防区
+         */
+        personid.setText(userName);
+        areaDefenseTv.setText(region_Defpo);
     }
+
 
     private void initNoLinkOptionsPicker() {// 不联动的多级选项
         pvNoLinkOptions = new OptionsPickerBuilder(this, new OnOptionsSelectListener() {
@@ -154,6 +117,10 @@ public class PersonalAccount extends AppCompatActivity {
                     String str = areas.get(options1)
                             + "/" + defenses.get(options2);
                     areaDefenseTv.setText(str);
+                    SharedPreferences.Editor editor = sp.edit();
+                    editor.putString("regionID",areas.get(options1));
+                    editor.putString("defposID",defenses.get(options2));
+                    editor.commit();
                 }
             }
         })
