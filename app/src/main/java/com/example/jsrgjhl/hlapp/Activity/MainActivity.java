@@ -472,6 +472,7 @@ public class MainActivity extends AppCompatActivity implements AMap.OnMapClickLi
     }
 
     private void initmarkers(){
+        aMap.clear();
         initpic();
         cameramarkers.clear();
         radarmarkers.clear();
