@@ -18,12 +18,7 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="29cfe3de-23d1-4cb3-8bb3-95b2c111b100" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/release/app-release.apk" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/jsrgjhl/hlapp/Activity/MainActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/jsrgjhl/hlapp/Activity/MainActivity.java" afterDir="false" />
-    </list>
+    <list default="true" id="29cfe3de-23d1-4cb3-8bb3-95b2c111b100" name="Default" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -129,8 +124,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/example/jsrgjhl/hlapp/Activity/MainActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="305">
-              <caret line="1169" column="18" lean-forward="true" selection-start-line="1169" selection-start-column="18" selection-end-line="1169" selection-end-column="18" />
+            <state relative-caret-position="799">
+              <caret line="1163" column="27" selection-start-line="1163" selection-start-column="27" selection-end-line="1163" selection-end-column="27" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#31720#32055#0" />
@@ -150,7 +145,7 @@
         <entry file="file://$PROJECT_DIR$/src/main/java/com/example/jsrgjhl/hlapp/Activity/LoginActivity.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="5985">
-              <caret line="360" column="48" selection-start-line="360" selection-start-column="48" selection-end-line="360" selection-end-column="48" />
+              <caret line="428" column="48" selection-start-line="428" selection-start-column="48" selection-end-line="428" selection-end-column="48" />
             </state>
           </provider>
         </entry>
@@ -158,8 +153,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/example/jsrgjhl/hlapp/PersonalSetting/PersonalAccount.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="76">
-              <caret line="35" column="13" selection-start-line="35" selection-start-column="13" selection-end-line="35" selection-end-column="13" />
+            <state relative-caret-position="646">
+              <caret line="36" column="13" selection-start-line="36" selection-start-column="13" selection-end-line="36" selection-end-column="13" />
             </state>
           </provider>
         </entry>
@@ -201,11 +196,9 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/example/jsrgjhl/hlapp/Activity/RecordActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1254">
-              <caret line="98" column="38" selection-start-line="98" selection-start-column="38" selection-end-line="98" selection-end-column="38" />
+            <state relative-caret-position="1976">
+              <caret line="105" column="38" selection-start-line="105" selection-start-column="38" selection-end-line="105" selection-end-column="38" />
               <folding>
-                <element signature="method#initRecords#0;class#RecordActivity#0" />
-                <element signature="method#deletzero#0;class#RecordActivity#0" />
                 <element signature="method#startTimer#0;class#RecordActivity#0" />
                 <element signature="method#stopTimer#0;class#RecordActivity#0" />
               </folding>
@@ -216,8 +209,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/example/jsrgjhl/hlapp/Activity/SolveActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-43">
-              <caret line="93" column="41" selection-start-line="93" selection-start-column="41" selection-end-line="93" selection-end-column="41" />
+            <state relative-caret-position="679">
+              <caret line="98" column="41" selection-start-line="98" selection-start-column="41" selection-end-line="98" selection-end-column="41" />
             </state>
           </provider>
         </entry>
@@ -3122,7 +3115,7 @@
     <entry file="file://$PROJECT_DIR$/src/main/java/com/example/jsrgjhl/hlapp/Activity/LoginActivity.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="5985">
-          <caret line="360" column="48" selection-start-line="360" selection-start-column="48" selection-end-line="360" selection-end-column="48" />
+          <caret line="428" column="48" selection-start-line="428" selection-start-column="48" selection-end-line="428" selection-end-column="48" />
         </state>
       </provider>
     </entry>
@@ -3156,11 +3149,9 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/example/jsrgjhl/hlapp/Activity/RecordActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1254">
-          <caret line="98" column="38" selection-start-line="98" selection-start-column="38" selection-end-line="98" selection-end-column="38" />
+        <state relative-caret-position="1976">
+          <caret line="105" column="38" selection-start-line="105" selection-start-column="38" selection-end-line="105" selection-end-column="38" />
           <folding>
-            <element signature="method#initRecords#0;class#RecordActivity#0" />
-            <element signature="method#deletzero#0;class#RecordActivity#0" />
             <element signature="method#startTimer#0;class#RecordActivity#0" />
             <element signature="method#stopTimer#0;class#RecordActivity#0" />
           </folding>
@@ -3169,22 +3160,22 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/example/jsrgjhl/hlapp/Activity/SolveActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-43">
-          <caret line="93" column="41" selection-start-line="93" selection-start-column="41" selection-end-line="93" selection-end-column="41" />
+        <state relative-caret-position="679">
+          <caret line="98" column="41" selection-start-line="98" selection-start-column="41" selection-end-line="98" selection-end-column="41" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/example/jsrgjhl/hlapp/PersonalSetting/PersonalAccount.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="76">
-          <caret line="35" column="13" selection-start-line="35" selection-start-column="13" selection-end-line="35" selection-end-column="13" />
+        <state relative-caret-position="646">
+          <caret line="36" column="13" selection-start-line="36" selection-start-column="13" selection-end-line="36" selection-end-column="13" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/example/jsrgjhl/hlapp/Activity/MainActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="305">
-          <caret line="1169" column="18" lean-forward="true" selection-start-line="1169" selection-start-column="18" selection-end-line="1169" selection-end-column="18" />
+        <state relative-caret-position="799">
+          <caret line="1163" column="27" selection-start-line="1163" selection-start-column="27" selection-end-line="1163" selection-end-column="27" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#31720#32055#0" />
