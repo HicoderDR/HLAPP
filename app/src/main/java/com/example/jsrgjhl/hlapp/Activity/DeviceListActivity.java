@@ -15,7 +15,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import com.example.jsrgjhl.hlapp.Adapter.Device;
 import com.example.jsrgjhl.hlapp.Adapter.DeviceAdapter;
@@ -88,6 +87,7 @@ public class DeviceListActivity extends AppCompatActivity {
 
         //
         //初始化设备列表
+        mnowdeviceList.clear();
         mnowdeviceList.addAll(mdeviceList);
         adapter = new DeviceAdapter(DeviceListActivity.this, R.layout.device_list,mnowdeviceList);
         devicelistView=(ListView)findViewById(R.id.device_listview);
@@ -325,7 +325,6 @@ public class DeviceListActivity extends AppCompatActivity {
                                 mdeviceList.remove(i);
                                 i--;
                             }
-                            Log.i(Tag,"xj"+mdeviceList.size());
                         }
                     } flag=1;
                 } catch (Exception e) {
