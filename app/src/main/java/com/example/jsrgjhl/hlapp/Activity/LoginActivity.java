@@ -37,10 +37,8 @@ import com.xiasuhuei321.loadingdialog.view.LoadingDialog;
 import java.util.HashMap;
 import java.util.Map;
 
-import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
 
 import static com.xiasuhuei321.loadingdialog.view.LoadingDialog.Speed.SPEED_TWO;
@@ -326,10 +324,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             regionID=m.get("regionID");
                             defposID=m.get("defposID");
                             flag = 1;
-                        }
+                        }else flag=2;
                     }
                     else flag=2;
-
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
