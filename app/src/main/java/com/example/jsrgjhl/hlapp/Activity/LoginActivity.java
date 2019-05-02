@@ -324,6 +324,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             regionID=m.get("regionID");
                             defposID=m.get("defposID");
                             flag = 1;
+                            loadCheckBoxState();
                         }else flag=2;
                     }
                     else flag=2;
