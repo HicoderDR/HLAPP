@@ -183,7 +183,6 @@ public class SolveActivity extends AppCompatActivity implements Serializable {
                         Response response=client.newCall(request).execute();
                         String result = response.body().string();
                         Map<String, Object> map= jsonstr2map.jsonstr2map(result);
-
                         String x=map.get("data").toString();
                         if(x=="true"){
                             flag=1;

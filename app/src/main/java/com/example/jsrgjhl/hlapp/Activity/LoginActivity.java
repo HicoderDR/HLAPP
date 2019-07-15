@@ -306,7 +306,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     Response response = client.newCall(request).execute();//发送请求
                     String result = response.body().string();
                     Map<String, Object> map= jsonstr2map.jsonstr2map(result);
-                    /**
+                    /*
                      * 将 string 转为json格式
                      */
                     String temp=map.get("data").toString();
